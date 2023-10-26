@@ -12,3 +12,17 @@
 /Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net7.0/HyLang.pdb
 /Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net7.0/HyLang.genruntimeconfig.cache
 /Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net7.0/ref/HyLang.dll
+D:\Projects\C#\HyLang\HyLang\bin\Debug\net7.0\HyLang.exe
+D:\Projects\C#\HyLang\HyLang\bin\Debug\net7.0\HyLang.deps.json
+D:\Projects\C#\HyLang\HyLang\bin\Debug\net7.0\HyLang.runtimeconfig.json
+D:\Projects\C#\HyLang\HyLang\bin\Debug\net7.0\HyLang.dll
+D:\Projects\C#\HyLang\HyLang\bin\Debug\net7.0\HyLang.pdb
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.GeneratedMSBuildEditorConfig.editorconfig
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.AssemblyInfoInputs.cache
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.AssemblyInfo.cs
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.csproj.CoreCompileInputs.cache
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.dll
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\refint\HyLang.dll
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.pdb
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\HyLang.genruntimeconfig.cache
+D:\Projects\C#\HyLang\HyLang\obj\Debug\net7.0\ref\HyLang.dll

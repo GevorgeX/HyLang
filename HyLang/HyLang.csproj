@@ -8,8 +8,5 @@
     </PropertyGroup>
 
 
-    <ItemGroup>
-      <Folder Include="Commands\" />
-    </ItemGroup>
 
 </Project>
