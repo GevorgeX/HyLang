@@ -8,20 +8,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecf30419-3a37-47cc-98cd-7e2bd02f372f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/BinaryNode.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/Node.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/NumberNode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.HyLang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HyLang/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/HyLang.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/HyLang.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/Parser/KeyWords.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/KeyWords.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/Parser/Lexer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/Lexer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/Parser/Parser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/Parser.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/Parser/TokenType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/TokenType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.AssemblyInfo.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.genruntimeconfig.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.pdb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/ref/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/ref/HyLang.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/refint/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/refint/HyLang.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.dgspec.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.g.props" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HyLang/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/project.assets.json" afterDir="false" />
@@ -41,36 +40,36 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2XHiEjSAdPq9O2dw1XytmSHNh95" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\gevna\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache",
-      "C:\\Users\\gevna\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache",
-      "C:\\Users\\gevna\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;/Users/gevnavoyan/Library/Application Support/JetBrains/Rider2023.2/resharper-host/DecompilerCache&quot;,
+      &quot;/Users/gevnavoyan/Library/Application Support/JetBrains/Rider2023.2/resharper-host/SourcesCache&quot;,
+      &quot;/Users/gevnavoyan/.local/share/Symbols/src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="HyLang" type="DotNetProject" factoryName=".NET Project">
       <option name="EXE_PATH" value="" />
@@ -100,6 +99,9 @@
       <option name="presentableId" value="Default" />
       <updated>1698292297488</updated>
       <workItem from="1698324593020" duration="2897000" />
+      <workItem from="1698342220752" duration="849000" />
+      <workItem from="1698506697358" duration="287000" />
+      <workItem from="1698555736394" duration="12289000" />
     </task>
     <servers />
   </component>

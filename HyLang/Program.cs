@@ -3,8 +3,9 @@ using System;
 
 var lexer = new Lexer();
 
-string input = "5+5";
+string input = "5+5;";
 
-foreach(var el in lexer.GetTokens(input))
-    Console.WriteLine(el);
+var parser = new Parser(lexer.GetTokens(input));
+
+
 

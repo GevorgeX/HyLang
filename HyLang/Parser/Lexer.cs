@@ -6,7 +6,7 @@ namespace HyLang.Parser;
 
 public class Lexer
 {
-    public static readonly string[] Delimiters = {" ","+" , "-" , "*" , "/"};
+    public static readonly string[] Delimiters = {" ","+" , "-" , "*" , "/",";"};
     
     private static readonly string Pattern ='(' +string.Join("|", Delimiters.Select(Regex.Escape)) +')';
     public string[] Parse(string text)

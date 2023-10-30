@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj": {}
+    "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj": {}
   },
   "projects": {
-    "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj": {
+    "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj",
+        "projectUniqueName": "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj",
         "projectName": "HyLang",
-        "projectPath": "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj",
-        "packagesPath": "C:\\Users\\gevna\\.nuget\\packages\\",
-        "outputPath": "D:\\Projects\\C#\\HyLang\\HyLang\\obj\\",
+        "projectPath": "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj",
+        "packagesPath": "/Users/gevnavoyan/.nuget/packages/",
+        "outputPath": "/Users/gevnavoyan/Projects/HyLang/HyLang/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\gevna\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "/Users/gevnavoyan/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
@@ -53,7 +53,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.401/RuntimeIdentifierGraph.json"
         }
       }
     }

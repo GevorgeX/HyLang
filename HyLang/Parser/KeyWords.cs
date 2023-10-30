@@ -11,7 +11,7 @@ public static class KeyWords
             "-" => TokenType.Minus,
             "*" => TokenType.Multiply,
             "/" => TokenType.Divide,
-            
+            ";" => TokenType.End,
             _ => TokenType.Undefined
         };
     }

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using HyLang.Parser.AST;
 
 namespace HyLang.Parser;
 
@@ -10,16 +12,33 @@ public class Parser
 
     public Parser(List<Token> tokens) => _tokens = tokens;
 
-    public void Parse()
+    public Node ParseCode()
     {
-        while (_tokens.Count > _position)
+        var root = new Node();
+        while (_position < _tokens.Count)
         {
-            
+            var expression = ParseExpression();
+            if (MatchToken(TokenType.End) is null)
+            {
+                throw new Exception();
+            }
+            root.Add(expression);
         }
-    }
-    public Token GetCurrentToken(int relativePos = 0) => _tokens[_position+relativePos];
 
-    public Token? TokenIs(params TokenType[] types)
+        return root;
+    }
+
+    private Node ParseExpression()
+    {
+    
+    }
+
+    private Token GetCurrentToken(int relativePos = 0)
+    {
+        var token = _tokens[_position+relativePos];
+        return token;
+    }
+    private Token? MatchToken(params TokenType[] types)
     {
         var token = GetCurrentToken();
         if (types.Contains(token.Type))
@@ -27,6 +46,7 @@ public class Parser
             _position++;
             return token;
         }
+
         return null;
     }
 }
