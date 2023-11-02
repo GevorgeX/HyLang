@@ -30,13 +30,33 @@ public class Parser
 
     private Node ParseExpression()
     {
-    
+        var token = MatchToken(TokenType.Number , TokenType.Plus);
+
+        switch (token.Value.Type)
+        {
+            case TokenType.Number:
+                return new NumberNode(token.Value.Text);
+
+            case TokenType.Plus:
+            {
+                var nextToken = MatchToken(TokenType.Number);
+                return new BinaryNode(token , )
+            }
+
+            default:
+                throw new Exception();
+        }
     }
+
 
     private Token GetCurrentToken(int relativePos = 0)
     {
         var token = _tokens[_position+relativePos];
         return token;
+    }
+    private TokenType GetCurrentTokenType()
+    {
+        return _tokens[_position].Type;
     }
     private Token? MatchToken(params TokenType[] types)
     {
