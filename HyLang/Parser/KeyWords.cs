@@ -12,6 +12,8 @@ public static class KeyWords
             "*" => TokenType.Multiply,
             "/" => TokenType.Divide,
             ";" => TokenType.End,
+            "(" => TokenType.LeftParenthesis,
+            ")" => TokenType.RightParenthesis,
             _ => TokenType.Undefined
         };
     }

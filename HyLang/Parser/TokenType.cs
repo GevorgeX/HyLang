@@ -8,5 +8,7 @@ public enum TokenType
     Minus,
     Multiply,
     Divide,
-    End
+    End,
+    LeftParenthesis,
+    RightParenthesis
 }

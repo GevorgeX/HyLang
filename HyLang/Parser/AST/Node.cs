@@ -12,7 +12,7 @@ public  class Node
     }
     public static void PrintTree(Node tree, string indent = "\n", bool last = true)
     {
-        System.Console.Write(indent + "└── " + tree);
+        System.Console.Write(indent + "└──── " + tree);
         indent += last ? "   " : "|  ";
 
         for (int i = 0; i < tree.nodes.Count; i++)

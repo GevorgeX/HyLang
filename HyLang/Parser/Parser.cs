@@ -17,8 +17,8 @@ public class Parser
         var root = new Node();
         while (_position < _tokens.Count)
         {
-            var expression = ParseExpression();
-            if (MatchToken(TokenType.End) is null)
+            var expression = Expression();
+            if (!MatchToken(TokenType.End))
             {
                 throw new Exception();
             }
@@ -28,24 +28,59 @@ public class Parser
         return root;
     }
 
-    private Node ParseExpression()
+    private Node Expression()
     {
-        var token = MatchToken(TokenType.Number , TokenType.Plus);
+        return Additive();
+    }
 
-        switch (token.Value.Type)
+    private Node Additive(){
+        var result = Multiplicative();
+                while (true)
         {
-            case TokenType.Number:
-                return new NumberNode(token.Value.Text);
-
-            case TokenType.Plus:
-            {
-                var nextToken = MatchToken(TokenType.Number);
-                return new BinaryNode(token , )
+            if( MatchToken(TokenType.Plus)){
+                result = new BinaryExpressionNode(result ,"+" , Multiplicative() );
             }
-
-            default:
-                throw new Exception();
+            else if( MatchToken(TokenType.Minus)){
+                result = new BinaryExpressionNode(result ,"-" , Multiplicative() );
+            }
+            else{
+                break;
+            }
         }
+        return result;
+    }
+    private Node Multiplicative(){
+        var result = Unary();
+        while (true)
+        {
+            if( MatchToken(TokenType.Multiply)){
+                result = new BinaryExpressionNode(result ,"*" , Unary() );
+            }
+            else if( MatchToken(TokenType.Divide)){
+                result = new BinaryExpressionNode(result ,"/" , Unary() );
+            }
+            else{
+                break;
+            }
+        }
+        return result;
+    }
+    private Node Unary(){
+
+        var result = Primary();
+        return result;
+    }
+    private Node Primary(){
+        var token = GetCurrentToken();
+        if(MatchToken(TokenType.Number)){
+            return new NumberExpressionNode(token.Text);
+        }
+        else if(MatchToken(TokenType.LeftParenthesis)){
+            var result = Expression();
+            RequireToken(TokenType.RightParenthesis);
+            return result;
+        }
+        throw new Exception("Symbol error");
     }
 
 
@@ -54,19 +89,20 @@ public class Parser
         var token = _tokens[_position+relativePos];
         return token;
     }
-    private TokenType GetCurrentTokenType()
-    {
-        return _tokens[_position].Type;
+    private void RequireToken(params TokenType[] types){
+        if(!MatchToken(types))
+            throw new Exception($"Require {types[0]}");
     }
-    private Token? MatchToken(params TokenType[] types)
+    private bool MatchToken(params TokenType[] types)
+    
     {
         var token = GetCurrentToken();
         if (types.Contains(token.Type))
         {
             _position++;
-            return token;
+            return true;
         }
 
-        return null;
+        return false;
     }
 }

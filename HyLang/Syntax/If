@@ -1,6 +1,6 @@
 ﻿եթե <condition> {
 }
-ապա ետե <condition> {
+ապա եթե <condition> {
 }
 ապա {
 }
