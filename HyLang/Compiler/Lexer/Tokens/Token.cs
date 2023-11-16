@@ -1,4 +1,4 @@
-namespace HyLang.Parser;
+namespace HyLang.Compiler.Lexer.Tokens;
 
 public struct Token
 {

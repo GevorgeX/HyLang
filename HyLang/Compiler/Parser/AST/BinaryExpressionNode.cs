@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace HyLang.Parser.AST;
+namespace HyLang.Compiler.Parser.AST;
 
 public class BinaryExpressionNode:Node
 {

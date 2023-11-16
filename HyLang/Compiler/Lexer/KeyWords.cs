@@ -1,4 +1,6 @@
-namespace HyLang.Parser;
+using HyLang.Compiler.Lexer.Tokens;
+
+namespace HyLang.Compiler.Lexer;
 
 public static class KeyWords
 {

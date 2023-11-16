@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace HyLang.Parser.AST;
+namespace HyLang.Compiler.Parser.AST;
 
 public class UnaryExpressionNode : Node
 {

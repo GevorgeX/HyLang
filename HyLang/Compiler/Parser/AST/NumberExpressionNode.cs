@@ -1,4 +1,4 @@
-namespace HyLang.Parser.AST;
+namespace HyLang.Compiler.Parser.AST;
 
 public class NumberExpressionNode: Node
 {

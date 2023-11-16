@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HyLang")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5fa81271ebc93f9f17668f5abd2654f5aad30319")]
 [assembly: System.Reflection.AssemblyProductAttribute("HyLang")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HyLang")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

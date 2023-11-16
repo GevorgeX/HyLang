@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using HyLang.Parser.AST;
+using HyLang.Compiler.Parser.AST;
+using HyLang.Compiler.Lexer.Tokens;
 
-namespace HyLang.Parser;
+namespace HyLang.Compiler.Parser;
 
 public class Parser
 {

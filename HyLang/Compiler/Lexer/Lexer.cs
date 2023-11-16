@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Linq;
+using HyLang.Compiler.Lexer.Tokens;
 
-namespace HyLang.Parser;
+namespace HyLang.Compiler.Lexer;
 
 public class Lexer
 {
