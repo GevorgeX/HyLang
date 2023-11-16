@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = HyLang
-build_property.ProjectDir = /Users/gevnavoyan/Projects/HyLang/HyLang/
+build_property.ProjectDir = D:\Projects\C#\HyLang\HyLang\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

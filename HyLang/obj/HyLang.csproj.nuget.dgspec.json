@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj": {}
+    "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj": {}
   },
   "projects": {
-    "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj": {
+    "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj",
+        "projectUniqueName": "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj",
         "projectName": "HyLang",
-        "projectPath": "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj",
-        "packagesPath": "/Users/gevnavoyan/.nuget/packages/",
-        "outputPath": "/Users/gevnavoyan/Projects/HyLang/HyLang/obj/",
+        "projectPath": "D:\\Projects\\C#\\HyLang\\HyLang\\HyLang.csproj",
+        "packagesPath": "C:\\Users\\gevna\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\C#\\HyLang\\HyLang\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/gevnavoyan/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\gevna\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -48,26 +48,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.osx-x64",
-              "version": "[6.0.25, 6.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.25, 6.0.25]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.100/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
