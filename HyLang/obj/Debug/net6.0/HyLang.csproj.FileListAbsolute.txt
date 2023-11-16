@@ -1,0 +1,15 @@
+/Users/gevnavoyan/Projects/HyLang/HyLang/bin/Debug/net6.0/HyLang
+/Users/gevnavoyan/Projects/HyLang/HyLang/bin/Debug/net6.0/HyLang.deps.json
+/Users/gevnavoyan/Projects/HyLang/HyLang/bin/Debug/net6.0/HyLang.runtimeconfig.json
+/Users/gevnavoyan/Projects/HyLang/HyLang/bin/Debug/net6.0/HyLang.dll
+/Users/gevnavoyan/Projects/HyLang/HyLang/bin/Debug/net6.0/HyLang.pdb
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.GeneratedMSBuildEditorConfig.editorconfig
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.AssemblyInfoInputs.cache
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.AssemblyInfo.cs
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.csproj.CoreCompileInputs.cache
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.sourcelink.json
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.dll
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/refint/HyLang.dll
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.pdb
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/HyLang.genruntimeconfig.cache
+/Users/gevnavoyan/Projects/HyLang/HyLang/obj/Debug/net6.0/ref/HyLang.dll

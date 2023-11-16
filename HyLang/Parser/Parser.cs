@@ -12,9 +12,9 @@ public class Parser
 
     public Parser(List<Token> tokens) => _tokens = tokens;
 
-    public Node ParseCode()
+    public List<Node> ParseCode()
     {
-        var root = new Node();
+        var root = new List<Node>();
         while (_position < _tokens.Count)
         {
             var expression = Expression();

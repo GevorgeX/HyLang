@@ -8,26 +8,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ecf30419-3a37-47cc-98cd-7e2bd02f372f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/BinaryNode.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/Node.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HyLang/Parser/AST/NumberNode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.HyLang/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HyLang/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/HyLang.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/HyLang.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/Parser/KeyWords.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/KeyWords.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/Parser/Lexer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/Lexer.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/Parser/Parser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/Parser.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/Parser/TokenType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Parser/TokenType.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.AssemblyInfo.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.GeneratedMSBuildEditorConfig.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.GeneratedMSBuildEditorConfig.editorconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.assets.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.assets.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.dgspec.json" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.dgspec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.g.props" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/HyLang.csproj.nuget.g.props" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/project.assets.json" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/project.assets.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/project.nuget.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/project.nuget.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/project.packagespec.json" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/project.packagespec.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/rider.project.model.nuget.info" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/rider.project.model.nuget.info" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HyLang/obj/rider.project.restore.info" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/rider.project.restore.info" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/bin/Debug/net7.0/HyLang.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.genruntimeconfig.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.genruntimeconfig.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/HyLang.pdb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/ref/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/ref/HyLang.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/refint/HyLang.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HyLang/obj/Debug/net7.0/refint/HyLang.dll" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,9 +26,28 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;GevorgeX&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="2449fcf4-493a-4746-ab98-05a59f1e2117" />
+        <option name="url" value="https://github.com/GevorgeX/HyLang.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Users/gevnavoyan/Projects/HyLang/HyLang/Parser/AST/Node.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="mock:///Users/gevnavoyan/Projects/HyLang/HyLang/Parser/Parser.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -102,13 +110,57 @@
       <workItem from="1698342220752" duration="849000" />
       <workItem from="1698506697358" duration="287000" />
       <workItem from="1698555736394" duration="12289000" />
+      <workItem from="1698665377836" duration="1136000" />
+      <workItem from="1698671671476" duration="2847000" />
+      <workItem from="1698895877143" duration="100000" />
+      <workItem from="1699458013658" duration="57000" />
+      <workItem from="1699458965236" duration="82000" />
     </task>
+    <task id="LOCAL-00001" summary="Add AST">
+      <option name="closed" value="true" />
+      <created>1698667051953</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1698667051953</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add nodes printer">
+      <option name="closed" value="true" />
+      <created>1698895931647</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1698895931647</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Add Expression Parser">
+      <option name="closed" value="true" />
+      <created>1699458051612</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1699458051612</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Add Expressions">
+      <option name="closed" value="true" />
+      <created>1699459006396</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1699459006396</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+    <MESSAGE value="Add AST" />
+    <MESSAGE value="Add nodes printer" />
+    <MESSAGE value="Add Expression Parser" />
+    <MESSAGE value="Add Expressions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add Expressions" />
   </component>
 </project>

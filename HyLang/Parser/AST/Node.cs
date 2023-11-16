@@ -2,10 +2,9 @@ using System.Collections.Generic;
 
 namespace HyLang.Parser.AST;
 
-public  class Node
+public class Node
 {
-    public List<Node> nodes =  new();
-    public void Add(Node node) => nodes.Add(node);
+    public virtual List<Node> GetChildNodes() =>  new List<Node>();
     public override string? ToString()
     {
         return GetType().Name;
@@ -15,9 +14,9 @@ public  class Node
         System.Console.Write(indent + "└──── " + tree);
         indent += last ? "   " : "|  ";
 
-        for (int i = 0; i < tree.nodes.Count; i++)
+        for (int i = 0; i < tree.GetChildNodes().Count; i++)
         {
-            PrintTree(tree.nodes[i], indent, i == tree.nodes.Count - 1);
+            PrintTree(tree.GetChildNodes()[i], indent, i == tree.GetChildNodes().Count - 1);
         }
     }
 }

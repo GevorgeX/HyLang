@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "Gd37+/iAW8AJjL+r99WiVVnnDYk5hX/MZgAas1wIr8oQuNUbqes0z8nKbzWr3VdNc00UutlXZST7WTc1ghdadg==",
+  "dgSpecHash": "7g+zoww2kS/X7hXsWm9hlt4hTP+ihjdTmLN6VTVjuqrJBxCP016Pv7/qTSLOtqo4F8HjqfsNPjXI8pHRhsg0mg==",
   "success": true,
   "projectFilePath": "/Users/gevnavoyan/Projects/HyLang/HyLang/HyLang.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/gevnavoyan/.nuget/packages/microsoft.netcore.app.ref/6.0.25/microsoft.netcore.app.ref.6.0.25.nupkg.sha512",
+    "/Users/gevnavoyan/.nuget/packages/microsoft.aspnetcore.app.ref/6.0.25/microsoft.aspnetcore.app.ref.6.0.25.nupkg.sha512",
+    "/Users/gevnavoyan/.nuget/packages/microsoft.netcore.app.host.osx-x64/6.0.25/microsoft.netcore.app.host.osx-x64.6.0.25.nupkg.sha512"
+  ],
   "logs": []
 }

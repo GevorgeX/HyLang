@@ -4,9 +4,12 @@ using System;
 
 var lexer = new Lexer();
 
-string input = "(5+5*6 - 4;";
+string input = "5+5*6 - 4;";
 
 var parser = new Parser(lexer.GetTokens(input));
 
 
-Node.PrintTree(parser.ParseCode()); 
+foreach (var item in parser.ParseCode())
+{
+    Node.PrintTree(item); 
+}
