@@ -1,4 +1,4 @@
-use crate::interpreter::library::ReferenceToObject;
+use crate::interpreter::library::{create_object, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 use crate::interpreter::MemRef;
 
@@ -10,7 +10,7 @@ pub struct NumberExp{
 impl super::Expression for NumberExp {
     fn evaluate(&self) -> ReferenceToObject {
         let val = Object::Number(self.value);
-        self.mem.create_object(val)
+        create_object(val)
     }
 }
 

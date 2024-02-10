@@ -1,8 +1,8 @@
 pub mod logical {
     use std::rc::Rc;
 
-    use crate::interpreter::memory::object::Object;
-    use crate::interpreter::memory::ReferenceToObject;
+    use crate::interpreter::library::object::Object;
+    use crate::interpreter::library::ReferenceToObject;
 
     pub fn and(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match (*left , *right) {
@@ -29,8 +29,8 @@ pub mod logical {
 pub mod arithmetical {
     use std::rc::Rc;
 
-    use crate::interpreter::memory::object::Object;
-    use crate::interpreter::memory::ReferenceToObject;
+    use crate::interpreter::library::object::Object;
+    use crate::interpreter::library::ReferenceToObject;
 
     pub fn add(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match (*left , *right) {
@@ -71,8 +71,8 @@ pub mod arithmetical {
 pub mod conditional {
     use std::rc::Rc;
 
-    use crate::interpreter::memory::object::Object;
-    use crate::interpreter::memory::ReferenceToObject;
+    use crate::interpreter::library::object::Object;
+    use crate::interpreter::library::ReferenceToObject;
 
     pub fn more(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match (*left , *right) {

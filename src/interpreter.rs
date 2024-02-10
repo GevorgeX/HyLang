@@ -2,18 +2,17 @@ mod expression;
 mod statement;
 mod library;
 mod task;
-// pub mod library;
 
 use std::{cell::RefCell, rc::Rc};
-use library::Memory;
+use library::LocalContext;
 
 use super::lexer::token::Token;
 use self::statement::{block_stm::BlockStm, Statement};
 
-pub type MemRef = Rc<Memory>;
+pub type MemRef = Rc<LocalContext>;
 pub struct Interpreter{
     index: RefCell<usize> ,
-    pub memory: Rc<Memory>,
+    pub memory: Rc<LocalContext>,
     tokens: Vec<Token>
 }
 
@@ -21,7 +20,7 @@ impl Interpreter {
     pub fn new(tokens: Vec<Token>) -> Interpreter{
         Interpreter{
             index: RefCell::new(0),
-            memory: Rc::new(Memory::new()),
+            memory: Rc::new(LocalContext::new()),
             tokens
         }
     }

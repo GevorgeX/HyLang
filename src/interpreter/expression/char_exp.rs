@@ -1,4 +1,4 @@
-use crate::interpreter::library::ReferenceToObject;
+use crate::interpreter::library::{create_object, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 use crate::interpreter::MemRef;
 
@@ -11,7 +11,7 @@ impl super::Expression for CharExp {
     fn evaluate(&self) -> ReferenceToObject {
         let chars:Vec<char> = self.value.chars().collect();
         let val = Object::Char(*chars.first().unwrap());
-        self.mem.create_object(val)
+        create_object(val)
     }
 }
 
