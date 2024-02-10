@@ -1,5 +1,5 @@
 use crate::interpreter::MemRef;
-use crate::interpreter::memory::ReferenceToObject;
+use crate::interpreter::library::ReferenceToObject;
 
 pub struct ValueExp{
     name: String,

@@ -1,4 +1,4 @@
-use crate::interpreter::{expression::Expression, memory::object::Object, task::Task};
+use crate::interpreter::{expression::Expression, library::object::Object, task::Task};
 
 use super::Statement;
 

@@ -15,7 +15,7 @@ fn main() {
 
     inter.parse_code().interpret();
 
-    // for  (name , val) in inter.memory.references.borrow().iter(){
+    // for  (name , val) in inter.library.references.borrow().iter(){
     //     println!("{} refcount {} , val = {}",name, std::rc::Rc::strong_count(val) ,val.to_string() );
     // }
 }

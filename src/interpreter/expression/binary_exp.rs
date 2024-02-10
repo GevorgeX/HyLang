@@ -1,5 +1,5 @@
-use crate::interpreter::memory::object_utils::arithmetical;
-use crate::interpreter::memory::ReferenceToObject;
+use crate::interpreter::library::object_utils::arithmetical;
+use crate::interpreter::library::ReferenceToObject;
 
 use super::{Expression, OperationType};
 

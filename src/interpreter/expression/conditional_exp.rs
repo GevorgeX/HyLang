@@ -1,5 +1,5 @@
-use crate::interpreter::memory::object_utils::{conditional, logical};
-use crate::interpreter::memory::ReferenceToObject;
+use crate::interpreter::library::object_utils::{conditional, logical};
+use crate::interpreter::library::ReferenceToObject;
 
 use super::{Expression, OperationType};
 

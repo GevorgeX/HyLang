@@ -7,7 +7,7 @@ mod conditional_exp;
 mod char_exp;
 
 
-use crate::interpreter::memory::ReferenceToObject;
+use crate::interpreter::library::ReferenceToObject;
 use super::Interpreter;
 use crate::lexer::token::Token;
 

@@ -1,11 +1,11 @@
 mod expression;
 mod statement;
-mod memory;
+mod library;
 mod task;
-// pub mod memory;
+// pub mod library;
 
 use std::{cell::RefCell, rc::Rc};
-use memory::Memory;
+use library::Memory;
 
 use super::lexer::token::Token;
 use self::statement::{block_stm::BlockStm, Statement};

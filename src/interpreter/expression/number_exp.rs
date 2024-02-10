@@ -1,5 +1,5 @@
-use crate::interpreter::memory::ReferenceToObject;
-use crate::interpreter::memory::object::Object;
+use crate::interpreter::library::ReferenceToObject;
+use crate::interpreter::library::object::Object;
 use crate::interpreter::MemRef;
 
 pub struct NumberExp{
