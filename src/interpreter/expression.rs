@@ -11,8 +11,9 @@ use crate::interpreter::library::ReferenceToObject;
 use super::{library::Context, Interpreter};
 use crate::lexer::token::Token;
 
+
 use self::{
-    binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp
+    binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp,array_exp::ArrayExp
 };
 pub enum OperationType {
     Plus,
@@ -198,6 +199,21 @@ impl<'a> Interpreter<'a> {
                     panic!("Require symbol")
                 }
                 
+            },
+            Token::LeftSquareBrace =>{
+                self.next_token();
+                let mut exps = vec![];
+                while *self.get_token() != Token::RightSquareBrace {
+                    exps.push(self.expression());
+                    
+                    if *self.get_token() != Token::RightSquareBrace {
+                        self.require_token(Token::Comma);
+                    }
+                }
+                
+                self.next_token();
+                
+                return Box::new(ArrayExp::new(exps));
             },
             Token::Word(word)=>{
                 self.next_token();

@@ -34,7 +34,10 @@ pub enum Token{
     StarEqual,
     SlashEqual,
     
-    P_R_I_N_T
+    P_R_I_N_T,
+    LeftSquareBrace,
+    RightSquareBrace,
+    Comma,
 }
 
 impl std::fmt::Display for Token {
