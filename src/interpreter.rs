@@ -3,25 +3,24 @@ mod statement;
 mod library;
 mod task;
 
-use std::{cell::RefCell, rc::Rc};
-use library::LocalContext;
+use std::cell::RefCell;
+
 
 use super::lexer::token::Token;
-use self::statement::{block_stm::BlockStm, Statement};
+use self::{library::Context, statement::{block_stm::BlockStm, Statement}};
 
-pub type MemRef = Rc<LocalContext>;
-pub struct Interpreter{
-    index: RefCell<usize> ,
-    pub memory: Rc<LocalContext>,
-    tokens: Vec<Token>
+pub struct Interpreter<'a>{
+    index: RefCell<usize>,
+    tokens: Vec<Token>,
+    main_context:Context<'a>
 }
 
-impl Interpreter {
-    pub fn new(tokens: Vec<Token>) -> Interpreter{
+impl<'a> Interpreter<'a> {
+    pub fn new(tokens: Vec<Token>) -> Interpreter<'a>{
         Interpreter{
             index: RefCell::new(0),
-            memory: Rc::new(LocalContext::new()),
-            tokens
+            tokens,
+            main_context:Context::new_local_context(None)
         }
     }
     pub(self) fn get_token(&self)-> &Token {
@@ -29,7 +28,6 @@ impl Interpreter {
 
             return &self.tokens[*self.index.borrow()]
         }
-        
         &Token::EOF
     }
     pub(self) fn next_token(&self) {
@@ -45,8 +43,9 @@ impl Interpreter {
         }
     }
     pub fn parse_code(&self) -> Box<dyn Statement> {
-        let  res = BlockStm::new(self.memory.clone()) ;
+        let cont = Context::new_local_context(None);
 
+        let res = BlockStm::new() ;
         loop {
             match self.get_token() {
                 Token::EOF => {
@@ -60,5 +59,8 @@ impl Interpreter {
         };
 
         Box::new(res)
+    }
+    pub fn run(&self){
+        self.parse_code().interpret(&self.main_context);
     }
 }

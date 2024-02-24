@@ -1,5 +1,6 @@
 use crate::lexer::token::Token;
 use super::expression::{binary_exp, value_exp, OperationType};
+use super::library::Context;
 use super::task::Task;
 use super::Interpreter;
 
@@ -23,11 +24,11 @@ use break_stm::BreakStm;
 use continue_stm::ContinueStm;
 
 pub trait Statement {
-    fn interpret(&self) -> Task;  
+    fn interpret(&self , context: &Context) -> Task;  
 }
 
 
-impl Interpreter {
+impl<'a> Interpreter<'a> {
     pub fn statement(&self) -> Box<dyn Statement> {
         match self.get_token() {
             Token::IF => {
@@ -98,7 +99,7 @@ impl Interpreter {
         Box::new(WhileStm::new(condition, while_statements))
     }
     fn block(&self) -> Box<dyn Statement> {
-        let res = BlockStm::new(self.memory.clone() );
+        let res = BlockStm::new( );
         self.require_token(Token::LeftBrace);
 
         while *self.get_token() != Token::RightBrace {
@@ -108,7 +109,7 @@ impl Interpreter {
         Box::new(res)
 
     }
-    fn if_else(&self) -> Box<dyn Statement>{
+    fn if_else(&self ) -> Box<dyn Statement>{
         let condition = self.expression();
         let if_statement = self.block();
         let else_statemnt;
@@ -127,7 +128,7 @@ impl Interpreter {
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             self.require_token(Token::Equal);
-            return Box::new(DefineVariableStm::new(word.clone(), self.expression() , self.memory.clone()))
+            return Box::new(DefineVariableStm::new(word.clone(), self.expression() , ))
         }
         else{
             panic!("Require name");
@@ -135,15 +136,15 @@ impl Interpreter {
     }
 
     fn assignment(&self,word:&String) -> Box<dyn Statement> {
-        return Box::new(AssignmentStm::new(word.clone(), self.expression() , self.memory.clone()))
+        return Box::new(AssignmentStm::new(word.clone(), self.expression() , ))
     }
     fn assignment_with_modifare(&self,word:&String, op:OperationType) -> Box<dyn Statement> {
         let val = Box::new(binary_exp::BinaryExp::new(
-            Box::new(value_exp::ValueExp::new(word.clone(),self.memory.clone())),
+            Box::new(value_exp::ValueExp::new(word.clone())),
             self.expression(),
             op
          ));
 
-        return Box::new(AssignmentStm::new(word.clone(), val , self.memory.clone()))
+        return Box::new(AssignmentStm::new(word.clone(), val , ))
     }
 }

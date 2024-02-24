@@ -1,21 +1,19 @@
-use crate::interpreter::library::{create_object, ReferenceToObject};
+use crate::interpreter::library::{create_object, Context, ReferenceToObject};
 use crate::interpreter::library::object::Object;
-use crate::interpreter::MemRef;
 
 pub struct NumberExp{
     value: i32,
-    mem: MemRef
 }
 
 impl super::Expression for NumberExp {
-    fn evaluate(&self) -> ReferenceToObject {
+    fn evaluate(&self,context:&Context) -> ReferenceToObject {
         let val = Object::Number(self.value);
         create_object(val)
     }
 }
 
 impl NumberExp {
-    pub fn new(value : i32 , mem:MemRef) -> NumberExp {
-        NumberExp{value ,mem}
+    pub fn new(value : i32) -> NumberExp {
+        NumberExp{value}
     }
 }

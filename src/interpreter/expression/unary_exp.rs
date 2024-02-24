@@ -1,5 +1,5 @@
 use crate::interpreter::library::object_utils::{arithmetical::neg, logical::not};
-use crate::interpreter::library::ReferenceToObject;
+use crate::interpreter::library::{Context, ReferenceToObject};
 
 use super::{Expression, OperationType};
 
@@ -9,11 +9,11 @@ pub struct UnaryExp{
 }
 
 impl super::Expression for UnaryExp {
-    fn evaluate(&self) -> ReferenceToObject {
+    fn evaluate(&self,context:&Context) -> ReferenceToObject {
         match self.op {
-            OperationType::Plus => self.value.evaluate(),
-            OperationType::Minus => neg(self.value.evaluate()) ,
-            OperationType::Not => not(self.value.evaluate()),
+            OperationType::Plus => self.value.evaluate(context),
+            OperationType::Minus => neg(self.value.evaluate(context)) ,
+            OperationType::Not => not(self.value.evaluate(context)),
             _ => panic!("wrong operator")
         }
     }

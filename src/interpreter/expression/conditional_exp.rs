@@ -1,5 +1,5 @@
 use crate::interpreter::library::object_utils::{conditional, logical};
-use crate::interpreter::library::ReferenceToObject;
+use crate::interpreter::library::{Context, ReferenceToObject};
 
 use super::{Expression, OperationType};
 
@@ -10,16 +10,16 @@ pub struct ConditionalExp{
 }
 
 impl super::Expression for ConditionalExp {
-    fn evaluate(&self) -> ReferenceToObject {
+    fn evaluate(&self,context:&Context) -> ReferenceToObject {
         match self.op {
-            OperationType::And => logical::and(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::Or =>logical::or(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::More =>conditional::more(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::Less =>conditional::less(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::MoreOrEq =>conditional::more_or_eq(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::LessOrEq =>conditional::less_or_eq(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::DoubleEqual => conditional::equal(self.left.evaluate(), self.right.evaluate())  ,
-            OperationType::NotEqual => conditional::not_equal(self.left.evaluate(), self.right.evaluate())  ,
+            OperationType::And => logical::and(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::Or =>logical::or(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::More =>conditional::more(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::Less =>conditional::less(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::MoreOrEq =>conditional::more_or_eq(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::LessOrEq =>conditional::less_or_eq(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::DoubleEqual => conditional::equal(self.left.evaluate(context), self.right.evaluate(context))  ,
+            OperationType::NotEqual => conditional::not_equal(self.left.evaluate(context), self.right.evaluate(context))  ,
             _ => panic!("Cant use this operator")
         }
     }

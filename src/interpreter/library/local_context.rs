@@ -1,0 +1,66 @@
+use std::{cell::RefCell, collections::HashMap};
+
+use super::{Context, ReferenceToObject};
+
+pub struct LocalContext<'a>{
+    references: RefCell<HashMap<String , ReferenceToObject>>,
+    parent: Option<&'a Context<'a>>
+}
+
+
+impl<'a> LocalContext<'a> {
+
+    pub fn define_variable(&self, name:String, refer: ReferenceToObject) {
+        let mut mem = self.references.borrow_mut();
+
+        if !mem.contains_key(&name){
+            mem.insert(name ,refer);
+        }
+        else {
+            panic!("This variable is already defined");
+        }
+    }
+
+    pub fn change_variable(&self, name:String, refer: ReferenceToObject ){
+        let mut mem = self.references.borrow_mut();
+
+        if mem.contains_key(&name){
+            mem.insert(name ,refer);
+        }
+        else if let Some(par) = self.parent  {
+            match par {
+                Context::LocalContext(cont) => cont.change_variable(name, refer),
+            }
+        }
+        else{
+            panic!("This variable isn't  define")
+        }
+    }
+    pub  fn delete_variable(&self, name: &String) {
+        self.references.borrow_mut().remove(name);
+    }
+
+    pub fn get_variable(&self, name: &String) -> ReferenceToObject {
+        if  let Some(val) = self.references.borrow().get(name) {
+            val.clone()
+        }
+        else{
+            if let Some(par) = self.parent{
+                match par {
+                    Context::LocalContext(cont) => cont.get_variable(name).clone(),
+                }
+            }
+            else{
+                panic!("CANT FIND VARIABLE")
+            }
+        }
+    }
+
+    pub fn new(parent: Option<&'a Context> )->LocalContext<'a> {
+        LocalContext{
+            references: RefCell::new(HashMap::new()),
+            parent
+        }
+    }
+    
+}

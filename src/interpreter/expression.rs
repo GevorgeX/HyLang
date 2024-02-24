@@ -5,10 +5,10 @@ pub(super) mod value_exp;
 mod boolean_exp;
 mod conditional_exp;
 mod char_exp;
-
+mod array_exp;
 
 use crate::interpreter::library::ReferenceToObject;
-use super::Interpreter;
+use super::{library::Context, Interpreter};
 use crate::lexer::token::Token;
 
 use self::{
@@ -31,12 +31,12 @@ pub enum OperationType {
 }
 
 pub trait Expression{
-    fn evaluate(&self) -> ReferenceToObject;
+    fn evaluate(&self , context:&Context) -> ReferenceToObject;
 }
 
 
 
-impl Interpreter {
+impl<'a> Interpreter<'a> {
     pub fn expression(&self)-> Box<dyn Expression> {
         self.conditional()
     }
@@ -121,7 +121,7 @@ impl Interpreter {
     
         res
     }
-    fn multiplicative(&self)-> Box<dyn Expression> {
+    fn multiplicative(&self ,)-> Box<dyn Expression> {
         let mut res = self.unary();
     
         loop {
@@ -147,7 +147,7 @@ impl Interpreter {
         return res
     
     }
-    fn unary(&self)-> Box<dyn Expression> {
+    fn unary(&self )-> Box<dyn Expression> {
         
         let token = self.get_token();
         
@@ -172,11 +172,11 @@ impl Interpreter {
         match token {
             Token::Number(num) => {
                 self.next_token();
-                return Box::new(NumberExp::new(*num, self.memory.clone()))
+                return Box::new(NumberExp::new(*num))
             },
             Token::TrueFalse(val) =>{
                 self.next_token();
-                return  Box::new(BooleanExp::new(*val , self.memory.clone()));
+                return  Box::new(BooleanExp::new(*val ));
             }
             Token::LeftParenthesis =>{
                 self.next_token();
@@ -191,7 +191,7 @@ impl Interpreter {
 
                     self.next_token();
                     self.require_token(Token::Apostr);
-                    return Box::new(CharExp::new(word.clone(), self.memory.clone()))
+                    return Box::new(CharExp::new(word.clone()))
                     
                 }
                 else{
@@ -201,7 +201,7 @@ impl Interpreter {
             },
             Token::Word(word)=>{
                 self.next_token();
-                return Box::new(ValueExp::new(word.clone(), self.memory.clone()));
+                return Box::new(ValueExp::new(word.clone()));
             },
             _ => panic!("Symbol error {}", self.index.borrow())
         }

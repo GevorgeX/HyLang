@@ -1,4 +1,4 @@
-use crate::interpreter::{expression::Expression, library::object::Object, task::Task};
+use crate::interpreter::{expression::Expression, library::{object::Object, Context}, task::Task};
 
 use super::Statement;
 
@@ -10,12 +10,14 @@ pub struct WhileStm{
 
 
 impl Statement for WhileStm {
-    fn interpret(&self)->Task {
+    fn interpret(&self,parent_context:&Context)->Task {
         let mut res = Task::Default;
+        let context = Context::new_local_context(Some(parent_context));
+
         loop {
-            if let Object::Bool(cond) = *self.condition.evaluate(){
+            if let Object::Bool(cond) = *self.condition.evaluate(parent_context){
                 if cond{
-                    let task = self.while_statement.interpret();
+                    let task = self.while_statement.interpret(&context);
         
                     match task {
                         Task::Break => break,
@@ -25,7 +27,7 @@ impl Statement for WhileStm {
                 }else { break }
             }
             else{
-                panic!("{} is not a bool" ,self.condition.evaluate().to_string())
+                panic!("{} is not a bool" ,self.condition.evaluate(parent_context).to_string())
             }
         }
         res

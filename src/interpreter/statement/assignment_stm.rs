@@ -1,20 +1,22 @@
-use crate::interpreter::{expression::Expression, task::Task, MemRef};
+use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
 pub struct AssignmentStm{
     name: String,
     value: Box<dyn Expression>,
-    mem: MemRef,
 }
 
 impl super::Statement for AssignmentStm {
-    fn interpret(&self) -> Task{
-        self.mem.change_variable(self.name.clone(), self.value.evaluate());
+    fn interpret(&self, context: &Context) -> Task{
+        match context {
+            Context::LocalContext(local) => 
+            local.change_variable(self.name.clone(), self.value.evaluate(context)),
+        }
         Task::Default
     }
 }
 
 impl AssignmentStm {
-    pub fn new( name: String,value :Box<dyn Expression> , mem:MemRef) -> AssignmentStm {
-        AssignmentStm{name , value , mem}
+    pub fn new( name: String,value :Box<dyn Expression> ) -> AssignmentStm {
+        AssignmentStm{name , value}
     }
 }

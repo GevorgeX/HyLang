@@ -1,4 +1,4 @@
-use crate::interpreter::{expression::Expression, task::Task};
+use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
 pub struct PrintStm{
     value: Box<dyn Expression>,
@@ -6,8 +6,8 @@ pub struct PrintStm{
 }
 
 impl super::Statement for PrintStm {
-    fn interpret(&self) -> Task{
-        println!("{}", self.value.evaluate().to_string());
+    fn interpret(&self,context:&Context) -> Task{
+        println!("{}", self.value.evaluate(context).to_string());
 
         Task::Default
     }

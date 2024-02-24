@@ -1,4 +1,4 @@
-use crate::interpreter::{expression::Expression, library::object::Object, task::Task};
+use crate::interpreter::{expression::Expression, library::{object::Object, Context}, task::Task};
 
 use super::Statement;
 
@@ -11,16 +11,17 @@ pub struct IfElseStm{
 
 
 impl Statement for IfElseStm {
-    fn interpret(&self) -> Task {
-        let cond = self.condition.evaluate();
+    fn interpret(&self,parent_context:&Context) -> Task {
+        let cond = self.condition.evaluate(parent_context);
         let mut res = Task::Default;
-        
+        let context = Context::new_local_context(Some(parent_context));
+
         if let Object::Bool(val) = *cond{
             if val == true{
-                res = self.if_statement.interpret();
+                res = self.if_statement.interpret(&context);
             }
             else if let Some(stm) = &self.else_statement{
-                res = stm.interpret();
+                res = stm.interpret(&context);
             }
         
 

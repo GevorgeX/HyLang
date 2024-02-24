@@ -1,4 +1,3 @@
-
 mod lexer;
 mod interpreter;
 
@@ -13,9 +12,9 @@ fn main() {
 
     let inter = interpreter::Interpreter::new(parsed);
 
-    inter.parse_code().interpret();
+    inter.run();
 
-    // for  (name , val) in inter.library.references.borrow().iter(){
+    // for  (name , val) in inter.references.borrow().iter(){
     //     println!("{} refcount {} , val = {}",name, std::rc::Rc::strong_count(val) ,val.to_string() );
     // }
 }
