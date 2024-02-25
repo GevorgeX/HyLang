@@ -43,7 +43,6 @@ impl<'a> Interpreter<'a> {
         }
     }
     pub fn parse_code(&self) -> Box<dyn Statement> {
-        let cont = Context::new_local_context(None);
 
         let res = BlockStm::new() ;
         loop {

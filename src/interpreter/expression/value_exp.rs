@@ -14,6 +14,6 @@ impl super::Expression for ValueExp {
 
 impl ValueExp {
     pub fn new(name: String ) -> ValueExp {
-        ValueExp{name }
+        ValueExp{name}
     }
 }

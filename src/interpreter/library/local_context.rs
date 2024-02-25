@@ -3,7 +3,7 @@ use std::{cell::RefCell, collections::HashMap};
 use super::{Context, ReferenceToObject};
 
 pub struct LocalContext<'a>{
-    references: RefCell<HashMap<String , ReferenceToObject>>,
+    references: RefCell<HashMap<String , ReferenceToObject<'a>>>,
     parent: Option<&'a Context<'a>>
 }
 
