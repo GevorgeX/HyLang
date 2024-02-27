@@ -1,14 +1,14 @@
-use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use std::{cell::RefCell, collections::HashMap, rc::Weak};
 
-use super::{function::Function, Context, ReferenceToObject};
+use super::{Context, ReferenceToObject};
 
-pub struct ModuleContext<'a>{
-    references: RefCell<HashMap<String , ReferenceToObject<'a> >>,
-    parent: Option<&'a Context<'a>>
+pub struct ModuleContext{
+    references: RefCell<HashMap<String , ReferenceToObject>>,
+    parent: Option<Weak<Context>>
 }
 
 
-impl<'a> ModuleContext<'a> {
+impl ModuleContext {
 
     pub fn define_function(&self, name:String, func: ReferenceToObject) {
         let mut mem = self.references.borrow_mut();
@@ -28,7 +28,7 @@ impl<'a> ModuleContext<'a> {
         }).clone()
     }
 
-    pub fn new(parent: Option<&'a Context> )->ModuleContext<'a> {
+    pub fn new(parent: Option<Weak<Context>> )->ModuleContext {
         ModuleContext{
             references: RefCell::new(HashMap::new()),
             parent

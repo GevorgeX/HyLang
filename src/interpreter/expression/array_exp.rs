@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::library::{create_object, Context, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 
@@ -8,10 +10,10 @@ pub struct ArrayExp{
 }
 
 impl super::Expression for ArrayExp {
-    fn evaluate(&self,context:&Context) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
         let mut array = vec![];
         for val in &self.value  {
-            array.push(val.evaluate(context)) ;
+            array.push(val.evaluate(context.clone())) ;
         }
         let array = create_object(Object::Array(array));
 

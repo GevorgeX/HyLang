@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::library::{create_object, Context, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 
@@ -6,7 +8,7 @@ pub struct CharExp{
 }
 
 impl super::Expression for CharExp {
-    fn evaluate(&self,context:&Context) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
         let chars:Vec<char> = self.value.chars().collect();
         let val = Object::Char(*chars.first().unwrap());
         create_object(val)

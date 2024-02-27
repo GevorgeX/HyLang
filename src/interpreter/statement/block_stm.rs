@@ -1,4 +1,4 @@
-use std::cell::RefCell;
+use std::{cell::RefCell, rc::Rc};
 
 use crate::interpreter::{library::Context, task::Task};
 
@@ -9,10 +9,10 @@ pub struct BlockStm{
 }
 
 impl Statement for BlockStm {
-    fn interpret(&self,context:&Context)-> Task {
+    fn interpret(&self,context:Rc<Context>)-> Task {
         let mut res: Task = Task::Default;
         for stm in self.statements.borrow().iter(){
-            res = stm.interpret(context);
+            res = stm.interpret(context.clone());
         }
         res
     }

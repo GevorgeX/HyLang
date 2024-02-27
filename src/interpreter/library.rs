@@ -1,4 +1,4 @@
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 
 use self::{local_context::LocalContext, object::Object};
 
@@ -8,18 +8,18 @@ mod local_context;
 mod module_context;
 mod function;
 
-pub enum Context<'a> {
-    LocalContext(local_context::LocalContext<'a>),
+pub enum Context {
+    LocalContext(local_context::LocalContext),
 }
 
-pub type ReferenceToObject<'a> = Rc<Object<'a>>;
+pub type ReferenceToObject = Rc<Object>;
 
 pub fn create_object(val:Object) -> ReferenceToObject {
     Rc::new(val)
 }
 
-impl<'a> Context<'a> {
-    pub fn new_local_context(parent: Option<&'a Context>) -> Context<'a>{
-        Context::LocalContext(LocalContext::new(parent))
+impl Context {
+    pub fn new_local_context(parent: Option<Weak< Context>>) -> Rc<Context>{
+        Rc::new(Context::LocalContext(LocalContext::new(parent)))
     }
 }

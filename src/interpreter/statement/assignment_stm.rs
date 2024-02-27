@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
 pub struct AssignmentStm{
@@ -6,10 +8,10 @@ pub struct AssignmentStm{
 }
 
 impl super::Statement for AssignmentStm {
-    fn interpret(&self, context: &Context) -> Task{
-        match context {
+    fn interpret(&self, context: Rc<Context>) -> Task{
+        match &*context {
             Context::LocalContext(local) => 
-            local.change_variable(self.name.clone(), self.value.evaluate(context)),
+            local.change_variable(self.name.clone(), self.value.evaluate(context.clone())),
         }
         Task::Default
     }

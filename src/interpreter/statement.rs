@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::lexer::token::Token;
 use super::expression::{binary_exp, value_exp, OperationType};
 use super::library::Context;
@@ -24,11 +26,16 @@ use break_stm::BreakStm;
 use continue_stm::ContinueStm;
 
 pub trait Statement {
-    fn interpret(&self , context: &Context) -> Task;  
+    fn interpret(&self , context: Rc<Context>) -> Task;  
 }
 
+impl Clone for Box<dyn Statement> {
+    fn clone(&self) -> Self {
+        self.clone()
+    }
+}
 
-impl<'a> Interpreter<'a> {
+impl Interpreter {
     pub fn statement(&self) -> Box<dyn Statement> {
         match self.get_token() {
             Token::IF => {

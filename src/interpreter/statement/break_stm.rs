@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{library::Context, task::Task};
 
 use super::Statement;
@@ -7,7 +9,7 @@ pub struct BreakStm{
 }
 
 impl Statement for BreakStm{
-    fn interpret(&self, context:&Context) -> Task {
+    fn interpret(&self, context:Rc<Context>) -> Task {
         Task::Break
     }
 }

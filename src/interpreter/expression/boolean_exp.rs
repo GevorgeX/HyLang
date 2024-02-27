@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::library::{create_object, Context, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 
@@ -6,7 +8,7 @@ pub struct BooleanExp {
 }
 
 impl super::Expression for BooleanExp {
-    fn evaluate(&self,context:&Context) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
         let val = Object::Bool(self.value);
         create_object(val)
 

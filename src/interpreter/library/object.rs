@@ -1,17 +1,17 @@
 use super::{function::Function, ReferenceToObject};
 
 #[derive(Clone)]
-pub enum Object<'a> {
+pub enum Object {
     Char(char),
     Number(i32),
     Bool(bool),
-    FunctionObject(Function<'a>),
+    FunctionObject(Function),
 
-    Array(Vec<ReferenceToObject<'a>>),
+    Array(Vec<ReferenceToObject>),
     
 }
 
-impl<'a> Object<'a> {
+impl Object {
     pub fn to_string(&self) -> String{
         match self {
             Object::Char(c) => format!("Char({})",c ).to_string(),

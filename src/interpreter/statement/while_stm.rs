@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{expression::Expression, library::{object::Object, Context}, task::Task};
 
 use super::Statement;
@@ -10,14 +12,14 @@ pub struct WhileStm{
 
 
 impl Statement for WhileStm {
-    fn interpret(&self,parent_context:&Context)->Task {
+    fn interpret(&self,parent_context:Rc<Context>)->Task {
         let mut res = Task::Default;
-        let context = Context::new_local_context(Some(parent_context));
+        let context = Context::new_local_context(Some(Rc::downgrade(&parent_context)));
 
         loop {
-            if let Object::Bool(cond) = *self.condition.evaluate(parent_context){
+            if let Object::Bool(cond) = *self.condition.evaluate(parent_context.clone()){
                 if cond{
-                    let task = self.while_statement.interpret(&context);
+                    let task = self.while_statement.interpret(context.clone());
         
                     match task {
                         Task::Break => break,

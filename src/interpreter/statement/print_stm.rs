@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
 pub struct PrintStm{
@@ -6,7 +8,7 @@ pub struct PrintStm{
 }
 
 impl super::Statement for PrintStm {
-    fn interpret(&self,context:&Context) -> Task{
+    fn interpret(&self,context:Rc<Context>) -> Task{
         println!("{}", self.value.evaluate(context).to_string());
 
         Task::Default

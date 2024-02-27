@@ -3,24 +3,24 @@ mod statement;
 mod library;
 mod task;
 
-use std::cell::RefCell;
+use std::{cell::RefCell, rc::Rc};
 
 
 use super::lexer::token::Token;
 use self::{library::Context, statement::{block_stm::BlockStm, Statement}};
 
-pub struct Interpreter<'a>{
+pub struct Interpreter{
     index: RefCell<usize>,
     tokens: Vec<Token>,
-    main_context:Context<'a>
+    main_context:Rc<Context>
 }
 
-impl<'a> Interpreter<'a> {
-    pub fn new(tokens: Vec<Token>) -> Interpreter<'a>{
+impl Interpreter {
+    pub fn new(tokens: Vec<Token>) -> Interpreter{
         Interpreter{
             index: RefCell::new(0),
             tokens,
-            main_context:Context::new_local_context(None)
+            main_context: Context::new_local_context(None)
         }
     }
     pub(self) fn get_token(&self)-> &Token {
@@ -60,6 +60,6 @@ impl<'a> Interpreter<'a> {
         Box::new(res)
     }
     pub fn run(&self){
-        self.parse_code().interpret(&self.main_context);
+        self.parse_code().interpret(self.main_context.clone());
     }
 }

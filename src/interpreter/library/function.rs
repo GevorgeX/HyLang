@@ -1,33 +1,37 @@
-use crate::interpreter::statement::Statement;
+use std::rc::Rc;
 
-use super::{local_context::LocalContext, Context, ReferenceToObject};
+use crate::interpreter::{expression::Expression, statement::Statement};
 
-// #[derive(Clone)]
-pub struct Function<'a>{
-    context: &'a Context<'a>,
+use super::{local_context::LocalContext, Context};
+
+#[derive(Clone)]
+pub struct Function{
+    define_context: Rc<Context>,
     args: Vec<String>,
     body: Box<dyn Statement>
 }
 
-impl<'a> Function<'a> {
-    pub fn call(&self, arguments: Vec<ReferenceToObject>) {
-        let  cur_context = LocalContext::new(Some(self.context));
+
+
+impl Function {
+    pub fn call(&self, arguments: Vec<Box<dyn Expression>> , context: Rc<Context> ) {
+        let cur_context = LocalContext::new(Some(Rc::downgrade(&self.define_context)));
 
         if self.args.len() != arguments.len() {
             panic!("ARGUMENT ERROR");
         }
 
         for i in 0..(self.args.len()) {
-            cur_context.define_variable(self.args[i].clone(),arguments[i].clone());
+            cur_context.define_variable(self.args[i].clone(),arguments[i].evaluate(context.clone()));
         }
 
         let cur_context = Context::LocalContext(cur_context);
-        self.body.interpret(&cur_context);
+        self.body.interpret(Rc::new(cur_context));
 
     }
 
-    pub fn new(context:&'a Context<'a>, args: Vec<String> , body: Box<dyn Statement> ) -> Function<'a>{
-        Function { context, args, body}
+    pub fn new(define_context:Rc<Context>, args: Vec<String> , body: Box<dyn Statement> ) -> Function{
+        Function { define_context, args, body}
     }
 }
 

@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::library::{object_utils::arithmetical, Context, ReferenceToObject};
 
 use super::{Expression, OperationType};
@@ -9,12 +11,12 @@ pub struct BinaryExp{
 }
 
 impl super::Expression for BinaryExp {
-    fn evaluate(&self,context:&Context) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
         match self.op {
-            OperationType::Plus => arithmetical::add(self.left.evaluate(context), self.right.evaluate(context)) ,
-            OperationType::Minus => arithmetical::sub(self.left.evaluate(context), self.right.evaluate(context)) ,
-            OperationType::Multi => arithmetical::mult(self.left.evaluate(context), self.right.evaluate(context)) ,
-            OperationType::Divide => arithmetical::div(self.left.evaluate(context), self.right.evaluate(context)) ,
+            OperationType::Plus => arithmetical::add(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
+            OperationType::Minus => arithmetical::sub(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
+            OperationType::Multi => arithmetical::mult(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
+            OperationType::Divide => arithmetical::div(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
             _ => panic!("Cant use this operator")
         }
     }

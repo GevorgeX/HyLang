@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{library::Context, task::Task};
 
 use super::Statement;
@@ -7,7 +9,7 @@ pub struct ContinueStm{
 }
 
 impl Statement for ContinueStm{
-    fn interpret(&self,context:&Context) -> Task {
+    fn interpret(&self,_context:Rc<Context>) -> Task {
         Task::Continue
     }
 }

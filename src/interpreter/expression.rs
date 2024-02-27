@@ -7,6 +7,8 @@ mod conditional_exp;
 mod char_exp;
 mod array_exp;
 
+use std::rc::Rc;
+
 use crate::interpreter::library::ReferenceToObject;
 use super::{library::Context, Interpreter};
 use crate::lexer::token::Token;
@@ -32,12 +34,12 @@ pub enum OperationType {
 }
 
 pub trait Expression{
-    fn evaluate(&self , context:&Context) -> ReferenceToObject;
+    fn evaluate(&self , context:Rc<Context>) -> ReferenceToObject;
 }
 
 
 
-impl<'a> Interpreter<'a> {
+impl Interpreter {
     pub fn expression(&self)-> Box<dyn Expression> {
         self.conditional()
     }

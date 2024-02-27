@@ -1,14 +1,14 @@
-use std::{cell::RefCell, collections::HashMap};
+use std::{cell::RefCell, collections::HashMap, rc::Weak};
 
 use super::{Context, ReferenceToObject};
 
-pub struct LocalContext<'a>{
-    references: RefCell<HashMap<String , ReferenceToObject<'a>>>,
-    parent: Option<&'a Context<'a>>
+pub struct LocalContext{
+    references: RefCell<HashMap<String , ReferenceToObject>>,
+    parent: Option<Weak<Context>>
 }
 
 
-impl<'a> LocalContext<'a> {
+impl LocalContext {
 
     pub fn define_variable(&self, name:String, refer: ReferenceToObject) {
         let mut mem = self.references.borrow_mut();
@@ -27,8 +27,8 @@ impl<'a> LocalContext<'a> {
         if mem.contains_key(&name){
             mem.insert(name ,refer);
         }
-        else if let Some(par) = self.parent  {
-            match par {
+        else if let Some(par) = &self.parent  {
+            match &*par.upgrade().unwrap() {
                 Context::LocalContext(cont) => cont.change_variable(name, refer),
             }
         }
@@ -45,8 +45,8 @@ impl<'a> LocalContext<'a> {
             val.clone()
         }
         else{
-            if let Some(par) = self.parent{
-                match par {
+            if let Some(par) = &self.parent{
+                match &*par.upgrade().unwrap() {
                     Context::LocalContext(cont) => cont.get_variable(name).clone(),
                 }
             }
@@ -56,7 +56,7 @@ impl<'a> LocalContext<'a> {
         }
     }
 
-    pub fn new(parent: Option<&'a Context> )->LocalContext<'a> {
+    pub fn new(parent: Option<Weak<Context>> )->LocalContext {
         LocalContext{
             references: RefCell::new(HashMap::new()),
             parent

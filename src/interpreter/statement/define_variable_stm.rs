@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
 pub struct DefineVariableStm{
@@ -6,9 +8,10 @@ pub struct DefineVariableStm{
 }
 
 impl super::Statement for DefineVariableStm {
-    fn interpret(&self, context:&Context) -> Task {
-        match context {
-            Context::LocalContext(local) => local.define_variable(self.name.clone(), self.value.evaluate(context)),
+    fn interpret(&self, context:Rc<Context>) -> Task {
+
+        match &*context {
+            Context::LocalContext(local) => local.define_variable(self.name.clone(), self.value.evaluate(context.clone())),
         }
         Task::DefineReference(self.name.clone())
     }

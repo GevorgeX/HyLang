@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::interpreter::library::{Context, ReferenceToObject};
 
 pub struct ValueExp{
@@ -5,8 +7,8 @@ pub struct ValueExp{
 }
 
 impl super::Expression for ValueExp {
-    fn evaluate(&self,context:&Context) -> ReferenceToObject {
-        return match context {
+    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
+        return match &*context {
             Context::LocalContext(local) => local.get_variable(&self.name),
         }
     }
