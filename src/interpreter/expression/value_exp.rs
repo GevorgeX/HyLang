@@ -10,6 +10,7 @@ impl super::Expression for ValueExp {
     fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
         return match &*context {
             Context::LocalContext(local) => local.get_variable(&self.name),
+            _=> panic!()
         }
     }
 }

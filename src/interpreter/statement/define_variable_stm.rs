@@ -12,6 +12,8 @@ impl super::Statement for DefineVariableStm {
 
         match &*context {
             Context::LocalContext(local) => local.define_variable(self.name.clone(), self.value.evaluate(context.clone())),
+            _=> panic!("Cant define var in this context")
+
         }
         Task::DefineReference(self.name.clone())
     }

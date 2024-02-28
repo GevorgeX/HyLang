@@ -33,7 +33,8 @@ pub enum Token{
     MinusEqual,
     StarEqual,
     SlashEqual,
-    
+    Function,
+
     P_R_I_N_T,
     LeftSquareBrace,
     RightSquareBrace,

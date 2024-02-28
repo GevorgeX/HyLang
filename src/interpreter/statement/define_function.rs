@@ -1,0 +1,31 @@
+use std::rc::Rc;
+
+use crate::interpreter::{library::{create_object, function::Function, object::Object, Context},task::Task};
+
+use super::Statement;
+
+pub struct DefineFunctionStm{
+    name: String,
+    body: Box<dyn Statement>,
+    args: Vec<String>
+}
+
+impl super::Statement for DefineFunctionStm {
+    fn interpret(&self, context:Rc<Context>) -> Task {
+        match &*context {
+            Context::ModuleContext(cont) => {
+                let func = Function::new(context.clone(), self.args.clone(), self.body.clone());
+                let func = Object::FunctionObject(func);
+                cont.define_function(self.name.clone(), create_object(func) )
+            },
+            _=> panic!()
+        }
+        Task::Default
+    }
+}
+
+impl DefineFunctionStm {
+    pub fn new( name: String,args:Vec<String> ,body :Box<dyn Statement>) -> DefineFunctionStm {
+        DefineFunctionStm{name ,args , body}
+    }
+}

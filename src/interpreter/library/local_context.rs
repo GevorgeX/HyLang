@@ -30,6 +30,7 @@ impl LocalContext {
         else if let Some(par) = &self.parent  {
             match &*par.upgrade().unwrap() {
                 Context::LocalContext(cont) => cont.change_variable(name, refer),
+                _ => panic!("This variable isn't  define")
             }
         }
         else{
@@ -48,6 +49,7 @@ impl LocalContext {
             if let Some(par) = &self.parent{
                 match &*par.upgrade().unwrap() {
                     Context::LocalContext(cont) => cont.get_variable(name).clone(),
+                    _=> panic!("CANT FIND VARIABLE")
                 }
             }
             else{

@@ -20,7 +20,7 @@ impl Interpreter {
         Interpreter{
             index: RefCell::new(0),
             tokens,
-            main_context: Context::new_local_context(None)
+            main_context: Context::new_module_context(None)
         }
     }
     pub(self) fn get_token(&self)-> &Token {

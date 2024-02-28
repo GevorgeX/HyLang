@@ -83,6 +83,7 @@ fn get_text_token(chars: &Vec<char> ,len:usize, index: &mut usize )->Token {
         "կայնի" => Token::Break,
         "շարունակի" => Token::Continue,
         "տպի" => Token::P_R_I_N_T,
+        "ֆունկ" => Token::Function,
         _=> Token::Word(res)
     }
 }

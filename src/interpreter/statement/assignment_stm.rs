@@ -12,6 +12,7 @@ impl super::Statement for AssignmentStm {
         match &*context {
             Context::LocalContext(local) => 
             local.change_variable(self.name.clone(), self.value.evaluate(context.clone())),
+            _=> panic!("Cant assignment var in this context")
         }
         Task::Default
     }

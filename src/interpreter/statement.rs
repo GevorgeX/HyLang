@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use crate::lexer::token::Token;
+
 use super::expression::{binary_exp, value_exp, OperationType};
 use super::library::Context;
 use super::task::Task;
@@ -13,6 +14,7 @@ mod if_else_stm;
 mod while_stm;
 mod break_stm;
 mod continue_stm;
+mod define_function;
 
 // !!! TEMP
 mod print_stm; use print_stm::PrintStm;
@@ -24,15 +26,10 @@ use define_variable_stm::DefineVariableStm;
 use while_stm::WhileStm;
 use break_stm::BreakStm;
 use continue_stm::ContinueStm;
+use define_function::DefineFunctionStm;
 
 pub trait Statement {
     fn interpret(&self , context: Rc<Context>) -> Task;  
-}
-
-impl Clone for Box<dyn Statement> {
-    fn clone(&self) -> Self {
-        self.clone()
-    }
 }
 
 impl Interpreter {
@@ -94,7 +91,11 @@ impl Interpreter {
             Token::P_R_I_N_T =>{
                 self.next_token();
                 return  Box::new(PrintStm::new(self.expression()));
-            }
+            },
+            Token::Function =>{
+                self.next_token();
+                return self.define_func()
+            },
             _ => panic!(""),
         }
         
@@ -153,5 +154,23 @@ impl Interpreter {
          ));
 
         return Box::new(AssignmentStm::new(word.clone(), val , ))
+    }
+    fn define_func(&self) ->Box<dyn Statement> {
+        if let Token::Word(word) = self.get_token(){
+            self.next_token();
+            self.require_token(Token::LeftParenthesis);
+            //args
+            self.require_token(Token::RightParenthesis);
+
+            let body = self.block();
+
+            let args :Vec<String>= vec![];
+
+            Box::new(DefineFunctionStm::new(word.clone(),args, body))
+            // self.statement()
+        }
+        else{
+            panic!("Require name");
+        }
     }
 }
