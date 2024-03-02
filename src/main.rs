@@ -11,8 +11,9 @@ fn main() {
     // }
 
     let inter = interpreter::Interpreter::new(parsed);
+    let main_function_name  = "գլխավոր".to_string();
 
-    inter.run();
+    inter.run(&main_function_name);
 
     // for  (name , val) in inter.references.borrow().iter(){
     //     println!("{} refcount {} , val = {}",name, std::rc::Rc::strong_count(val) ,val.to_string() );

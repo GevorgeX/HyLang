@@ -4,7 +4,7 @@ use super::{Context, ReferenceToObject};
 
 pub struct ModuleContext{
     references: RefCell<HashMap<String , ReferenceToObject>>,
-    parent: Option<Weak<Context>>
+    pub parent: Option<Weak<Context>>
 }
 
 
@@ -22,10 +22,13 @@ impl ModuleContext {
     }
 
 
-    pub fn get_function(&self, name: &String) -> ReferenceToObject {
-        self.references.borrow().get(name).unwrap_or_else(||{
-            panic!("Function doesnt defined");
-        }).clone()
+    pub fn get_function(&self, name: &String) -> Option<ReferenceToObject> {
+        if let Some(val) = self.references.borrow().get(name){
+            Some(val.clone())
+        }
+        else {
+            None
+        }
     }
 
     pub fn new(parent: Option<Weak<Context>> )->ModuleContext {

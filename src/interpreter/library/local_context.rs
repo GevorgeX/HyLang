@@ -4,7 +4,7 @@ use super::{Context, ReferenceToObject};
 
 pub struct LocalContext{
     references: RefCell<HashMap<String , ReferenceToObject>>,
-    parent: Option<Weak<Context>>
+    pub parent: Option<Weak<Context>>
 }
 
 
@@ -41,20 +41,12 @@ impl LocalContext {
         self.references.borrow_mut().remove(name);
     }
 
-    pub fn get_variable(&self, name: &String) -> ReferenceToObject {
+    pub fn get_variable(&self, name: &String) -> Option<ReferenceToObject> {
         if  let Some(val) = self.references.borrow().get(name) {
-            val.clone()
+            Some(val.clone())
         }
         else{
-            if let Some(par) = &self.parent{
-                match &*par.upgrade().unwrap() {
-                    Context::LocalContext(cont) => cont.get_variable(name).clone(),
-                    _=> panic!("CANT FIND VARIABLE")
-                }
-            }
-            else{
-                panic!("CANT FIND VARIABLE")
-            }
+            None
         }
     }
 

@@ -16,7 +16,7 @@ impl super::Statement for DefineVariableStm {
             _=> panic!("Cant define var in this context")
 
         }
-        Task::DefineReference(self.name.clone())
+        Task::Default
     }
 }
 

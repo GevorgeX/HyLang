@@ -12,7 +12,7 @@ use self::{library::Context, statement::{block_stm::BlockStm, Statement}};
 pub struct Interpreter{
     index: RefCell<usize>,
     tokens: Vec<Token>,
-    main_context:Rc<Context>
+    main_context:Rc<Context>,
 }
 
 impl Interpreter {
@@ -20,7 +20,7 @@ impl Interpreter {
         Interpreter{
             index: RefCell::new(0),
             tokens,
-            main_context: Context::new_module_context(None)
+            main_context: Context::new_module_context(None),
         }
     }
     pub(self) fn get_token(&self)-> &Token {
@@ -59,7 +59,11 @@ impl Interpreter {
 
         Box::new(res)
     }
-    pub fn run(&self){
+    pub fn run(&self, main_func_name:&String){
         self.parse_code().interpret(self.main_context.clone());
+        match &*self.main_context.get_object(main_func_name) {
+            library::object::Object::FunctionObject(func) => func.call(vec![], self.main_context.clone()),
+            _=> ()
+        }
     }
 }

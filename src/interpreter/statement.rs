@@ -15,6 +15,7 @@ mod while_stm;
 mod break_stm;
 mod continue_stm;
 mod define_function;
+mod function_call_stm;
 
 // !!! TEMP
 mod print_stm; use print_stm::PrintStm;
@@ -27,6 +28,7 @@ use while_stm::WhileStm;
 use break_stm::BreakStm;
 use continue_stm::ContinueStm;
 use define_function::DefineFunctionStm;
+use function_call_stm::FunctionCallStm;
 
 dyn_clone::clone_trait_object!(Statement);
 pub trait Statement: dyn_clone::DynClone {
@@ -42,7 +44,7 @@ impl Interpreter {
             },
             Token::Define =>{
                 self.next_token();
-                return self.define();
+                return self.define_variable();
                 
             },
             Token::LeftBrace =>{
@@ -76,6 +78,9 @@ impl Interpreter {
                         self.next_token();
                         self.assignment_with_modifare(word, OperationType::Divide)  
                     },
+                    Token::LeftParenthesis =>{
+                        self.function_call(word.clone())  
+                    }
                     _ => panic!("Require = ")
                 }
                  
@@ -133,7 +138,7 @@ impl Interpreter {
 
         Box::new(IfElseStm::new(condition, if_statement ,else_statemnt))
     }
-    fn define(&self) ->Box<dyn Statement>{
+    fn define_variable(&self) ->Box<dyn Statement>{
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             self.require_token(Token::Equal);
@@ -160,12 +165,21 @@ impl Interpreter {
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             self.require_token(Token::LeftParenthesis);
-            //args
-            self.require_token(Token::RightParenthesis);
+            let mut args :Vec<String>= vec![];
+
+            while  let Token::Word(word) = self.get_token() {
+                
+                args.push(word.clone());
+                self.next_token();
+
+                if *self.get_token() != Token::RightParenthesis {
+                    self.require_token(Token::Comma);
+                }
+            }
+            self.next_token();
 
             let body = self.block();
 
-            let args :Vec<String>= vec![];
 
             Box::new(DefineFunctionStm::new(word.clone(),args, body))
             // self.statement()
@@ -174,4 +188,22 @@ impl Interpreter {
             panic!("Require name");
         }
     }
+    fn function_call(&self, name:String) ->Box<dyn Statement> {
+        let mut args = vec![];
+        self.require_token(Token::LeftParenthesis);
+        
+        while  Token::RightParenthesis !=  *self.get_token() {
+                
+            args.push(self.expression());
+            // self.next_token();
+
+            if *self.get_token() != Token::RightParenthesis {
+                self.require_token(Token::Comma);
+            }
+        }
+        self.next_token();
+
+        Box::new(FunctionCallStm::new(name, args))
+    }
 }
+

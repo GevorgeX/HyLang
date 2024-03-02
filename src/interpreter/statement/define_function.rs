@@ -19,10 +19,11 @@ impl super::Statement for DefineFunctionStm {
                 let func = Object::FunctionObject(func);
                 cont.define_function(self.name.clone(), create_object(func) )
             },
-            _=> panic!()
+            _=> panic!("Cant define {} function in this context" , self.name)
         }
         Task::Default
     }
+    
 }
 
 impl DefineFunctionStm {

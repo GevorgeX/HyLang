@@ -1,4 +1,4 @@
-use std::rc::{Rc, Weak};
+use std::{borrow::Borrow, rc::{Rc, Weak}};
 
 use self::object::Object;
 
@@ -21,6 +21,31 @@ pub fn create_object(val:Object) -> ReferenceToObject {
 }
 
 impl Context {
+    pub fn get_object(&self, name:&String) -> ReferenceToObject{
+        match self {
+            Context::LocalContext(local) => {
+                if let Some(val) = local.get_variable(name){
+                    return val;
+                }
+                else{
+                    if let Some(par) = &local.parent{
+                        return par.upgrade().unwrap().get_object(name);
+                    }
+                    else{
+                        panic!("Cant find {}", name);
+                    }
+                }
+            },
+            Context::ModuleContext(modul)=>{
+                if let Some(val) = modul.get_function(name){
+                    return val
+                }
+                panic!("Cant find object {}", name)
+            },
+
+        }
+    }
+   
     pub fn new_local_context(parent: Option<Weak<Context>>) -> Rc<Context>{
         Rc::new(Context::LocalContext(local_context::LocalContext::new(parent)))
     }
