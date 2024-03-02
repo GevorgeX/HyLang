@@ -5,6 +5,7 @@ use crate::interpreter::library::{ Context, ReferenceToObject};
 
 use super::{Expression, OperationType};
 
+#[derive(Clone)]
 pub struct ConditionalExp{
     left: Box<dyn Expression>,
     right: Box<dyn Expression>,

@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::interpreter::{expression::Expression, library::Context, task::Task};
 
+#[derive(Clone)]
 pub struct AssignmentStm{
     name: String,
     value: Box<dyn Expression>,

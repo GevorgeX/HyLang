@@ -3,6 +3,7 @@ use std::rc::Rc;
 use crate::interpreter::library::{create_object, Context, ReferenceToObject};
 use crate::interpreter::library::object::Object;
 
+#[derive(Clone)]
 pub struct NumberExp{
     value: i32,
 }

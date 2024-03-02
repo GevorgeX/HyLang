@@ -17,6 +17,7 @@ use crate::lexer::token::Token;
 use self::{
     binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp,array_exp::ArrayExp
 };
+#[derive(Clone)]
 pub enum OperationType {
     Plus,
     Minus,
@@ -33,7 +34,8 @@ pub enum OperationType {
     Not,
 }
 
-pub trait Expression{
+dyn_clone::clone_trait_object!(Expression);
+pub trait Expression : dyn_clone::DynClone{
     fn evaluate(&self , context:Rc<Context>) -> ReferenceToObject;
 }
 

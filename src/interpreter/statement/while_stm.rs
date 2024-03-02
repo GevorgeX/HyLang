@@ -4,6 +4,7 @@ use crate::interpreter::{expression::Expression, library::{object::Object, Conte
 
 use super::Statement;
 
+#[derive(Clone)]
 pub struct WhileStm{
     condition: Box<dyn Expression>,
     while_statement: Box<dyn Statement>,

@@ -4,6 +4,7 @@ use crate::interpreter::{library::{create_object, function::Function, object::Ob
 
 use super::Statement;
 
+#[derive(Clone)]
 pub struct DefineFunctionStm{
     name: String,
     body: Box<dyn Statement>,

@@ -4,6 +4,7 @@ use crate::interpreter::{library::Context, task::Task};
 
 use super::Statement;
 
+#[derive(Clone)]
 pub struct ContinueStm{
 
 }

@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::interpreter::library::{Context, ReferenceToObject};
 
+#[derive(Clone)]
 pub struct ValueExp{
     name: String,
 }

@@ -28,7 +28,8 @@ use break_stm::BreakStm;
 use continue_stm::ContinueStm;
 use define_function::DefineFunctionStm;
 
-pub trait Statement {
+dyn_clone::clone_trait_object!(Statement);
+pub trait Statement: dyn_clone::DynClone {
     fn interpret(&self , context: Rc<Context>) -> Task;  
 }
 

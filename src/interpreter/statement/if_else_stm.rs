@@ -4,6 +4,7 @@ use crate::interpreter::{expression::Expression, library::{object::Object, Conte
 
 use super::Statement;
 
+#[derive(Clone)]
 pub struct IfElseStm{
     condition: Box<dyn Expression>,
     if_statement: Box<dyn Statement>,

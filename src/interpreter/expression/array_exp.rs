@@ -5,6 +5,7 @@ use crate::interpreter::library::object::Object;
 
 use super::Expression;
 
+#[derive(Clone)]
 pub struct ArrayExp{
     value: Vec<Box<dyn Expression>>,
 }

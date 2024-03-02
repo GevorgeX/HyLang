@@ -4,6 +4,7 @@ use crate::interpreter::library::{object_utils::arithmetical, Context, Reference
 
 use super::{Expression, OperationType};
 
+#[derive(Clone)]
 pub struct BinaryExp{
     left: Box<dyn Expression>,
     right: Box<dyn Expression>,
