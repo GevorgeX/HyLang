@@ -22,7 +22,7 @@ impl Function {
         }
 
         for i in 0..(self.args.len()) {
-            cur_context.define_variable(self.args[i].clone(),arguments[i].evaluate(context.clone()));
+            cur_context.define_variable(self.args[i].clone(),arguments[i].evaluate(context.clone()).unwrap());
         }
 
         let cur_context = Context::LocalContext(cur_context);
