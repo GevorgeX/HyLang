@@ -15,7 +15,5 @@ fn main() {
 
     inter.run(&main_function_name);
 
-    // for  (name , val) in inter.references.borrow().iter(){
-    //     println!("{} refcount {} , val = {}",name, std::rc::Rc::strong_count(val) ,val.to_string() );
-    // }
+    
 }

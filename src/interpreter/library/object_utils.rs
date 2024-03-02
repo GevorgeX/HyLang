@@ -2,7 +2,7 @@ pub mod logical {
     use std::rc::Rc;
 
     use crate::interpreter::library::object::Object;
-    use crate::interpreter::library::ReferenceToObject;
+    use crate::interpreter::library::object::ReferenceToObject;
 
     pub fn and(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match (&*left, &*right) {
@@ -30,7 +30,7 @@ pub mod arithmetical {
     use std::rc::Rc;
 
     use crate::interpreter::library::object::Object;
-    use crate::interpreter::library::ReferenceToObject;
+    use crate::interpreter::library::object::ReferenceToObject;
 
     pub fn add(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match ((&*left).clone() , &*right) {
@@ -72,7 +72,7 @@ pub mod conditional {
     use std::rc::Rc;
 
     use crate::interpreter::library::object::Object;
-    use crate::interpreter::library::ReferenceToObject;
+    use crate::interpreter::library::object::ReferenceToObject;
 
     pub fn more(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
         match (&*left , &*right) {

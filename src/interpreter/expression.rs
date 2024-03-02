@@ -9,8 +9,8 @@ mod array_exp;
 
 use std::rc::Rc;
 
-use crate::interpreter::library::ReferenceToObject;
-use super::{library::Context, Interpreter};
+use crate::interpreter::library::object::ReferenceToObject;
+use super::{library::{exception::Exception, Context}, Interpreter};
 use crate::lexer::token::Token;
 
 
@@ -36,7 +36,7 @@ pub enum OperationType {
 
 dyn_clone::clone_trait_object!(Expression);
 pub trait Expression : dyn_clone::DynClone{
-    fn evaluate(&self , context:Rc<Context>) -> ReferenceToObject;
+    fn evaluate(&self , context:Rc<Context>) -> Result<ReferenceToObject,Exception>;
 }
 
 
@@ -152,7 +152,7 @@ impl Interpreter {
         return res
     
     }
-    fn unary(&self )-> Box<dyn Expression> {
+    fn unary(&self )-> Result <Box<dyn Expression>,Exception> {
         
         let token = self.get_token();
         
@@ -163,44 +163,59 @@ impl Interpreter {
             },
             Token::Minus => {
                 self.next_token();
-                return Box::new(UnaryExp::new(self.primary(), OperationType::Minus))
+                let res = self.primary();
+                if let Result::Ok(res) = res{
+                    return Ok(Box::new(UnaryExp::new(res, OperationType::Minus)))
+                }
+                else{
+                    return res;
+                }
             },
             Token::Not =>{
                 self.next_token();
-                return Box::new(UnaryExp::new(self.primary(), OperationType::Not))
-            }
+                let res = self.primary();
+                if let Result::Ok(res) = res{
+                    return Ok(Box::new(UnaryExp::new(res, OperationType::Not)))
+                }
+                else{
+                    return res;
+                }            }
             _ => self.primary()
         }
     }
-    fn primary(&self)-> Box<dyn Expression> { 
+    fn primary(&self)->Result<Box<dyn Expression>,Exception> { 
         let token = self.get_token();
         match token {
             Token::Number(num) => {
                 self.next_token();
-                return Box::new(NumberExp::new(*num))
+                return Ok(Box::new(NumberExp::new(*num)))
             },
             Token::TrueFalse(val) =>{
                 self.next_token();
-                return  Box::new(BooleanExp::new(*val ));
+                return  Ok(Box::new(BooleanExp::new(*val )));
             }
             Token::LeftParenthesis =>{
                 self.next_token();
                 let exp = self.expression();
                 
-                self.require_token(Token::RightParenthesis);
-                return exp
+                if let Err(e) = self.require_token(Token::RightParenthesis){
+                    return Err(e);
+                }
+                return Ok(exp)
             },
             Token::Apostr =>{
                 self.next_token();
                 if let Token::Word(word) = self.get_token() {
 
                     self.next_token();
-                    self.require_token(Token::Apostr);
-                    return Box::new(CharExp::new(word.clone()))
+                    if let Err(e) = self.require_token(Token::Apostr){
+                        return Err(e);
+                    }
+                    return Ok(Box::new(CharExp::new(word.clone())))
                     
                 }
                 else{
-                    panic!("Require symbol")
+                    return Err(Exception::new_require_symbol("բառ".to_string()));
                 }
                 
             },
@@ -211,19 +226,21 @@ impl Interpreter {
                     exps.push(self.expression());
                     
                     if *self.get_token() != Token::RightSquareBrace {
-                        self.require_token(Token::Comma);
+                        if let Err(e) = self.require_token(Token::Comma){
+                            return Err(e);
+                        }
                     }
                 }
                 
                 self.next_token();
                 
-                return Box::new(ArrayExp::new(exps));
+                return Ok(Box::new(ArrayExp::new(exps)));
             },
             Token::Word(word)=>{
                 self.next_token();
-                return Box::new(ValueExp::new(word.clone()));
+                return Ok(Box::new(ValueExp::new(word.clone())));
             },
-            _ => panic!("Symbol error {}", self.index.borrow())
+            _ => Err(Exception::new_unknow_word())
         }
     }
 }

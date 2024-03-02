@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::HashMap, rc::Weak};
 
-use super::{Context, ReferenceToObject};
+use super::{exception::Exception, object::ReferenceToObject, Context};
 
 pub struct LocalContext{
     references: RefCell<HashMap<String , ReferenceToObject>>,
@@ -10,43 +10,41 @@ pub struct LocalContext{
 
 impl LocalContext {
 
-    pub fn define_variable(&self, name:String, refer: ReferenceToObject) {
+    pub fn define_variable(&self, name:String, refer: ReferenceToObject) -> Result<(), Exception> {
         let mut mem = self.references.borrow_mut();
 
         if !mem.contains_key(&name){
             mem.insert(name ,refer);
+            Ok(())
         }
         else {
-            panic!("This variable is already defined");
+            Err(Exception::new_var_alr_def(name))
         }
     }
 
-    pub fn change_variable(&self, name:String, refer: ReferenceToObject ){
+    pub fn change_variable(&self, name:String, refer: ReferenceToObject ) -> Result<(), Exception>{
         let mut mem = self.references.borrow_mut();
 
         if mem.contains_key(&name){
             mem.insert(name ,refer);
+            Ok(())
         }
         else if let Some(par) = &self.parent  {
             match &*par.upgrade().unwrap() {
                 Context::LocalContext(cont) => cont.change_variable(name, refer),
-                _ => panic!("This variable isn't  define")
+                _ => Err(Exception::new_object_does_Exit(name))
             }
         }
         else{
-            panic!("This variable isn't  define")
+            Err(Exception::new_object_does_Exit(name))
         }
     }
-    pub  fn delete_variable(&self, name: &String) {
-        self.references.borrow_mut().remove(name);
-    }
-
-    pub fn get_variable(&self, name: &String) -> Option<ReferenceToObject> {
+    pub fn get_variable(&self, name: &String) -> Result<ReferenceToObject, Exception> {
         if  let Some(val) = self.references.borrow().get(name) {
-            Some(val.clone())
+            Ok(val.clone())
         }
         else{
-            None
+            Err(Exception::new_object_does_Exit(name.clone()))
         }
     }
 

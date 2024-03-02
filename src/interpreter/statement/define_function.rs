@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{library::{create_object, function::Function, object::Object, Context},task::Task};
+use crate::interpreter::{library::{function::Function, object::{create_object, Object}, Context},task::Task};
 
 use super::Statement;
 

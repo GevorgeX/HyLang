@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::library::{object_utils::arithmetical, Context, ReferenceToObject};
+use crate::interpreter::library::{exception::Exception, object::ReferenceToObject, object_utils::arithmetical, Context};
 
 use super::{Expression, OperationType};
 
@@ -12,12 +12,14 @@ pub struct BinaryExp{
 }
 
 impl super::Expression for BinaryExp {
-    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+        let left =self.left.evaluate(context.clone()).unwrap();
+        let right = self.right.evaluate(context.clone()).unwrap();
         match self.op {
-            OperationType::Plus => arithmetical::add(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
-            OperationType::Minus => arithmetical::sub(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
-            OperationType::Multi => arithmetical::mult(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
-            OperationType::Divide => arithmetical::div(self.left.evaluate(context.clone()), self.right.evaluate(context.clone())) ,
+            OperationType::Plus => Ok(arithmetical::add(left,right)) ,
+            OperationType::Minus => Ok(arithmetical::sub(left,right)) ,
+            OperationType::Multi => Ok(arithmetical::mult(left,right)) ,
+            OperationType::Divide => Ok(arithmetical::div(left,right)) ,
             _ => panic!("Cant use this operator")
         }
     }

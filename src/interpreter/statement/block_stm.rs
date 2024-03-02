@@ -14,6 +14,11 @@ impl Statement for BlockStm {
         let mut res: Task = Task::Default;
         for stm in self.statements.borrow().iter(){
             res = stm.interpret(context.clone());
+
+            match res {
+                Task::Default => (),
+                _=> return res 
+            }
         }
         res
     }

@@ -1,7 +1,9 @@
 use std::rc::Rc;
 
+use crate::interpreter::library::exception::Exception;
 use crate::interpreter::library::object_utils::{conditional, logical};
-use crate::interpreter::library::{ Context, ReferenceToObject};
+use crate::interpreter::library::object::ReferenceToObject;
+use crate::interpreter::library::Context;
 
 use super::{Expression, OperationType};
 
@@ -13,16 +15,18 @@ pub struct ConditionalExp{
 }
 
 impl super::Expression for ConditionalExp {
-    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+        let left = self.left.evaluate(context.clone()).unwrap();
+        let right =self.right.evaluate(context.clone()).unwrap(); 
         match self.op {
-            OperationType::And => logical::and(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::Or =>logical::or(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::More =>conditional::more(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::Less =>conditional::less(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::MoreOrEq =>conditional::more_or_eq(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::LessOrEq =>conditional::less_or_eq(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::DoubleEqual => conditional::equal(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
-            OperationType::NotEqual => conditional::not_equal(self.left.evaluate(context.clone()), self.right.evaluate(context.clone()))  ,
+            OperationType::And => Ok(logical::and(left,right)),
+            OperationType::Or =>Ok(logical::or(left,right)),
+            OperationType::More =>Ok(conditional::more(left,right))  ,
+            OperationType::Less =>Ok(conditional::less(left,right))  ,
+            OperationType::MoreOrEq =>Ok(conditional::more_or_eq(left,right))  ,
+            OperationType::LessOrEq =>Ok(conditional::less_or_eq(left,right))  ,
+            OperationType::DoubleEqual => Ok(conditional::equal(left,right))  ,
+            OperationType::NotEqual => Ok(conditional::not_equal(left,right))  ,
             _ => panic!("Cant use this operator")
         }
     }

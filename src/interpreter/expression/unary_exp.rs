@@ -1,7 +1,9 @@
 use std::rc::Rc;
 
+use crate::interpreter::library::exception::Exception;
+use crate::interpreter::library::object::ReferenceToObject;
 use crate::interpreter::library::object_utils::{arithmetical::neg, logical::not};
-use crate::interpreter::library::{Context, ReferenceToObject};
+use crate::interpreter::library::Context;
 
 use super::{Expression, OperationType};
 
@@ -12,11 +14,11 @@ pub struct UnaryExp{
 }
 
 impl super::Expression for UnaryExp {
-    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject, Exception> {
         match self.op {
             OperationType::Plus => self.value.evaluate(context),
-            OperationType::Minus => neg(self.value.evaluate(context)) ,
-            OperationType::Not => not(self.value.evaluate(context)),
+            OperationType::Minus => Ok(neg(self.value.evaluate(context).unwrap())) ,
+            OperationType::Not => Ok(not(self.value.evaluate(context).unwrap())),
             _ => panic!("wrong operator")
         }
     }

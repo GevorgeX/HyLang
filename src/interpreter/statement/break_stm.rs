@@ -10,7 +10,7 @@ pub struct BreakStm{
 }
 
 impl Statement for BreakStm{
-    fn interpret(&self, context:Rc<Context>) -> Task {
+    fn interpret(&self, _context:Rc<Context>) -> Task {
         Task::Break
     }
 }

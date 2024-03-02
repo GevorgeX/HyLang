@@ -7,7 +7,7 @@ use std::{cell::RefCell, rc::Rc};
 
 
 use super::lexer::token::Token;
-use self::{library::Context, statement::{block_stm::BlockStm, Statement}};
+use self::{library::{exception::Exception, Context}, statement::{block_stm::BlockStm, Statement}};
 
 pub struct Interpreter{
     index: RefCell<usize>,
@@ -34,12 +34,13 @@ impl Interpreter {
         *self.index.borrow_mut() += 1;
     } 
 
-    pub(self) fn require_token(&self , target:Token) {
+    pub(self) fn require_token(&self , target:Token)-> Result<(), Exception> {
         if *self.get_token() == target{
             self.next_token();
+            return Ok(())
         }
         else{
-            panic!("Require {}", target.to_string())
+            return Err(Exception::new_require_symbol(target.to_string()));
         }
     }
     pub fn parse_code(&self) -> Box<dyn Statement> {

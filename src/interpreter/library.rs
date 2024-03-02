@@ -1,10 +1,12 @@
-use std::{borrow::Borrow, rc::{Rc, Weak}};
+use std::rc::{Rc, Weak};
 
-use self::object::Object;
+use self::{exception::Exception, object::ReferenceToObject};
+
 
 pub mod object;
 pub mod object_utils;
 pub mod function;
+pub mod exception;
 
 mod local_context;
 mod module_context;
@@ -14,33 +16,26 @@ pub enum Context {
     ModuleContext(module_context::ModuleContext)
 }
 
-pub type ReferenceToObject = Rc<Object>;
-
-pub fn create_object(val:Object) -> ReferenceToObject {
-    Rc::new(val)
-}
 
 impl Context {
-    pub fn get_object(&self, name:&String) -> ReferenceToObject{
+    pub fn get_object(&self, name:&String) -> Result<ReferenceToObject,Exception>{
         match self {
             Context::LocalContext(local) => {
-                if let Some(val) = local.get_variable(name){
-                    return val;
+                let req = local.get_variable(name);
+                if req.is_ok(){
+                    return req;
                 }
                 else{
                     if let Some(par) = &local.parent{
                         return par.upgrade().unwrap().get_object(name);
                     }
                     else{
-                        panic!("Cant find {}", name);
+                        Err(Exception::new_object_does_Exit(name.clone()))
                     }
                 }
             },
             Context::ModuleContext(modul)=>{
-                if let Some(val) = modul.get_function(name){
-                    return val
-                }
-                panic!("Cant find object {}", name)
+                return modul.get_function(name);
             },
 
         }
@@ -53,3 +48,4 @@ impl Context {
         Rc::new(Context::ModuleContext(module_context::ModuleContext::new(parent)))
     }
 }
+

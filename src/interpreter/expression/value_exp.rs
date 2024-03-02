@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::library::{Context, ReferenceToObject};
+use crate::interpreter::library::{exception::Exception, object::ReferenceToObject, Context};
 
 #[derive(Clone)]
 pub struct ValueExp{
@@ -8,7 +8,7 @@ pub struct ValueExp{
 }
 
 impl super::Expression for ValueExp {
-    fn evaluate(&self,context:Rc<Context>) -> ReferenceToObject {
+    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         context.get_object(&self.name)
     }
 }

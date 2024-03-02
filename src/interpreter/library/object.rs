@@ -1,4 +1,6 @@
-use super::{function::Function, ReferenceToObject};
+use std::rc::Rc;
+
+use super::function::Function;
 
 #[derive(Clone)]
 pub enum Object {
@@ -28,3 +30,8 @@ impl Object {
 //         println!("{} was deleted",self.to_string());
 //     }
 // }
+pub type ReferenceToObject = Rc<Object>;
+
+pub fn create_object(val:Object) -> ReferenceToObject {
+    Rc::new(val)
+}
