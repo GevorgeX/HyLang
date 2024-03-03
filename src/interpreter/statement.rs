@@ -2,6 +2,8 @@ use std::rc::Rc;
 
 use crate::lexer::token::Token;
 
+use self::return_stm::ReturnStm;
+
 use super::expression::{binary_exp, value_exp, OperationType};
 use super::library::exception::Exception;
 use super::library::Context;
@@ -17,6 +19,7 @@ mod break_stm;
 mod continue_stm;
 mod define_function_stm;
 mod function_call_stm;
+mod return_stm;
 
 // !!! TEMP
 mod print_stm; use print_stm::PrintStm;
@@ -80,6 +83,7 @@ impl Interpreter {
                         self.assignment_with_modifare(word, OperationType::Divide)  
                     },
                     Token::LeftParenthesis =>{
+                        self.next_token();
                         self.function_call(word.clone())  
                     }
                     _ => Err(Exception::require_symbol("=".to_string()))
@@ -94,6 +98,14 @@ impl Interpreter {
                 self.next_token();
                 return Ok(Box::new(ContinueStm::new()))
             },
+            Token::Return => {
+                self.next_token();
+                let exp = match self.expression() {
+                    Ok(o) => o,
+                    Err(e) => return Err(e),
+                };
+                return Ok(Box::new(ReturnStm::new(exp)));
+            }
             Token::P_R_I_N_T =>{
                 self.next_token();
                 let exp = match self.expression() {
@@ -207,7 +219,10 @@ impl Interpreter {
     fn define_func(&self) ->Result<Box<dyn Statement>,Exception> {
         if let Token::Word(word) = self.get_token(){
             self.next_token();
-            self.require_token(Token::LeftParenthesis);
+            if let Err(e) = self.require_token(Token::LeftParenthesis){
+                return Err(e);
+            }
+
             let mut args :Vec<String>= vec![];
 
             while  let Token::Word(word) = self.get_token() {
@@ -216,7 +231,9 @@ impl Interpreter {
                 self.next_token();
 
                 if *self.get_token() != Token::RightParenthesis {
-                    self.require_token(Token::Comma);
+                    if let Err(e) = self.require_token(Token::Comma){
+                        return Err(e);
+                    }                
                 }
             }
             self.next_token();
@@ -231,16 +248,14 @@ impl Interpreter {
             // self.statement()
         }
         else{
-            panic!("Require name");
+            Err(Exception::require_symbol("անուն".to_string()))
         }
     }
     fn function_call(&self, name:String) ->Result<Box<dyn Statement>,Exception> {
-        let mut args = vec![];
-        self.require_token(Token::LeftParenthesis);
-        
+        let mut args = vec![];      
         while  Token::RightParenthesis !=  *self.get_token() {
                 
-            let value =match self.expression(){
+            let value = match self.expression(){
                 Ok(o) => o,
                 Err(e) => return Err(e),
             };
@@ -248,7 +263,9 @@ impl Interpreter {
             // self.next_token();
 
             if *self.get_token() != Token::RightParenthesis {
-                self.require_token(Token::Comma);
+                if let Err(e) = self.require_token(Token::Comma){
+                    return Err(e);
+                }
             }
         }
         self.next_token();

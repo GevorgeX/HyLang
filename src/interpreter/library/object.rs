@@ -4,11 +4,11 @@ use super::function::Function;
 
 #[derive(Clone)]
 pub enum Object {
+    Null,
     Char(char),
     Number(i32),
     Bool(bool),
     FunctionObject(Function),
-
     Array(Vec<ReferenceToObject>),
     
 }
@@ -21,6 +21,7 @@ impl Object {
             Object::Bool(b) => format!("Bool({})",b ).to_string(),
             Object::Array(a) => format!("Array({})",a.iter().map(|c| c.to_string()).collect::<Vec<String>>().join(", ")).to_string(),
             Object::FunctionObject(_) => todo!(),
+            Object::Null => "Null".to_string(),
         }
     }
 }

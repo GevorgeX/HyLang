@@ -10,7 +10,7 @@ pub struct BooleanExp {
 }
 
 impl super::Expression for BooleanExp {
-    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+    fn evaluate(&self,_context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let val = Object::Bool(self.value);
         Ok(create_object(val))
 

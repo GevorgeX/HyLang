@@ -33,6 +33,7 @@ impl Statement for WhileStm {
                     match task {
                         Task::Break => break,
                         Task::Continue => continue,
+                        Task::Return(_) => return Ok(task),
                         _=> res = task,
                     }
                 }else { break }

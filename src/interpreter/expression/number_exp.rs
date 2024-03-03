@@ -11,7 +11,7 @@ pub struct NumberExp{
 }
 
 impl super::Expression for NumberExp {
-    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+    fn evaluate(&self,_context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let val = Object::Number(self.value);
         Ok(create_object(val))
     }

@@ -34,6 +34,7 @@ pub enum Token{
     StarEqual,
     SlashEqual,
     Function,
+    Return,
 
     P_R_I_N_T,
     LeftSquareBrace,

@@ -16,7 +16,10 @@ impl super::Statement for FunctionCallStm {
         }; 
         
         match &*obj {
-            object::Object::FunctionObject(func) => func.call(self.arguments.clone(), context) ,
+            object::Object::FunctionObject(func) => match func.call(self.arguments.clone(), context){
+                Ok(_) => (),
+                Err(e) => return Err(e),
+            },
             _ => return Err(Exception::is_not_func(self.name.clone()))
         }
         Ok(Task::Default)

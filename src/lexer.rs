@@ -76,7 +76,7 @@ fn get_text_token(chars: &Vec<char> ,len:usize, index: &mut usize )->Token {
         "ճիշտ" => Token::TrueFalse(true),
         "կեխծ" => Token::TrueFalse(false),
         "եթե" => Token::IF,
-        "ապա" => Token::ELSE,
+        "հակառակ" => Token::ELSE,
         "և" => Token::And,
         "կամ" => Token::Or,
         "ցիկլ" => Token::While,
@@ -84,6 +84,7 @@ fn get_text_token(chars: &Vec<char> ,len:usize, index: &mut usize )->Token {
         "շարունակի" => Token::Continue,
         "տպի" => Token::P_R_I_N_T,
         "ֆունկ" => Token::Function,
+        "վերադարձ" => Token::Return,
         _=> Token::Word(res)
     }
 }

@@ -10,7 +10,7 @@ pub struct CharExp{
 }
 
 impl super::Expression for CharExp {
-    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+    fn evaluate(&self,_context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let chars:Vec<char> = self.value.chars().collect();
         let val = Object::Char(*chars.first().unwrap());
         Ok(create_object(val))

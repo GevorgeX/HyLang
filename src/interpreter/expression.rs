@@ -6,6 +6,7 @@ mod boolean_exp;
 mod conditional_exp;
 mod char_exp;
 mod array_exp;
+mod functional_call_exp;
 
 use std::rc::Rc;
 
@@ -15,7 +16,7 @@ use crate::lexer::token::Token;
 
 
 use self::{
-    binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp,array_exp::ArrayExp
+    array_exp::ArrayExp, binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, functional_call_exp::FunctionCallExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp
 };
 #[derive(Clone)]
 pub enum OperationType {
@@ -317,9 +318,34 @@ impl Interpreter {
             },
             Token::Word(word)=>{
                 self.next_token();
+                if *self.get_token() == Token::LeftParenthesis{
+                    self.next_token();
+                    return self.function_call_with_return_value(word.clone())
+                }
                 return Ok(Box::new(ValueExp::new(word.clone())));
             },
             _ => Err(Exception::unknow_word())
         }
+    }
+    fn function_call_with_return_value(&self, name:String) ->Result<Box<dyn Expression>,Exception> {
+        let mut args = vec![];   
+        while Token::RightParenthesis !=  *self.get_token() {
+                
+            let value =match self.expression(){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+            args.push(value);
+            // self.next_token();
+
+            if *self.get_token() != Token::RightParenthesis {
+                if let Err(e) = self.require_token(Token::Comma){
+                    return Err(e);
+                }
+            }
+        }
+        self.next_token();
+
+        Ok(Box::new(FunctionCallExp::new(name, args)))
     }
 }

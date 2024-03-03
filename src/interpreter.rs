@@ -87,8 +87,10 @@ impl Interpreter {
             },
         };
 
-        match  &*main_func{
-            library::object::Object::FunctionObject(func) => func.call(vec![], self.main_context.clone()),
+        match &*main_func{
+            library::object::Object::FunctionObject(func) => {
+                let _ = func.call(vec![], self.main_context.clone());
+            },
             _ => ()
         }
     }
