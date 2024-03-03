@@ -16,8 +16,15 @@ pub struct ConditionalExp{
 
 impl super::Expression for ConditionalExp {
     fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
-        let left = self.left.evaluate(context.clone()).unwrap();
-        let right =self.right.evaluate(context.clone()).unwrap(); 
+        let left = match self.left.evaluate(context.clone()){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        let right = match self.right.evaluate(context.clone()){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+
         match self.op {
             OperationType::And => Ok(logical::and(left,right)),
             OperationType::Or =>Ok(logical::or(left,right)),

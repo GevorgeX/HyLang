@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{library::{function::Function, object::{create_object, Object}, Context},task::Task};
+use crate::interpreter::{library::{exception::Exception, function::Function, object::{create_object, Object}, Context},task::Task};
 
 use super::Statement;
 
@@ -12,16 +12,19 @@ pub struct DefineFunctionStm{
 }
 
 impl super::Statement for DefineFunctionStm {
-    fn interpret(&self, context:Rc<Context>) -> Task {
+    fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
         match &*context {
             Context::ModuleContext(cont) => {
                 let func = Function::new(context.clone(), self.args.clone(), self.body.clone());
                 let func = Object::FunctionObject(func);
-                cont.define_function(self.name.clone(), create_object(func) )
+                match cont.define_function(self.name.clone(), create_object(func)){
+                    Ok(_) => Ok(Task::Default),
+                    Err(e) => Err(e),
+                }
             },
-            _=> panic!("Cant define {} function in this context" , self.name)
+            _=> Err(Exception::cant_def_in_cont(self.name.clone()))
         }
-        Task::Default
+        
     }
     
 }

@@ -39,8 +39,6 @@ pub trait Expression : dyn_clone::DynClone{
     fn evaluate(&self , context:Rc<Context>) -> Result<ReferenceToObject,Exception>;
 }
 
-
-
 impl Interpreter {
     pub fn expression(&self)-> Result<Box<dyn Expression>,Exception> {
         self.conditional()
@@ -59,7 +57,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::And));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::And));
                         }
                         else{
                             return add;
@@ -69,7 +67,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::Or));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::Or));
                         }
                         else{
                             return add;
@@ -79,7 +77,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::DoubleEqual));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::DoubleEqual));
                         }
                         else{
                             return add;
@@ -89,7 +87,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::More));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::More));
                         }
                         else{
                             return add;
@@ -99,7 +97,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::MoreOrEq));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::MoreOrEq));
                         }
                         else{
                             return add;
@@ -109,7 +107,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::Less));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::Less));
                         }
                         else{
                             return add;
@@ -119,7 +117,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::LessOrEq));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::LessOrEq));
                         }
                         else{
                             return add;
@@ -129,7 +127,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(BinaryExp::new(res, add, OperationType::NotEqual));
+                            res = Box::new(ConditionalExp::new(res, add, OperationType::NotEqual));
                         }
                         else{
                             return add;
@@ -290,7 +288,7 @@ impl Interpreter {
                     
                 }
                 else{
-                    return Err(Exception::new_require_symbol("բառ".to_string()));
+                    return Err(Exception::require_symbol("բառ".to_string()));
                 }
                 
             },
@@ -321,7 +319,7 @@ impl Interpreter {
                 self.next_token();
                 return Ok(Box::new(ValueExp::new(word.clone())));
             },
-            _ => Err(Exception::new_unknow_word())
+            _ => Err(Exception::unknow_word())
         }
     }
 }

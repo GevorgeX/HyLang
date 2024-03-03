@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{expression::Expression, library::Context, task::Task};
+use crate::interpreter::{expression::Expression, library::{exception::Exception, Context}, task::Task};
 
 #[derive(Clone)]
 pub struct AssignmentStm{
@@ -9,13 +9,15 @@ pub struct AssignmentStm{
 }
 
 impl super::Statement for AssignmentStm {
-    fn interpret(&self, context: Rc<Context>) -> Task{
+    fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
         match &*context {
             Context::LocalContext(local) => 
-            local.change_variable(self.name.clone(), self.value.evaluate(context.clone())),
-            _=> panic!("Cant assignment var in this context")
+            match local.change_variable(self.name.clone(), self.value.evaluate(context.clone()).unwrap()){
+                Ok(_) => Ok(Task::Default),
+                Err(e) => Err(e),
+            },
+            _=> Err(Exception::object_does_exit(self.name.clone()))
         }
-        Task::Default
     }
 }
 

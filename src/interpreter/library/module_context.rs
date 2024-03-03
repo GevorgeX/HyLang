@@ -18,7 +18,7 @@ impl ModuleContext {
             Ok(())
         }
         else {
-            Err(Exception::new_func_alr_def(name))
+            Err(Exception::func_alr_def(name))
         }
     }
 
@@ -28,7 +28,7 @@ impl ModuleContext {
             Ok(val.clone())
         }
         else {
-            Err(Exception::new_object_does_Exit(name.clone()))
+            Err(Exception::object_does_exit(name.clone()))
         }
     }
 

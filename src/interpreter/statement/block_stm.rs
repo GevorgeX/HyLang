@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-use crate::interpreter::{library::Context, task::Task};
+use crate::interpreter::{library::{exception::Exception, Context}, task::Task};
 
 use super::Statement;
 
@@ -10,17 +10,19 @@ pub struct BlockStm{
 }
 
 impl Statement for BlockStm {
-    fn interpret(&self,context:Rc<Context>)-> Task {
-        let mut res: Task = Task::Default;
+    fn interpret(&self,context:Rc<Context>)-> Result<Task, Exception> {
         for stm in self.statements.borrow().iter(){
-            res = stm.interpret(context.clone());
+            let res = stm.interpret(context.clone());
 
             match res {
-                Task::Default => (),
-                _=> return res 
+                Ok(o) => match o {
+                    Task::Default => (),
+                    _=> return Ok(o)
+                },
+                Err(e) => return Err(e),
             }
         }
-        res
+        Ok(Task::Default)
     }
 }
 

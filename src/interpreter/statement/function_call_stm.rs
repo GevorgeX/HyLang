@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{expression::Expression, library::{object, Context}, task::Task};
+use crate::interpreter::{expression::Expression, library::{exception::Exception, object, Context}, task::Task};
 
 #[derive(Clone)]
 pub struct FunctionCallStm{
@@ -9,15 +9,17 @@ pub struct FunctionCallStm{
 }
 
 impl super::Statement for FunctionCallStm {
-    fn interpret(&self, context: Rc<Context>) -> Task{
-        let obj = context.get_object(&self.name);
-      
+    fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
+        let obj = match context.get_object(&self.name) {
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        }; 
         
         match &*obj {
             object::Object::FunctionObject(func) => func.call(self.arguments.clone(), context) ,
-            _ => panic!("Cant call {}", obj.to_string())
+            _ => return Err(Exception::is_not_func(self.name.clone()))
         }
-        Task::Default
+        Ok(Task::Default)
     }
 }
 

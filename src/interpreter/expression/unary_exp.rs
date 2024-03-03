@@ -17,8 +17,16 @@ impl super::Expression for UnaryExp {
     fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject, Exception> {
         match self.op {
             OperationType::Plus => self.value.evaluate(context),
-            OperationType::Minus => Ok(neg(self.value.evaluate(context).unwrap())) ,
-            OperationType::Not => Ok(not(self.value.evaluate(context).unwrap())),
+            OperationType::Minus =>
+                match self.value.evaluate(context){
+                    Ok(o) => Ok(neg(o)),
+                    Err(e) => return Err(e),
+                },
+            OperationType::Not =>
+            match self.value.evaluate(context){
+                Ok(o) => Ok(not(o)),
+                Err(e) => return Err(e),
+            },
             _ => panic!("wrong operator")
         }
     }

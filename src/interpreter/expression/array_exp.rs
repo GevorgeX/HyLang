@@ -15,7 +15,12 @@ impl super::Expression for ArrayExp {
     fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let mut array = vec![];
         for val in &self.value  {
-            array.push(val.evaluate(context.clone()).unwrap()) ;
+
+            let value = match val.evaluate(context.clone()){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+            array.push(value) ;
         }
         let array = create_object(Object::Array(array));
 

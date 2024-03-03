@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{expression::Expression, library::{object::Object, Context}, task::Task};
+use crate::interpreter::{expression::Expression, library::{exception::Exception, object::Object, Context}, task::Task};
 
 use super::Statement;
 
@@ -14,26 +14,33 @@ pub struct IfElseStm{
 
 
 impl Statement for IfElseStm {
-    fn interpret(&self,parent_context: Rc<Context>) -> Task {
+    fn interpret(&self,parent_context: Rc<Context>) -> Result<Task, Exception> {
         let mut res = Task::Default;
         let context = Context::new_local_context(Some(Rc::downgrade(&parent_context)));
         
-        let cond = self.condition.evaluate(parent_context);
+        let cond = match self.condition.evaluate(parent_context){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
 
         if let Object::Bool(val) = *cond{
             if val == true{
-                res = self.if_statement.interpret(context);
+                res = match self.if_statement.interpret(context){
+                    Ok(o) => o,
+                    Err(e) => return Err(e),
+                };
             }
             else if let Some(stm) = &self.else_statement{
-                res = stm.interpret(context);
+                res = match stm.interpret(context){
+                    Ok(o) => o,
+                    Err(e) => return Err(e),
+                };            
             }
-        
-
         }
         else{
-            panic!("Cant converted {} to bool", cond.to_string() )
+            return Err(Exception::is_not_a(cond.to_string(), "Bool".to_string()))
         }
-        return res
+        return Ok(res)
         
     }
 }

@@ -18,7 +18,7 @@ impl LocalContext {
             Ok(())
         }
         else {
-            Err(Exception::new_var_alr_def(name))
+            Err(Exception::var_alr_def(name))
         }
     }
 
@@ -32,11 +32,11 @@ impl LocalContext {
         else if let Some(par) = &self.parent  {
             match &*par.upgrade().unwrap() {
                 Context::LocalContext(cont) => cont.change_variable(name, refer),
-                _ => Err(Exception::new_object_does_Exit(name))
+                _ => Err(Exception::object_does_exit(name))
             }
         }
         else{
-            Err(Exception::new_object_does_Exit(name))
+            Err(Exception::object_does_exit(name))
         }
     }
     pub fn get_variable(&self, name: &String) -> Result<ReferenceToObject, Exception> {
@@ -44,7 +44,7 @@ impl LocalContext {
             Ok(val.clone())
         }
         else{
-            Err(Exception::new_object_does_Exit(name.clone()))
+            Err(Exception::object_does_exit(name.clone()))
         }
     }
 

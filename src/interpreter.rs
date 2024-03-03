@@ -40,11 +40,10 @@ impl Interpreter {
             return Ok(())
         }
         else{
-            return Err(Exception::new_require_symbol(target.to_string()));
+            return Err(Exception::require_symbol(target.to_string()));
         }
     }
-    pub fn parse_code(&self) -> Box<dyn Statement> {
-
+    pub fn parse_code(&self) -> Result<Box<dyn Statement>,Exception> {
         let res = BlockStm::new() ;
         loop {
             match self.get_token() {
@@ -53,18 +52,44 @@ impl Interpreter {
                     break;
                 },
                 _ => {
-                    res.add(self.statement());  
+                    let statement = match self.statement(){
+                        Ok(o) => o,
+                        Err(e) => return Err(e),
+                    };
+                    res.add(statement);  
                 }
             }
         };
 
-        Box::new(res)
+        Ok(Box::new(res))
     }
     pub fn run(&self, main_func_name:&String){
-        self.parse_code().interpret(self.main_context.clone());
-        match &*self.main_context.get_object(main_func_name) {
+        let parse_code = match self.parse_code(){
+            Ok(o) => o,
+            Err(e) => {
+                println!("{}", e.message);
+                return;
+            },
+        };
+        match parse_code.interpret(self.main_context.clone()){
+            Ok(_) => (),
+            Err(e) => {
+                println!("{}", e.message);
+                return;
+            },
+        };
+
+        let main_func = match self.main_context.get_object(main_func_name){
+            Ok(o) => o,
+            Err(e) => {
+                println!("{}", e.message);
+                return;
+            },
+        };
+
+        match  &*main_func{
             library::object::Object::FunctionObject(func) => func.call(vec![], self.main_context.clone()),
-            _=> ()
+            _ => ()
         }
     }
 }

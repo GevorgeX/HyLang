@@ -3,6 +3,7 @@ use std::rc::Rc;
 use crate::lexer::token::Token;
 
 use super::expression::{binary_exp, value_exp, OperationType};
+use super::library::exception::Exception;
 use super::library::Context;
 use super::task::Task;
 use super::Interpreter;
@@ -14,7 +15,7 @@ mod if_else_stm;
 mod while_stm;
 mod break_stm;
 mod continue_stm;
-mod define_function;
+mod define_function_stm;
 mod function_call_stm;
 
 // !!! TEMP
@@ -27,16 +28,16 @@ use define_variable_stm::DefineVariableStm;
 use while_stm::WhileStm;
 use break_stm::BreakStm;
 use continue_stm::ContinueStm;
-use define_function::DefineFunctionStm;
+use define_function_stm::DefineFunctionStm;
 use function_call_stm::FunctionCallStm;
 
 dyn_clone::clone_trait_object!(Statement);
 pub trait Statement: dyn_clone::DynClone {
-    fn interpret(&self , context: Rc<Context>) -> Task;  
+    fn interpret(&self , context: Rc<Context>) -> Result<Task, Exception>;  
 }
 
 impl Interpreter {
-    pub fn statement(&self) -> Box<dyn Statement> {
+    pub fn statement(&self) -> Result<Box<dyn Statement>,Exception>{
         match self.get_token() {
             Token::IF => {
                 self.next_token();
@@ -81,87 +82,129 @@ impl Interpreter {
                     Token::LeftParenthesis =>{
                         self.function_call(word.clone())  
                     }
-                    _ => panic!("Require = ")
+                    _ => Err(Exception::require_symbol("=".to_string()))
                 }
                  
- 
             },
             Token::Break => {
                 self.next_token();
-                return Box::new(BreakStm::new())
+                return Ok(Box::new(BreakStm::new()))
             },
             Token::Continue => {
                 self.next_token();
-                return Box::new(ContinueStm::new())
+                return Ok(Box::new(ContinueStm::new()))
             },
             Token::P_R_I_N_T =>{
                 self.next_token();
-                return  Box::new(PrintStm::new(self.expression()));
+                let exp = match self.expression() {
+                    Ok(o) => o,
+                    Err(e) => return Err(e),
+                };
+                return Ok(Box::new(PrintStm::new(exp)))
             },
             Token::Function =>{
                 self.next_token();
                 return self.define_func()
             },
-            _ => panic!(""),
+            _ => return Err(Exception::unknow_word()),
         }
         
     }
-    fn while_stm(&self) -> Box<dyn Statement>{
-        let condition = self.expression();
-        let while_statements = self.block();
+    fn while_stm(&self) -> Result<Box<dyn Statement>,Exception>{
+        let condition = match self.expression(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        let while_statements = match self.block(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
 
-        Box::new(WhileStm::new(condition, while_statements))
+        Ok(Box::new(WhileStm::new(condition, while_statements)))
     }
-    fn block(&self) -> Box<dyn Statement> {
+    fn block(&self) -> Result<Box<dyn Statement>,Exception>{
         let res = BlockStm::new( );
-        self.require_token(Token::LeftBrace);
+        if let Err(e) = self.require_token(Token::LeftBrace){
+            return Err(e);
+        }
 
         while *self.get_token() != Token::RightBrace {
-            res.add(self.statement());
+            let statement = match self.statement(){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+            res.add(statement);
         }
         self.next_token();
-        Box::new(res)
+        Ok(Box::new(res))
 
     }
-    fn if_else(&self ) -> Box<dyn Statement>{
-        let condition = self.expression();
-        let if_statement = self.block();
+    fn if_else(&self ) -> Result<Box<dyn Statement>,Exception>{
+        let condition = match self.expression(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        let if_statement = match self.block(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
         let else_statemnt;
 
         if *self.get_token() == Token::ELSE{
             self.next_token();
-            else_statemnt = Some(self.block())
+            let block =match self.block(){
+                Ok(o) => o,
+                Err(e) =>return  Err(e),
+            };
+            else_statemnt = Some(block)
         }
         else{
             else_statemnt = None;
         }
 
-        Box::new(IfElseStm::new(condition, if_statement ,else_statemnt))
+        Ok(Box::new(IfElseStm::new(condition, if_statement ,else_statemnt)))
     }
-    fn define_variable(&self) ->Box<dyn Statement>{
+    fn define_variable(&self) ->Result<Box<dyn Statement>,Exception>{
         if let Token::Word(word) = self.get_token(){
             self.next_token();
-            self.require_token(Token::Equal);
-            return Box::new(DefineVariableStm::new(word.clone(), self.expression() , ))
+            if let Err(e) = self.require_token(Token::Equal){
+                return Err(e);
+            }
+
+            let value =match self.expression(){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+            return Ok(Box::new(DefineVariableStm::new(word.clone(), value)))
         }
         else{
-            panic!("Require name");
+            Err(Exception::require_symbol("name".to_string()))
         }
     }
 
-    fn assignment(&self,word:&String) -> Box<dyn Statement> {
-        return Box::new(AssignmentStm::new(word.clone(), self.expression() , ))
+    fn assignment(&self,word:&String) -> Result<Box<dyn Statement>,Exception> {
+        let value =match self.expression(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        
+        Ok(Box::new(AssignmentStm::new(word.clone(), value )))
     }
-    fn assignment_with_modifare(&self,word:&String, op:OperationType) -> Box<dyn Statement> {
+    fn assignment_with_modifare(&self,word:&String, op:OperationType) -> Result<Box<dyn Statement>,Exception> {
+        let right =match self.expression(){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        
         let val = Box::new(binary_exp::BinaryExp::new(
             Box::new(value_exp::ValueExp::new(word.clone())),
-            self.expression(),
+            right,
             op
          ));
 
-        return Box::new(AssignmentStm::new(word.clone(), val , ))
+        Ok(Box::new(AssignmentStm::new(word.clone(), val) ))
     }
-    fn define_func(&self) ->Box<dyn Statement> {
+    fn define_func(&self) ->Result<Box<dyn Statement>,Exception> {
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             self.require_token(Token::LeftParenthesis);
@@ -178,23 +221,30 @@ impl Interpreter {
             }
             self.next_token();
 
-            let body = self.block();
+            let body = match self.block(){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
 
 
-            Box::new(DefineFunctionStm::new(word.clone(),args, body))
+            Ok(Box::new(DefineFunctionStm::new(word.clone(),args, body)))
             // self.statement()
         }
         else{
             panic!("Require name");
         }
     }
-    fn function_call(&self, name:String) ->Box<dyn Statement> {
+    fn function_call(&self, name:String) ->Result<Box<dyn Statement>,Exception> {
         let mut args = vec![];
         self.require_token(Token::LeftParenthesis);
         
         while  Token::RightParenthesis !=  *self.get_token() {
                 
-            args.push(self.expression());
+            let value =match self.expression(){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+            args.push(value);
             // self.next_token();
 
             if *self.get_token() != Token::RightParenthesis {
@@ -203,7 +253,7 @@ impl Interpreter {
         }
         self.next_token();
 
-        Box::new(FunctionCallStm::new(name, args))
+        Ok(Box::new(FunctionCallStm::new(name, args)))
     }
 }
 

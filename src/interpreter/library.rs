@@ -30,7 +30,7 @@ impl Context {
                         return par.upgrade().unwrap().get_object(name);
                     }
                     else{
-                        Err(Exception::new_object_does_Exit(name.clone()))
+                        Err(Exception::object_does_exit(name.clone()))
                     }
                 }
             },

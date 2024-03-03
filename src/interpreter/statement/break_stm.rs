@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{library::Context, task::Task};
+use crate::interpreter::{library::{exception::Exception, Context}, task::Task};
 
 use super::Statement;
 
@@ -10,8 +10,8 @@ pub struct BreakStm{
 }
 
 impl Statement for BreakStm{
-    fn interpret(&self, _context:Rc<Context>) -> Task {
-        Task::Break
+    fn interpret(&self, _context:Rc<Context>) -> Result<Task, Exception> {
+        Ok(Task::Break)
     }
 }
 

@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use crate::interpreter::{expression::Expression, library::{object::Object, Context}, task::Task};
+use crate::interpreter::{expression::Expression, library::{exception::Exception, object::Object, Context}, task::Task};
 
 use super::Statement;
 
@@ -13,15 +13,23 @@ pub struct WhileStm{
 
 
 impl Statement for WhileStm {
-    fn interpret(&self,parent_context:Rc<Context>)->Task {
+    fn interpret(&self,parent_context:Rc<Context>)->Result<Task, Exception> {
         let mut res = Task::Default;
         let context = Context::new_local_context(Some(Rc::downgrade(&parent_context)));
 
         loop {
-            if let Object::Bool(cond) = *self.condition.evaluate(parent_context.clone()){
+            let object = match self.condition.evaluate(parent_context.clone()){
+                Ok(o) => o,
+                Err(e) => return Err(e),
+            };
+
+            if let Object::Bool(cond) = *object{
                 if cond{
-                    let task = self.while_statement.interpret(context.clone());
-        
+                    let task =match self.while_statement.interpret(context.clone()){
+                        Ok(o) => o,
+                        Err(e) => return Err(e),
+                    };
+                    
                     match task {
                         Task::Break => break,
                         Task::Continue => continue,
@@ -30,10 +38,10 @@ impl Statement for WhileStm {
                 }else { break }
             }
             else{
-                panic!("{} is not a bool" ,self.condition.evaluate(parent_context).to_string())
+                return Err(Exception::is_not_a(object.to_string(), "Bool".to_string()));
             }
         }
-        res
+        Ok(res)
     }
 }
 

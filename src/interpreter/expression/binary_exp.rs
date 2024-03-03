@@ -13,8 +13,16 @@ pub struct BinaryExp{
 
 impl super::Expression for BinaryExp {
     fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
-        let left =self.left.evaluate(context.clone()).unwrap();
-        let right = self.right.evaluate(context.clone()).unwrap();
+        let left = match self.left.evaluate(context.clone()){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        let right = match self.right.evaluate(context.clone()){
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+
+
         match self.op {
             OperationType::Plus => Ok(arithmetical::add(left,right)) ,
             OperationType::Minus => Ok(arithmetical::sub(left,right)) ,
