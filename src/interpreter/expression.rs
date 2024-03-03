@@ -33,6 +33,7 @@ pub enum OperationType {
     DoubleEqual,
     NotEqual,
     Not,
+    Remain,
 }
 
 dyn_clone::clone_trait_object!(Expression);
@@ -210,6 +211,16 @@ impl Interpreter {
                         let un = self.unary();
                         if let Result::Ok(un) = un{
                             res = Box::new(BinaryExp::new(res, un, OperationType::Divide));
+                        }
+                        else{
+                            return un;
+                        }                    
+                    },
+                    Token::Percent =>{
+                        self.next_token();
+                        let un = self.unary();
+                        if let Result::Ok(un) = un{
+                            res = Box::new(BinaryExp::new(res, un, OperationType::Remain));
                         }
                         else{
                             return un;

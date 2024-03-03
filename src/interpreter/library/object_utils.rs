@@ -59,7 +59,12 @@ pub mod arithmetical {
             _ => panic!("Cant use '/' with {} and {}", left.to_string(), right.to_string())
         }   
     }
-
+    pub fn rem(left: ReferenceToObject, right: ReferenceToObject) -> ReferenceToObject {
+        match (&*left , &*right) {
+            (Object::Number(v1), Object::Number(v2)) => Rc::new(Object::Number(v1 % v2)),
+            _ => panic!("Cant use '/' with {} and {}", left.to_string(), right.to_string())
+        }   
+    }
     pub fn neg(left: ReferenceToObject) -> ReferenceToObject {
         match &*left  {
             Object::Number(v1) => Rc::new(Object::Number(-v1)),

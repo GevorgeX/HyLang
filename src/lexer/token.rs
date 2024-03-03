@@ -35,6 +35,7 @@ pub enum Token{
     SlashEqual,
     Function,
     Return,
+    Percent,
 
     P_R_I_N_T,
     LeftSquareBrace,

@@ -2,7 +2,7 @@ pub mod token;
 
 use token::Token;
 
-const DELIMITERS: [char;17]= ['+' , '-' ,'*', '/', '(',')' ,'=', '>' ,'<','!' ,'{','}', '\'','\"' ,'[',']', ',' ];
+const DELIMITERS: [char;18]= ['+' , '-' ,'*', '/', '(',')' ,'=', '>' ,'<','!' ,'{','}', '\'','\"' ,'[',']', ',' ,'%' ];
 
 pub fn parse(chars: &String) -> Vec<Token>{
     let mut res = vec![];
@@ -173,6 +173,7 @@ fn get_operator_token(chars: &Vec<char>, index: &mut usize)-> Token {
         '[' => Token::LeftSquareBrace,
         ']' => Token::RightSquareBrace,
         ',' => Token::Comma,
+        '%' => Token::Percent,
         _ => panic!("Undefined Token")
     }
 }

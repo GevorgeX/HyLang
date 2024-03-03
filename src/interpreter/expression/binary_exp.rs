@@ -28,6 +28,7 @@ impl super::Expression for BinaryExp {
             OperationType::Minus => Ok(arithmetical::sub(left,right)) ,
             OperationType::Multi => Ok(arithmetical::mult(left,right)) ,
             OperationType::Divide => Ok(arithmetical::div(left,right)) ,
+            OperationType::Remain =>Ok(arithmetical::rem(left,right)),
             _ => panic!("Cant use this operator")
         }
     }
