@@ -8,7 +8,7 @@ use super::{exception::Exception, local_context::LocalContext, object::{create_o
 pub struct Function{
     define_context: Rc<Context>,
     args: Vec<String>,
-    body: Box<dyn Statement>
+    body: Box<Statement>
 }
 
 
@@ -44,7 +44,7 @@ impl Function {
         }
     }
 
-    pub fn new(define_context:Rc<Context>, args: Vec<String> , body: Box<dyn Statement> ) -> Function{
+    pub fn new(define_context:Rc<Context>, args: Vec<String> , body: Box<Statement> ) -> Function{
         Function { define_context, args, body}
     }
 }

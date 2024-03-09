@@ -3,13 +3,13 @@ use std::rc::Rc;
 use crate::interpreter::{expression::Expression, library::{exception::Exception, object, Context}, task::Task};
 
 #[derive(Clone)]
-pub struct FunctionCallStm{
+pub struct FunctionCallStmImpl{
     name: String,
     arguments: Vec<Box<Expression> >,
 }
 
-impl super::Statement for FunctionCallStm {
-    fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
+impl  FunctionCallStmImpl {
+    pub fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
         let obj = match context.get_object(&self.name) {
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -24,10 +24,7 @@ impl super::Statement for FunctionCallStm {
         }
         Ok(Task::Default)
     }
-}
-
-impl FunctionCallStm {
-    pub fn new( name: String,arguments: Vec<Box<Expression>> ) -> FunctionCallStm {
-        FunctionCallStm{name, arguments}
+    pub fn new( name: String,arguments: Vec<Box<Expression>> ) -> FunctionCallStmImpl {
+        FunctionCallStmImpl{name, arguments}
     }
 }

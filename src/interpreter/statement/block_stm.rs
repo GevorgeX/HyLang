@@ -5,12 +5,12 @@ use crate::interpreter::{library::{exception::Exception, Context}, task::Task};
 use super::Statement;
 
 #[derive(Clone)]
-pub struct BlockStm{
-    statements: RefCell<Vec<Box<dyn Statement>>>,
+pub struct BlockStmImpl{
+    statements: RefCell<Vec<Box<Statement>>>,
 }
 
-impl Statement for BlockStm {
-    fn interpret(&self,context:Rc<Context>)-> Result<Task, Exception> {
+impl  BlockStmImpl {
+    pub fn interpret(&self,context:Rc<Context>)-> Result<Task, Exception> {
         for stm in self.statements.borrow().iter(){
             let res = stm.interpret(context.clone());
 
@@ -24,15 +24,12 @@ impl Statement for BlockStm {
         }
         Ok(Task::Default)
     }
-}
-
-impl BlockStm {
-    pub fn new() -> BlockStm{
-        BlockStm{
+    pub fn new() -> BlockStmImpl{
+        BlockStmImpl{
             statements : RefCell::new(vec![]),
          }
     }
-    pub fn add(&self , statement: Box<dyn Statement> ){
+    pub fn add(&self , statement: Box<Statement> ){
         self.statements.borrow_mut().push(statement);
     }
 }

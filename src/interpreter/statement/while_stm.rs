@@ -5,15 +5,15 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 use super::Statement;
 
 #[derive(Clone)]
-pub struct WhileStm{
+pub struct WhileStmImpl{
     condition: Box<Expression>,
-    while_statement: Box<dyn Statement>,
+    while_statement: Box<Statement>,
 }
 
 
 
-impl Statement for WhileStm {
-    fn interpret(&self,parent_context:Rc<Context>)->Result<Task, Exception> {
+impl  WhileStmImpl {
+    pub fn interpret(&self,parent_context:Rc<Context>)->Result<Task, Exception> {
         loop {
             match self.condition.evaluate(parent_context.clone()) {
                 Ok(cond) => match &*cond {
@@ -38,12 +38,8 @@ impl Statement for WhileStm {
         }
         Ok(Task::Default)
     }
-}
-
-impl WhileStm {
     pub fn new(condition: Box<Expression>,
-        while_statement: Box<dyn Statement>,) -> WhileStm {
-        
-            WhileStm{condition, while_statement}
+        while_statement: Box<Statement>,) -> WhileStmImpl {
+        WhileStmImpl{condition, while_statement}
     }
 }

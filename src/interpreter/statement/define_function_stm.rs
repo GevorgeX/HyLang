@@ -5,14 +5,14 @@ use crate::interpreter::{library::{exception::Exception, function::Function, obj
 use super::Statement;
 
 #[derive(Clone)]
-pub struct DefineFunctionStm{
+pub struct DefineFunctionStmImpl{
     name: String,
-    body: Box<dyn Statement>,
+    body: Box<Statement>,
     args: Vec<String>
 }
 
-impl super::Statement for DefineFunctionStm {
-    fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
+impl  DefineFunctionStmImpl {
+    pub fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
         match &*context {
             Context::ModuleContext(cont) => {
                 let func = Function::new(context.clone(), self.args.clone(), self.body.clone());
@@ -26,11 +26,8 @@ impl super::Statement for DefineFunctionStm {
         }
         
     }
-    
-}
-
-impl DefineFunctionStm {
-    pub fn new( name: String,args:Vec<String> ,body :Box<dyn Statement>) -> DefineFunctionStm {
-        DefineFunctionStm{name ,args , body}
+    pub fn new( name: String,args:Vec<String> ,body :Box<Statement>) -> DefineFunctionStmImpl {
+        DefineFunctionStmImpl{name ,args , body}
     }
 }
+

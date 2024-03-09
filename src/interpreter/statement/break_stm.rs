@@ -1,22 +1,16 @@
-use std::rc::Rc;
+use crate::interpreter::{library::exception::Exception, task::Task};
 
-use crate::interpreter::{library::{exception::Exception, Context}, task::Task};
-
-use super::Statement;
 
 #[derive(Clone)]
-pub struct BreakStm{
+pub struct BreakStmImpl{
 
 }
 
-impl Statement for BreakStm{
-    fn interpret(&self, _context:Rc<Context>) -> Result<Task, Exception> {
+impl BreakStmImpl{
+    pub fn interpret(&self) -> Result<Task, Exception> {
         Ok(Task::Break)
     }
-}
-
-impl BreakStm {
-    pub fn new()->BreakStm {
-        BreakStm{}
+    pub fn new()->BreakStmImpl {
+        BreakStmImpl{}
     }
 }

@@ -3,13 +3,13 @@ use std::rc::Rc;
 use crate::interpreter::{expression::Expression, library::{exception::Exception, Context}, task::Task};
 
 #[derive(Clone)]
-pub struct AssignmentStm{
+pub struct AssignmentStmImpl{
     name: String,
     value: Box<Expression>,
 }
 
-impl super::Statement for AssignmentStm {
-    fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
+impl  AssignmentStmImpl {
+    pub fn interpret(&self, context: Rc<Context>) -> Result<Task, Exception>{
         match &*context {
             Context::LocalContext(local) => 
             match local.change_variable(self.name.clone(), self.value.evaluate(context.clone()).unwrap()){
@@ -19,10 +19,7 @@ impl super::Statement for AssignmentStm {
             _=> Err(Exception::object_does_exit(self.name.clone()))
         }
     }
-}
-
-impl AssignmentStm {
-    pub fn new( name: String,value :Box<Expression> ) -> AssignmentStm {
-        AssignmentStm{name , value}
+    pub fn new( name: String,value :Box<Expression> ) -> AssignmentStmImpl {
+        AssignmentStmImpl{name , value}
     }
 }

@@ -2,24 +2,19 @@ use std::rc::Rc;
 
 use crate::interpreter::{expression::Expression, library::{exception::Exception, Context}, task::Task};
 
-use super::Statement;
-
 #[derive(Clone)]
-pub struct ReturnStm{
+pub struct ReturnStmImpl{
     value: Box<Expression>
 }
 
-impl Statement for ReturnStm{
-    fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
+impl ReturnStmImpl{
+    pub fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
         match self.value.evaluate(context){
             Ok(o) => Ok(Task::Return(o)),
             Err(e) => Err(e),
         }
     }
-}
-
-impl ReturnStm {
-    pub fn new(value: Box<Expression>)->ReturnStm {
-        ReturnStm{value}
+    pub fn new(value: Box<Expression>)->ReturnStmImpl {
+        ReturnStmImpl{value}
     }
 }

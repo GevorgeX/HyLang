@@ -1,22 +1,17 @@
-use std::rc::Rc;
+use crate::interpreter::{library::exception::Exception, task::Task};
 
-use crate::interpreter::{library::{exception::Exception, Context}, task::Task};
-
-use super::Statement;
 
 #[derive(Clone)]
-pub struct ContinueStm{
+pub struct ContinueStmImpl{
 
 }
 
-impl Statement for ContinueStm{
-    fn interpret(&self,_context:Rc<Context>) -> Result<Task, Exception> {
+impl  ContinueStmImpl{
+    pub fn interpret(&self) -> Result<Task, Exception> {
         Ok(Task::Continue)
     }
+    pub fn new()->ContinueStmImpl {
+        ContinueStmImpl{}
+    } 
 }
 
-impl ContinueStm {
-    pub fn new()->ContinueStm {
-        ContinueStm{}
-    }
-}

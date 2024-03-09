@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use crate::lexer::token::Token;
 
-use self::return_stm::ReturnStm;
+use self::return_stm::ReturnStmImpl;
 
 use super::expression::{binary_exp, value_exp, Expression, OperationType};
 use super::library::exception::Exception;
@@ -22,25 +22,53 @@ mod function_call_stm;
 mod return_stm;
 
 // !!! TEMP
-mod print_stm; use print_stm::PrintStm;
+mod print_stm; use print_stm::PrintStmImpl;
 
-use block_stm::BlockStm;
-use if_else_stm::IfElseStm;
-use assignment_stm::AssignmentStm;
-use define_variable_stm::DefineVariableStm;
-use while_stm::WhileStm;
-use break_stm::BreakStm;
-use continue_stm::ContinueStm;
-use define_function_stm::DefineFunctionStm;
-use function_call_stm::FunctionCallStm;
+use block_stm::BlockStmImpl;
+use if_else_stm::IfElseStmImpl;
+use assignment_stm::AssignmentStmImpl;
+use define_variable_stm::DefineVariableStmImpl;
+use while_stm::WhileStmImpl;
+use break_stm::BreakStmImpl;
+use continue_stm::ContinueStmImpl;
+use define_function_stm::DefineFunctionStmImpl;
+use function_call_stm::FunctionCallStmImpl;
 
-dyn_clone::clone_trait_object!(Statement);
-pub trait Statement: dyn_clone::DynClone {
-    fn interpret(&self , context: Rc<Context>) -> Result<Task, Exception>;  
+#[derive(Clone)]
+pub enum Statement {
+    AssignmentStm(AssignmentStmImpl),
+    BlockStm(BlockStmImpl),
+    BreakStm(BreakStmImpl),
+    ContinueStm(ContinueStmImpl),
+    DefineFunctionStm(DefineFunctionStmImpl),
+    DefineVariableStm(DefineVariableStmImpl),
+    FunctionCallStm(FunctionCallStmImpl),
+    IfElseStm(IfElseStmImpl),
+    PRINTSTM(PrintStmImpl),
+    ReturnStm(ReturnStmImpl),
+    WhileStm(WhileStmImpl)
+}  
+
+impl Statement {   
+    pub fn interpret(&self , context: Rc<Context>) -> Result<Task, Exception>{
+        match self {
+            Statement::AssignmentStm(o) => o.interpret(context),
+            Statement::BlockStm(o) => o.interpret(context),
+            Statement::BreakStm(o) => o.interpret(),
+            Statement::ContinueStm(o) => o.interpret(),
+            Statement::DefineFunctionStm(o) => o.interpret(context),
+            Statement::DefineVariableStm(o) => o.interpret(context),
+            Statement::FunctionCallStm(o) => o.interpret(context),
+            Statement::IfElseStm(o) => o.interpret(context),
+            Statement::PRINTSTM(o) => o.interpret(context),
+            Statement::ReturnStm(o) => o.interpret(context),
+            Statement::WhileStm(o) => o.interpret(context),
+        }
+    }
 }
 
 impl Interpreter {
-    pub fn statement(&self) -> Result<Box<dyn Statement>,Exception>{
+    pub fn statement(&self) -> Result<Box<Statement>,Exception>{
         match self.get_token() {
             Token::IF => {
                 self.next_token();
@@ -92,11 +120,11 @@ impl Interpreter {
             },
             Token::Break => {
                 self.next_token();
-                return Ok(Box::new(BreakStm::new()))
+                Ok(Box::new(Statement::BreakStm(BreakStmImpl::new())))
             },
             Token::Continue => {
                 self.next_token();
-                return Ok(Box::new(ContinueStm::new()))
+                Ok(Box::new(Statement::ContinueStm(ContinueStmImpl::new())))
             },
             Token::Return => {
                 self.next_token();
@@ -104,7 +132,7 @@ impl Interpreter {
                     Ok(o) => o,
                     Err(e) => return Err(e),
                 };
-                return Ok(Box::new(ReturnStm::new(exp)));
+                Ok(Box::new(Statement::ReturnStm(ReturnStmImpl::new(exp))))
             }
             Token::P_R_I_N_T =>{
                 self.next_token();
@@ -112,7 +140,7 @@ impl Interpreter {
                     Ok(o) => o,
                     Err(e) => return Err(e),
                 };
-                return Ok(Box::new(PrintStm::new(exp)))
+                Ok(Box::new(Statement::PRINTSTM(PrintStmImpl::new(exp))))
             },
             Token::Function =>{
                 self.next_token();
@@ -122,7 +150,7 @@ impl Interpreter {
         }
         
     }
-    fn while_stm(&self) -> Result<Box<dyn Statement>,Exception>{
+    fn while_stm(&self) -> Result<Box<Statement>,Exception>{
         let condition = match self.expression(){
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -132,10 +160,10 @@ impl Interpreter {
             Err(e) => return Err(e),
         };
 
-        Ok(Box::new(WhileStm::new(condition, while_statements)))
+        Ok(Box::new(Statement::WhileStm(WhileStmImpl::new(condition, while_statements))))
     }
-    fn block(&self) -> Result<Box<dyn Statement>,Exception>{
-        let res = BlockStm::new( );
+    fn block(&self) -> Result<Box<Statement>,Exception>{
+        let res = BlockStmImpl::new( );
         if let Err(e) = self.require_token(Token::LeftBrace){
             return Err(e);
         }
@@ -148,10 +176,10 @@ impl Interpreter {
             res.add(statement);
         }
         self.next_token();
-        Ok(Box::new(res))
+        Ok(Box::new(Statement::BlockStm(res)))
 
     }
-    fn if_else(&self ) -> Result<Box<dyn Statement>,Exception>{
+    fn if_else(&self ) -> Result<Box< Statement>,Exception>{
         let condition = match self.expression(){
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -174,9 +202,9 @@ impl Interpreter {
             else_statemnt = None;
         }
 
-        Ok(Box::new(IfElseStm::new(condition, if_statement ,else_statemnt)))
+        Ok(Box::new(Statement::IfElseStm(IfElseStmImpl::new(condition, if_statement ,else_statemnt))))
     }
-    fn define_variable(&self) ->Result<Box<dyn Statement>,Exception>{
+    fn define_variable(&self) ->Result<Box< Statement>,Exception>{
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             if let Err(e) = self.require_token(Token::Equal){
@@ -187,22 +215,22 @@ impl Interpreter {
                 Ok(o) => o,
                 Err(e) => return Err(e),
             };
-            return Ok(Box::new(DefineVariableStm::new(word.clone(), value)))
+            Ok(Box::new(Statement::DefineVariableStm(DefineVariableStmImpl::new(word.clone(), value))))
         }
         else{
             Err(Exception::require_symbol("name".to_string()))
         }
     }
 
-    fn assignment(&self,word:&String) -> Result<Box<dyn Statement>,Exception> {
+    fn assignment(&self,word:&String) -> Result<Box<Statement>,Exception> {
         let value =match self.expression(){
             Ok(o) => o,
             Err(e) => return Err(e),
         };
         
-        Ok(Box::new(AssignmentStm::new(word.clone(), value )))
+        Ok(Box::new(Statement::AssignmentStm(AssignmentStmImpl::new(word.clone(), value ))))
     }
-    fn assignment_with_modifare(&self,word:&String, op:OperationType) -> Result<Box<dyn Statement>,Exception> {
+    fn assignment_with_modifare(&self,word:&String, op:OperationType) -> Result<Box< Statement>,Exception> {
         let right =match self.expression(){
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -214,9 +242,9 @@ impl Interpreter {
             op
          )));
 
-        Ok(Box::new(AssignmentStm::new(word.clone(), val) ))
+        Ok(Box::new(Statement::AssignmentStm(AssignmentStmImpl::new(word.clone(), val)) ))
     }
-    fn define_func(&self) ->Result<Box<dyn Statement>,Exception> {
+    fn define_func(&self) ->Result<Box< Statement>,Exception> {
         if let Token::Word(word) = self.get_token(){
             self.next_token();
             if let Err(e) = self.require_token(Token::LeftParenthesis){
@@ -244,14 +272,14 @@ impl Interpreter {
             };
 
 
-            Ok(Box::new(DefineFunctionStm::new(word.clone(),args, body)))
+            Ok(Box::new(Statement::DefineFunctionStm(DefineFunctionStmImpl::new(word.clone(),args, body))))
             // self.statement()
         }
         else{
             Err(Exception::require_symbol("անուն".to_string()))
         }
     }
-    fn function_call(&self, name:String) ->Result<Box<dyn Statement>,Exception> {
+    fn function_call(&self, name:String) ->Result<Box<Statement>,Exception> {
         let mut args = vec![];      
         while  Token::RightParenthesis !=  *self.get_token() {
                 
@@ -270,7 +298,7 @@ impl Interpreter {
         }
         self.next_token();
 
-        Ok(Box::new(FunctionCallStm::new(name, args)))
+        Ok(Box::new(Statement::FunctionCallStm(FunctionCallStmImpl::new(name, args))))
     }
 }
 

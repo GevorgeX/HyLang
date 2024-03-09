@@ -5,16 +5,16 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 use super::Statement;
 
 #[derive(Clone)]
-pub struct IfElseStm{
+pub struct IfElseStmImpl{
     condition: Box<Expression>,
-    if_statement: Box<dyn Statement>,
-    else_statement: Option<Box<dyn Statement>>
+    if_statement: Box< Statement>,
+    else_statement: Option<Box<Statement>>
 }
 
 
 
-impl Statement for IfElseStm {
-    fn interpret(&self,parent_context: Rc<Context>) -> Result<Task, Exception> {
+impl IfElseStmImpl {
+    pub fn interpret(&self,parent_context: Rc<Context>) -> Result<Task, Exception> {
         let mut res = Task::Default;
         let context = Context::new_local_context(Some(Rc::downgrade(&parent_context)));
         
@@ -43,14 +43,11 @@ impl Statement for IfElseStm {
         return Ok(res)
         
     }
-}
-
-impl IfElseStm {
     pub fn new(condition: Box<Expression>,
-        if_statement: Box<dyn Statement>,
-        else_statement: Option<Box<dyn Statement>>) -> IfElseStm {
+        if_statement: Box< Statement>,
+        else_statement: Option<Box<Statement>>) -> IfElseStmImpl {
         
-            IfElseStm{
+            IfElseStmImpl{
             condition, if_statement ,else_statement
         }
     }

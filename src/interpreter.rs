@@ -7,7 +7,7 @@ use std::{cell::RefCell, rc::Rc};
 
 
 use super::lexer::token::Token;
-use self::{library::{exception::Exception, Context}, statement::{block_stm::BlockStm, Statement}};
+use self::{library::{exception::Exception, Context}, statement::{block_stm::BlockStmImpl, Statement}};
 
 pub struct Interpreter{
     index: RefCell<usize>,
@@ -43,8 +43,8 @@ impl Interpreter {
             return Err(Exception::require_symbol(target.to_string()));
         }
     }
-    pub fn parse_code(&self) -> Result<Box<dyn Statement>,Exception> {
-        let res = BlockStm::new() ;
+    pub fn parse_code(&self) -> Result<Box<Statement>,Exception> {
+        let res = BlockStmImpl::new() ;
         loop {
             match self.get_token() {
                 Token::EOF => {
@@ -61,7 +61,7 @@ impl Interpreter {
             }
         };
 
-        Ok(Box::new(res))
+        Ok(Box::new(statement::Statement::BlockStm(res)))
     }
     pub fn run(&self, main_func_name:&String){
         let parse_code = match self.parse_code(){

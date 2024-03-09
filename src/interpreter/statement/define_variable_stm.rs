@@ -3,13 +3,13 @@ use std::rc::Rc;
 use crate::interpreter::{expression::Expression, library::{exception::Exception, Context}, task::Task};
 
 #[derive(Clone)]
-pub struct DefineVariableStm{
+pub struct DefineVariableStmImpl{
     name: String,
     value: Box<Expression>,
 }
 
-impl super::Statement for DefineVariableStm {
-    fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
+impl  DefineVariableStmImpl {
+    pub fn interpret(&self, context:Rc<Context>) -> Result<Task, Exception> {
 
         match &*context {
             Context::LocalContext(local) => match local.define_variable(self.name.clone(),
@@ -21,10 +21,7 @@ impl super::Statement for DefineVariableStm {
 
         }
     }
-}
-
-impl DefineVariableStm {
-    pub fn new( name: String,value :Box<Expression> ) -> DefineVariableStm {
-        DefineVariableStm{name , value}
+    pub fn new( name: String,value :Box<Expression> ) -> DefineVariableStmImpl {
+        DefineVariableStmImpl{name , value}
     }
 }
