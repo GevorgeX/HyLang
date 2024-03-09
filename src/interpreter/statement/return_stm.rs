@@ -6,7 +6,7 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct ReturnStm{
-    value: Box<dyn Expression>
+    value: Box<Expression>
 }
 
 impl Statement for ReturnStm{
@@ -19,7 +19,7 @@ impl Statement for ReturnStm{
 }
 
 impl ReturnStm {
-    pub fn new(value: Box<dyn Expression>)->ReturnStm {
+    pub fn new(value: Box<Expression>)->ReturnStm {
         ReturnStm{value}
     }
 }

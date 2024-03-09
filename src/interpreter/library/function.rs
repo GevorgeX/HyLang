@@ -14,7 +14,7 @@ pub struct Function{
 
 
 impl Function {
-    pub fn call(&self, arguments: Vec<Box<dyn Expression>> , context: Rc<Context>)-> Result<ReferenceToObject, Exception> {
+    pub fn call(&self, arguments: Vec<Box<Expression>> , context: Rc<Context>)-> Result<ReferenceToObject, Exception> {
         let cur_context = LocalContext::new(Some(Rc::downgrade(&self.define_context)));
 
         if self.args.len() != arguments.len() {

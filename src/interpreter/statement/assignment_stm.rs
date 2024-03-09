@@ -5,7 +5,7 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 #[derive(Clone)]
 pub struct AssignmentStm{
     name: String,
-    value: Box<dyn Expression>,
+    value: Box<Expression>,
 }
 
 impl super::Statement for AssignmentStm {
@@ -22,7 +22,7 @@ impl super::Statement for AssignmentStm {
 }
 
 impl AssignmentStm {
-    pub fn new( name: String,value :Box<dyn Expression> ) -> AssignmentStm {
+    pub fn new( name: String,value :Box<Expression> ) -> AssignmentStm {
         AssignmentStm{name , value}
     }
 }

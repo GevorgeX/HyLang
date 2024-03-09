@@ -5,7 +5,7 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 #[derive(Clone)]
 pub struct FunctionCallStm{
     name: String,
-    arguments: Vec<Box<dyn Expression> >,
+    arguments: Vec<Box<Expression> >,
 }
 
 impl super::Statement for FunctionCallStm {
@@ -27,7 +27,7 @@ impl super::Statement for FunctionCallStm {
 }
 
 impl FunctionCallStm {
-    pub fn new( name: String,arguments: Vec<Box<dyn Expression>> ) -> FunctionCallStm {
+    pub fn new( name: String,arguments: Vec<Box<Expression>> ) -> FunctionCallStm {
         FunctionCallStm{name, arguments}
     }
 }

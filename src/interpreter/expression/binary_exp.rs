@@ -3,16 +3,16 @@ use std::rc::Rc;
 use crate::interpreter::library::{exception::Exception, object::ReferenceToObject, object_utils::arithmetical, Context};
 
 use super::{Expression, OperationType};
-
 #[derive(Clone)]
-pub struct BinaryExp{
-    left: Box<dyn Expression>,
-    right: Box<dyn Expression>,
+
+pub struct BinaryExpImpl{
+    left: Box<Expression>,
+    right: Box<Expression>,
     op: OperationType
 }
 
-impl super::Expression for BinaryExp {
-    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+impl BinaryExpImpl {
+    pub fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let left = match self.left.evaluate(context.clone()){
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -32,11 +32,8 @@ impl super::Expression for BinaryExp {
             _ => panic!("Cant use this operator")
         }
     }
-}
 
-impl BinaryExp {
-    pub fn new(left:Box<dyn Expression> , right:Box<dyn Expression>, op:OperationType) -> BinaryExp {
-        BinaryExp{left, right , op}
+    pub fn new(left: Box<Expression>,right: Box<Expression>,op: OperationType) ->Self{
+        Self{left ,right ,op}
     }
 }
-

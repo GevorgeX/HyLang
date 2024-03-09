@@ -10,13 +10,12 @@ mod functional_call_exp;
 
 use std::rc::Rc;
 
-use crate::interpreter::library::object::ReferenceToObject;
-use super::{library::{exception::Exception, Context}, Interpreter};
+use super::{library::{exception::Exception, object::ReferenceToObject, Context}, Interpreter};
 use crate::lexer::token::Token;
 
 
 use self::{
-    array_exp::ArrayExp, binary_exp::BinaryExp, boolean_exp::BooleanExp, char_exp::CharExp, conditional_exp::ConditionalExp, functional_call_exp::FunctionCallExp, number_exp::NumberExp, unary_exp::UnaryExp, value_exp::ValueExp
+    array_exp::ArrayExpImpl, binary_exp::BinaryExpImpl, boolean_exp::BooleanExpImpl, char_exp::CharExpImpl, conditional_exp::ConditionalExpImpl, functional_call_exp::FunctionCallExpImpl, number_exp::NumberExpImpl, unary_exp::UnaryExpImpl, value_exp::ValueExpImpl
 };
 #[derive(Clone)]
 pub enum OperationType {
@@ -36,16 +35,39 @@ pub enum OperationType {
     Remain,
 }
 
-dyn_clone::clone_trait_object!(Expression);
-pub trait Expression : dyn_clone::DynClone{
-    fn evaluate(&self , context:Rc<Context>) -> Result<ReferenceToObject,Exception>;
+#[derive(Clone)]
+pub enum  Expression{
+    ArrayExp(ArrayExpImpl),
+    BinaryExp(BinaryExpImpl),
+    BooleanExp(BooleanExpImpl),
+    CharExp(CharExpImpl),
+    ConditionalExp(ConditionalExpImpl),
+    FunctionCallExp(FunctionCallExpImpl),
+    NumberExp(NumberExpImpl),
+    UnaryExp(UnaryExpImpl),
+    ValueExp(ValueExpImpl)
+    }
+impl Expression {
+    pub fn evaluate(&self , context:Rc<Context>) -> Result<ReferenceToObject,Exception>{
+        match self {
+            Expression::ArrayExp(o) => o.evaluate(context),
+            Expression::BinaryExp(o) => o.evaluate(context),
+            Expression::BooleanExp(o) => o.evaluate(),
+            Expression::CharExp(o) => o.evaluate(),
+            Expression::ConditionalExp(o) => o.evaluate(context),
+            Expression::FunctionCallExp(o) => o.evaluate(context),
+            Expression::NumberExp(o) => o.evaluate(context),
+            Expression::UnaryExp(o) => o.evaluate(context),
+            Expression::ValueExp(o) => o.evaluate(context),
+        }
+    }
 }
 
 impl Interpreter {
-    pub fn expression(&self)-> Result<Box<dyn Expression>,Exception> {
+    pub fn expression(&self)-> Result<Box<Expression>,Exception> {
         self.conditional()
     }
-    fn conditional(&self) -> Result<Box<dyn Expression>,Exception> {
+    fn conditional(&self) -> Result<Box<Expression>,Exception> {
         let mut res = match self.additive(){
             Ok(un) => un,
             Err(e) => return Err(e),
@@ -59,7 +81,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::And));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::And)));
                         }
                         else{
                             return add;
@@ -69,7 +91,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::Or));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::Or)));
                         }
                         else{
                             return add;
@@ -79,7 +101,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::DoubleEqual));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::DoubleEqual)));
                         }
                         else{
                             return add;
@@ -89,7 +111,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::More));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::More)));
                         }
                         else{
                             return add;
@@ -99,7 +121,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::MoreOrEq));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::MoreOrEq)));
                         }
                         else{
                             return add;
@@ -109,7 +131,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::Less));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::Less)));
                         }
                         else{
                             return add;
@@ -119,7 +141,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::LessOrEq));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::LessOrEq)));
                         }
                         else{
                             return add;
@@ -129,7 +151,7 @@ impl Interpreter {
                         self.next_token();
                         let add = self.additive();
                         if let Result::Ok(add) = add{
-                            res = Box::new(ConditionalExp::new(res, add, OperationType::NotEqual));
+                            res = Box::new(Expression::ConditionalExp(ConditionalExpImpl::new(res, add, OperationType::NotEqual)));
                         }
                         else{
                             return add;
@@ -145,8 +167,8 @@ impl Interpreter {
         }
         return Ok(res)
     }
-    fn additive(&self)-> Result<Box<dyn Expression>,Exception> {
-        let mut res: Box<dyn Expression> = match self.multiplicative(){
+    fn additive(&self)-> Result<Box<Expression>,Exception> {
+        let mut res = match self.multiplicative(){
             Ok(mult) => mult,
             Err(e) => return Err(e),
         };
@@ -160,7 +182,7 @@ impl Interpreter {
                         self.next_token();
                         let mult = self.multiplicative();
                         if let Result::Ok(mult) = mult{
-                            res = Box::new(BinaryExp::new(res, mult, OperationType::Plus));
+                            res = Box::new(Expression::BinaryExp(BinaryExpImpl::new(res, mult, OperationType::Plus)));
                         }
                         else{
                             return mult;
@@ -170,7 +192,7 @@ impl Interpreter {
                         self.next_token();
                         let mult = self.multiplicative();
                         if let Result::Ok(mult) = mult{
-                            res = Box::new(BinaryExp::new(res, mult, OperationType::Minus));
+                            res = Box::new(Expression::BinaryExp(BinaryExpImpl::new(res, mult, OperationType::Minus)));
                         }
                         else{
                             return mult;
@@ -186,7 +208,7 @@ impl Interpreter {
     
         Ok(res)
     }
-    fn multiplicative(&self ,)-> Result<Box<dyn Expression>,Exception> {
+    fn multiplicative(&self ,)-> Result<Box<Expression>,Exception> {
         let mut res = match self.unary(){
             Ok(un) => un,
             Err(e) => return Err(e),
@@ -200,7 +222,7 @@ impl Interpreter {
                         self.next_token();
                         let un = self.unary();
                         if let Result::Ok(un) = un{
-                            res = Box::new(BinaryExp::new(res, un, OperationType::Multi));
+                            res = Box::new(Expression::BinaryExp(BinaryExpImpl::new(res, un, OperationType::Multi)));
                         }
                         else{
                             return un;
@@ -210,7 +232,7 @@ impl Interpreter {
                         self.next_token();
                         let un = self.unary();
                         if let Result::Ok(un) = un{
-                            res = Box::new(BinaryExp::new(res, un, OperationType::Divide));
+                            res = Box::new(Expression::BinaryExp(BinaryExpImpl::new(res, un, OperationType::Divide)));
                         }
                         else{
                             return un;
@@ -220,7 +242,7 @@ impl Interpreter {
                         self.next_token();
                         let un = self.unary();
                         if let Result::Ok(un) = un{
-                            res = Box::new(BinaryExp::new(res, un, OperationType::Remain));
+                            res = Box::new(Expression::BinaryExp(BinaryExpImpl::new(res, un, OperationType::Remain)));
                         }
                         else{
                             return un;
@@ -237,47 +259,48 @@ impl Interpreter {
         return Ok(res)
     
     }
-    fn unary(&self )-> Result <Box<dyn Expression>,Exception> {
+    fn unary(&self )-> Result <Box<Expression>,Exception> {
         
         let token = self.get_token();
         
         match token {
             Token::Plus => {
                 self.next_token();
-                return self.primary()
+                self.primary()
             },
             Token::Minus => {
                 self.next_token();
                 let res = self.primary();
                 if let Result::Ok(res) = res{
-                    return Ok(Box::new(UnaryExp::new(res, OperationType::Minus)))
+                     Ok(Box::new(Expression::UnaryExp(UnaryExpImpl::new(res, OperationType::Minus))))
                 }
                 else{
-                    return res;
+                    res
                 }
             },
             Token::Not =>{
                 self.next_token();
                 let res = self.primary();
                 if let Result::Ok(res) = res{
-                    return Ok(Box::new(UnaryExp::new(res, OperationType::Not)))
+                    Ok(Box::new(Expression::UnaryExp(UnaryExpImpl::new(res, OperationType::Not))))
                 }
                 else{
-                    return res;
-                }            }
+                    res
+                }          
+            }
             _ => self.primary()
         }
     }
-    fn primary(&self)->Result<Box<dyn Expression>,Exception> { 
+    fn primary(&self)->Result<Box<Expression>,Exception> { 
         let token = self.get_token();
         match token {
             Token::Number(num) => {
                 self.next_token();
-                return Ok(Box::new(NumberExp::new(*num)))
+                Ok(Box::new(Expression::NumberExp(NumberExpImpl::new(*num))))
             },
             Token::TrueFalse(val) =>{
                 self.next_token();
-                return  Ok(Box::new(BooleanExp::new(*val )));
+                Ok(Box::new(Expression::BooleanExp(BooleanExpImpl::new(*val ))))
             }
             Token::LeftParenthesis =>{
                 self.next_token();
@@ -296,7 +319,7 @@ impl Interpreter {
                     if let Err(e) = self.require_token(Token::Apostr){
                         return Err(e);
                     }
-                    return Ok(Box::new(CharExp::new(word.clone())))
+                    Ok(Box::new(Expression::CharExp(CharExpImpl::new(word.clone()))))
                     
                 }
                 else{
@@ -324,8 +347,7 @@ impl Interpreter {
                 }
                 
                 self.next_token();
-                
-                return Ok(Box::new(ArrayExp::new(exps)));
+                Ok(Box::new(Expression::ArrayExp(ArrayExpImpl::new(exps))))
             },
             Token::Word(word)=>{
                 self.next_token();
@@ -333,12 +355,12 @@ impl Interpreter {
                     self.next_token();
                     return self.function_call_with_return_value(word.clone())
                 }
-                return Ok(Box::new(ValueExp::new(word.clone())));
+                Ok(Box::new(Expression::ValueExp(ValueExpImpl::new(word.clone()))))
             },
             _ => Err(Exception::unknow_word())
         }
     }
-    fn function_call_with_return_value(&self, name:String) ->Result<Box<dyn Expression>,Exception> {
+    fn function_call_with_return_value(&self, name:String) ->Result<Box<Expression>,Exception> {
         let mut args = vec![];   
         while Token::RightParenthesis !=  *self.get_token() {
                 
@@ -357,6 +379,6 @@ impl Interpreter {
         }
         self.next_token();
 
-        Ok(Box::new(FunctionCallExp::new(name, args)))
+        Ok(Box::new(Expression::FunctionCallExp(FunctionCallExpImpl::new(name, args))))
     }
 }

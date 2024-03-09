@@ -5,7 +5,7 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 #[derive(Clone)]
 pub struct DefineVariableStm{
     name: String,
-    value: Box<dyn Expression>,
+    value: Box<Expression>,
 }
 
 impl super::Statement for DefineVariableStm {
@@ -24,7 +24,7 @@ impl super::Statement for DefineVariableStm {
 }
 
 impl DefineVariableStm {
-    pub fn new( name: String,value :Box<dyn Expression> ) -> DefineVariableStm {
+    pub fn new( name: String,value :Box<Expression> ) -> DefineVariableStm {
         DefineVariableStm{name , value}
     }
 }

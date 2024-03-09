@@ -4,7 +4,7 @@ use crate::lexer::token::Token;
 
 use self::return_stm::ReturnStm;
 
-use super::expression::{binary_exp, value_exp, OperationType};
+use super::expression::{binary_exp, value_exp, Expression, OperationType};
 use super::library::exception::Exception;
 use super::library::Context;
 use super::task::Task;
@@ -208,11 +208,11 @@ impl Interpreter {
             Err(e) => return Err(e),
         };
         
-        let val = Box::new(binary_exp::BinaryExp::new(
-            Box::new(value_exp::ValueExp::new(word.clone())),
+        let val = Box::new(Expression::BinaryExp(binary_exp::BinaryExpImpl::new(
+            Box::new(Expression::ValueExp(value_exp::ValueExpImpl::new(word.clone()))),
             right,
             op
-         ));
+         )));
 
         Ok(Box::new(AssignmentStm::new(word.clone(), val) ))
     }

@@ -4,7 +4,7 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 
 #[derive(Clone)]
 pub struct PrintStm{
-    value: Box<dyn Expression>,
+    value: Box<Expression>,
     
 }
 
@@ -17,7 +17,7 @@ impl super::Statement for PrintStm {
 }
 
 impl PrintStm {
-    pub fn new(value :Box<dyn Expression> ) -> PrintStm {
+    pub fn new(value :Box<Expression> ) -> PrintStm {
         PrintStm{ value }
     }
 }

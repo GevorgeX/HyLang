@@ -6,7 +6,7 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct IfElseStm{
-    condition: Box<dyn Expression>,
+    condition: Box<Expression>,
     if_statement: Box<dyn Statement>,
     else_statement: Option<Box<dyn Statement>>
 }
@@ -46,7 +46,7 @@ impl Statement for IfElseStm {
 }
 
 impl IfElseStm {
-    pub fn new(condition: Box<dyn Expression>,
+    pub fn new(condition: Box<Expression>,
         if_statement: Box<dyn Statement>,
         else_statement: Option<Box<dyn Statement>>) -> IfElseStm {
         

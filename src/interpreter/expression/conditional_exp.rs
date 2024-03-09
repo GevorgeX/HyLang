@@ -6,16 +6,16 @@ use crate::interpreter::library::object::ReferenceToObject;
 use crate::interpreter::library::Context;
 
 use super::{Expression, OperationType};
-
 #[derive(Clone)]
-pub struct ConditionalExp{
-    left: Box<dyn Expression>,
-    right: Box<dyn Expression>,
+
+pub struct ConditionalExpImpl{
+    left: Box< Expression>,
+    right: Box< Expression>,
     op: OperationType
 }
 
-impl super::Expression for ConditionalExp {
-    fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
+impl  ConditionalExpImpl {
+    pub fn evaluate(&self,context:Rc<Context>) -> Result<ReferenceToObject,Exception> {
         let left = match self.left.evaluate(context.clone()){
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -37,11 +37,7 @@ impl super::Expression for ConditionalExp {
             _ => panic!("Cant use this operator")
         }
     }
-}
-
-impl ConditionalExp {
-    pub fn new(left:Box<dyn Expression> , right:Box<dyn Expression>, op:OperationType) -> ConditionalExp {
-        ConditionalExp{left, right , op}
+    pub fn new(left: Box<Expression>,right: Box<Expression>,op: OperationType) ->Self{
+        Self{left ,right ,op}
     }
 }
-

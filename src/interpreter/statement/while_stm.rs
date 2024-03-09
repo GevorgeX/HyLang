@@ -6,7 +6,7 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct WhileStm{
-    condition: Box<dyn Expression>,
+    condition: Box<Expression>,
     while_statement: Box<dyn Statement>,
 }
 
@@ -41,7 +41,7 @@ impl Statement for WhileStm {
 }
 
 impl WhileStm {
-    pub fn new(condition: Box<dyn Expression>,
+    pub fn new(condition: Box<Expression>,
         while_statement: Box<dyn Statement>,) -> WhileStm {
         
             WhileStm{condition, while_statement}

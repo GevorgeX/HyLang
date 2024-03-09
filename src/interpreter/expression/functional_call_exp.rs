@@ -1,15 +1,15 @@
 use std::rc::Rc;
 
-use crate::interpreter::{expression::Expression, library::{exception::Exception, object::{self, ReferenceToObject}, Context}, task::Task};
+use crate::interpreter::{expression::Expression, library::{exception::Exception, object::{self, ReferenceToObject}, Context}};
 
 #[derive(Clone)]
-pub struct FunctionCallExp{
+pub struct FunctionCallExpImpl{
     name: String,
-    arguments: Vec<Box<dyn Expression>>,
+    arguments: Vec<Box<Expression>>,
 }
 
-impl super::Expression for FunctionCallExp {
-    fn evaluate(&self, context: Rc<Context>) -> Result<ReferenceToObject, Exception>{
+impl FunctionCallExpImpl {
+    pub fn evaluate(&self, context: Rc<Context>) -> Result<ReferenceToObject, Exception>{
         let obj = match context.get_object(&self.name) {
             Ok(o) => o,
             Err(e) => return Err(e),
@@ -23,10 +23,7 @@ impl super::Expression for FunctionCallExp {
             _ => Err(Exception::is_not_func(self.name.clone()))
         }
     }
-}
-
-impl FunctionCallExp {
-    pub fn new( name: String,arguments: Vec<Box<dyn Expression>> ) -> FunctionCallExp {
-        FunctionCallExp{name, arguments}
+    pub fn new(name: String,arguments: Vec<Box<Expression>>,) ->Self{
+        Self{name ,arguments}
     }
 }
