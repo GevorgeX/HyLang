@@ -2,6 +2,7 @@ mod expression;
 mod statement;
 mod library;
 mod task;
+mod node;
 
 use std::{cell::RefCell, rc::Rc};
 
@@ -44,7 +45,7 @@ impl Interpreter {
         }
     }
     pub fn parse_code(&self) -> Result<Box<Statement>,Exception> {
-        let res = BlockStmImpl::new() ;
+        let mut res = BlockStmImpl::new() ;
         loop {
             match self.get_token() {
                 Token::EOF => {
@@ -71,6 +72,8 @@ impl Interpreter {
                 return;
             },
         };
+
+        self::node::print_tree(&*parse_code, "".to_string(), true);
         match parse_code.interpret(self.main_context.clone()){
             Ok(_) => (),
             Err(e) => {

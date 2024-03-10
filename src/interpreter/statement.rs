@@ -163,7 +163,7 @@ impl Interpreter {
         Ok(Box::new(Statement::WhileStm(WhileStmImpl::new(condition, while_statements))))
     }
     fn block(&self) -> Result<Box<Statement>,Exception>{
-        let res = BlockStmImpl::new( );
+        let mut res = BlockStmImpl::new( );
         if let Err(e) = self.require_token(Token::LeftBrace){
             return Err(e);
         }

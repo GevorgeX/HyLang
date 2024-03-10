@@ -6,9 +6,9 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct DefineFunctionStmImpl{
-    name: String,
-    body: Box<Statement>,
-    args: Vec<String>
+    pub name: String,
+    pub body: Box<Statement>,
+    pub args: Vec<String>
 }
 
 impl  DefineFunctionStmImpl {

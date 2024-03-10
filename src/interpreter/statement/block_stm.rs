@@ -6,12 +6,12 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct BlockStmImpl{
-    statements: RefCell<Vec<Box<Statement>>>,
+    pub statements: Vec<Box<Statement>>,
 }
 
 impl  BlockStmImpl {
     pub fn interpret(&self,context:Rc<Context>)-> Result<Task, Exception> {
-        for stm in self.statements.borrow().iter(){
+        for stm in self.statements.iter(){
             let res = stm.interpret(context.clone());
 
             match res {
@@ -25,11 +25,9 @@ impl  BlockStmImpl {
         Ok(Task::Default)
     }
     pub fn new() -> BlockStmImpl{
-        BlockStmImpl{
-            statements : RefCell::new(vec![]),
-         }
+        BlockStmImpl{statements : vec![]}
     }
-    pub fn add(&self , statement: Box<Statement> ){
-        self.statements.borrow_mut().push(statement);
+    pub fn add(&mut self , statement: Box<Statement> ){
+        self.statements.push(statement);
     }
 }

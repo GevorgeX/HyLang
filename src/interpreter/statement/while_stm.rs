@@ -6,8 +6,8 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct WhileStmImpl{
-    condition: Box<Expression>,
-    while_statement: Box<Statement>,
+    pub condition: Box<Expression>,
+    pub while_statement: Box<Statement>,
 }
 
 

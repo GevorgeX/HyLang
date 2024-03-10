@@ -4,7 +4,7 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 
 #[derive(Clone)]
 pub struct PrintStmImpl{
-    value: Box<Expression>,
+    pub value: Box<Expression>,
     
 }
 

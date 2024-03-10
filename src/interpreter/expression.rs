@@ -34,7 +34,26 @@ pub enum OperationType {
     Not,
     Remain,
 }
-
+impl OperationType {
+    pub fn to_string(&self) -> String{
+        match self {
+            OperationType::Plus => "+".to_string(),
+            OperationType::Minus => "-".to_string(),
+            OperationType::Multi => "*".to_string(),
+            OperationType::Divide => "/".to_string(),
+            OperationType::And => "&&".to_string(),
+            OperationType::Or => "||".to_string(),
+            OperationType::More => ">".to_string(),
+            OperationType::Less =>"<+>".to_string(),
+            OperationType::MoreOrEq =>">=".to_string(),
+            OperationType::LessOrEq => "<=>".to_string(),
+            OperationType::DoubleEqual => "==".to_string(),
+            OperationType::NotEqual => "!=".to_string(),
+            OperationType::Not => "!".to_string(),
+            OperationType::Remain => "%".to_string(),
+        }
+    }
+}
 #[derive(Clone)]
 pub enum  Expression{
     ArrayExp(ArrayExpImpl),

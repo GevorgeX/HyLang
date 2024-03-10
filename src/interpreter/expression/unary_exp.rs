@@ -9,8 +9,8 @@ use super::{Expression, OperationType};
 #[derive(Clone)]
 
 pub struct UnaryExpImpl{
-    value: Box<Expression>,
-    op: OperationType
+    pub value: Box<Expression>,
+    pub op: OperationType
 }
 
 impl UnaryExpImpl {

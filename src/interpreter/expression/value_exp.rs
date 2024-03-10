@@ -4,7 +4,7 @@ use crate::interpreter::library::{exception::Exception, object::ReferenceToObjec
 #[derive(Clone)]
 
 pub struct ValueExpImpl{
-    name: String,
+    pub name: String,
 }
 
 impl ValueExpImpl {

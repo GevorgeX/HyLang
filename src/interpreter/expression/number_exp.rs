@@ -6,7 +6,7 @@ use crate::interpreter::library::object::{create_object, Object, ReferenceToObje
 #[derive(Clone)]
 
 pub struct NumberExpImpl{
-    value: i32,
+    pub value: i32,
 }
 
 impl NumberExpImpl {

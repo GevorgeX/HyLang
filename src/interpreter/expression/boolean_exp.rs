@@ -3,7 +3,7 @@ use crate::interpreter::library::object::{create_object, Object, ReferenceToObje
 #[derive(Clone)]
 
 pub struct BooleanExpImpl {
-    value: bool,
+    pub value: bool,
 }
 
 impl  BooleanExpImpl {

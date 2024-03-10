@@ -6,9 +6,9 @@ use super::Statement;
 
 #[derive(Clone)]
 pub struct IfElseStmImpl{
-    condition: Box<Expression>,
-    if_statement: Box< Statement>,
-    else_statement: Option<Box<Statement>>
+    pub condition: Box<Expression>,
+    pub if_statement: Box< Statement>,
+    pub else_statement: Option<Box<Statement>>
 }
 
 

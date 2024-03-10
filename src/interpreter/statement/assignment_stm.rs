@@ -4,8 +4,8 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 
 #[derive(Clone)]
 pub struct AssignmentStmImpl{
-    name: String,
-    value: Box<Expression>,
+    pub name: String,
+    pub value: Box<Expression>,
 }
 
 impl  AssignmentStmImpl {

@@ -4,8 +4,8 @@ use crate::interpreter::{expression::Expression, library::{exception::Exception,
 
 #[derive(Clone)]
 pub struct FunctionCallStmImpl{
-    name: String,
-    arguments: Vec<Box<Expression> >,
+    pub name: String,
+    pub arguments: Vec<Box<Expression> >,
 }
 
 impl  FunctionCallStmImpl {

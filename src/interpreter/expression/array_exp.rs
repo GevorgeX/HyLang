@@ -1,3 +1,4 @@
+use core::fmt;
 use std::rc::Rc;
 
 use crate::interpreter::library::exception::Exception;
@@ -8,7 +9,7 @@ use super::Expression;
 #[derive(Clone)]
 
 pub struct ArrayExpImpl{
-    value: Vec<Box<Expression>>,
+    pub value: Vec<Box<Expression>>,
 }
 
 impl ArrayExpImpl {
@@ -26,7 +27,6 @@ impl ArrayExpImpl {
 
         Ok(array)
     }
-
     pub fn new(value:Vec<Box<Expression>>) ->Self{
         Self{value}
     }

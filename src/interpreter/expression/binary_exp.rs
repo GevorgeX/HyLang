@@ -6,9 +6,9 @@ use super::{Expression, OperationType};
 #[derive(Clone)]
 
 pub struct BinaryExpImpl{
-    left: Box<Expression>,
-    right: Box<Expression>,
-    op: OperationType
+    pub left: Box<Expression>,
+    pub right: Box<Expression>,
+    pub op: OperationType
 }
 
 impl BinaryExpImpl {
