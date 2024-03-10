@@ -2,6 +2,7 @@ use std::rc::Rc;
 
 use crate::lexer::token::Token;
 
+use self::empty_stm::EmptyStmImpl;
 use self::return_stm::ReturnStmImpl;
 
 use super::expression::{binary_exp, value_exp, Expression, OperationType};
@@ -20,6 +21,7 @@ mod continue_stm;
 mod define_function_stm;
 mod function_call_stm;
 mod return_stm;
+mod empty_stm;
 
 // !!! TEMP
 mod print_stm; use print_stm::PrintStmImpl;
@@ -46,7 +48,8 @@ pub enum Statement {
     IfElseStm(IfElseStmImpl),
     PRINTSTM(PrintStmImpl),
     ReturnStm(ReturnStmImpl),
-    WhileStm(WhileStmImpl)
+    WhileStm(WhileStmImpl),
+    EmptyStm(EmptyStmImpl)
 }  
 
 impl Statement {   
@@ -63,6 +66,7 @@ impl Statement {
             Statement::PRINTSTM(o) => o.interpret(context),
             Statement::ReturnStm(o) => o.interpret(context),
             Statement::WhileStm(o) => o.interpret(context),
+            Statement::EmptyStm(o) => o.interpret(context),
         }
     }
 }
@@ -79,12 +83,12 @@ impl Interpreter {
                 return self.define_variable();
                 
             },
-            Token::LeftBrace =>{
-                return self.block();
-            }
             Token::While =>{
                 self.next_token();
                 return  self.while_stm();
+            }
+            Token::LeftBrace =>{
+                self.empty()
             }
             Token::Word(word)=>{
                 self.next_token();
@@ -161,6 +165,13 @@ impl Interpreter {
         };
 
         Ok(Box::new(Statement::WhileStm(WhileStmImpl::new(condition, while_statements))))
+    }
+    fn empty(&self)-> Result<Box<Statement>,Exception>{
+        let block = match self.block() {
+            Ok(o) => o,
+            Err(e) => return Err(e),
+        };
+        Ok(Box::new(Statement::EmptyStm(EmptyStmImpl::new(block))))
     }
     fn block(&self) -> Result<Box<Statement>,Exception>{
         let mut res = BlockStmImpl::new( );

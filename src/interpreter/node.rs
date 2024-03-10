@@ -110,27 +110,28 @@ impl Node for Statement {
             },
             Statement::FunctionCallStm(o) => &*o.arguments[index],
             Statement::IfElseStm(o) => match index {
-                0 => (&*o.condition),
-                1 => (&*o.if_statement),
+                0 => &*o.condition,
+                1 => &*o.if_statement,
                 2 => match &o.else_statement {
-                    Some(o) => (&**o),
+                    Some(o) => &**o,
                     None => todo!(),
                 },
                 _ => todo!()
             },
             Statement::PRINTSTM(o) => match index {
-                0 => (&*o.value),
+                0 => &*o.value,
                 _ => todo!()
             },
             Statement::ReturnStm(o) => match index {
-                0 => (&*o.value),
+                0 => &*o.value,
                 _ => todo!()
             },
             Statement::WhileStm(o) => match index {
-                0 => (&*o.condition),
-                1 => (&*o.while_statement),
+                0 => &*o.condition,
+                1 => &*o.while_statement,
                 _ => todo!()
             },
+            Statement::EmptyStm(o) => &*o.body,
         }  
     }
 
@@ -150,6 +151,7 @@ impl Node for Statement {
             Statement::PRINTSTM(_) =>  1,
             Statement::ReturnStm(_) =>  1,
             Statement::WhileStm(_) => 2,
+            Statement::EmptyStm(_) => 1,
         }    
     }
 
@@ -166,6 +168,7 @@ impl Node for Statement {
             Statement::PRINTSTM(_) =>  "PRINTSTM".to_string(),
             Statement::ReturnStm(_) =>  "ReturnStm".to_string(),
             Statement::WhileStm(_) => "WhileStm".to_string(),
+            Statement::EmptyStm(_) => "EmptyStm".to_string(),
         }
     }
 }
