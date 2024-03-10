@@ -18,10 +18,7 @@ pub fn print_tree(tree:&dyn Node, mut indent:String, last:bool){
 impl Node for Expression {
     fn get_child(&self , index:usize) -> &dyn Node {
         match self {
-            Expression::ArrayExp(_) => match index {
-                0 => todo!(),
-                _=> todo!()
-            } ,
+            Expression::ArrayExp(o) => &*o.value[index],
             Expression::BinaryExp(o) => match index {
                 0 => &*o.left,
                 1 => &*o.right,
@@ -55,7 +52,7 @@ impl Node for Expression {
 
     fn size(&self) -> usize {
         match self {
-            Expression::ArrayExp(_) => 0 ,
+            Expression::ArrayExp(o) => o.value.len() ,
             Expression::BinaryExp(_) => 2,
             Expression::BooleanExp(_) => 0,
             Expression::CharExp(_) => 0,

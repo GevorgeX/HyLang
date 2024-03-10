@@ -1,4 +1,3 @@
-use core::fmt;
 use std::rc::Rc;
 
 use crate::interpreter::library::exception::Exception;
@@ -27,7 +26,10 @@ impl ArrayExpImpl {
 
         Ok(array)
     }
-    pub fn new(value:Vec<Box<Expression>>) ->Self{
-        Self{value}
+    pub fn push(&mut self, exp:Box<Expression>){
+        self.value.push(exp);
+    }
+    pub fn new() ->Self{
+        Self{value:vec![]}
     }
 }

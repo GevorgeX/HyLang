@@ -348,7 +348,7 @@ impl Interpreter {
             },
             Token::LeftSquareBrace =>{
                 self.next_token();
-                let mut exps = vec![];
+                let mut exps = ArrayExpImpl::new();
                 while *self.get_token() != Token::RightSquareBrace {
                     let exp = self.expression();
                     if let Result::Ok(res) = exp {
@@ -366,7 +366,7 @@ impl Interpreter {
                 }
                 
                 self.next_token();
-                Ok(Box::new(Expression::ArrayExp(ArrayExpImpl::new(exps))))
+                Ok(Box::new(Expression::ArrayExp(exps)))
             },
             Token::Word(word)=>{
                 self.next_token();
