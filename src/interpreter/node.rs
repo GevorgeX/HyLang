@@ -35,10 +35,7 @@ impl Node for Expression {
                 1 => &*o.right,
                 _=> todo!()
             } ,
-            Expression::FunctionCallExp(_) => match index {
-                0 => todo!(),
-                _=> todo!()
-            } ,
+            Expression::FunctionCallExp(o) => &*o.arguments[index],
             Expression::NumberExp(_) => match index {
                 _=> todo!()
             } ,
@@ -140,7 +137,7 @@ impl Node for Statement {
             Statement::ContinueStm(_) =>  0,
             Statement::DefineFunctionStm(_) =>  1,
             Statement::DefineVariableStm(_) =>  1,
-            Statement::FunctionCallStm(_) =>  0,
+            Statement::FunctionCallStm(o) =>  o.arguments.len(),
             Statement::IfElseStm(o) =>  match o.else_statement {
                 Some(_) => 3,
                 None => 2,
