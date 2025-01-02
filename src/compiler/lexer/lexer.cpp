@@ -41,18 +41,23 @@ std::string tokenTypeToString(TokenType type) {
     }
 }
 
+Token::Token(TokenType type, int start, int end, int line):type(type),start(start),end(end),line(line)
+{
+}
+
 std::ostream & operator<<(std::ostream &os, const Token &token) {
     os <<"{ "<<"type: "<<tokenTypeToString(token.type)<<" start: "<<token.start<<" end: "
     <<token.end<<" line: "<<token.line<<" }";
     return os;
 }
 
-bool Lexer::is_end() {
+bool Lexer::is_end() const
+{
     return index >= chars.size();
 }
 
-Token Lexer::make_token(TokenType type) {
-    return Token{type,start, index, line};
+Token Lexer::make_token(TokenType type) const {
+    return {type,start, index, line};
 }
 
 bool Lexer::match(char c) {
