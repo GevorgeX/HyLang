@@ -1,6 +1,9 @@
 add_executable(Compiler compiler.cpp
         lexer.cpp
-        lexer.h)
+        lexer.h
+        parser.cpp
+        parser.h
+)
 
 add_custom_command(
         TARGET Compiler POST_BUILD
