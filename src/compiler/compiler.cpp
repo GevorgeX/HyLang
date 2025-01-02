@@ -2,7 +2,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "lexer.h"
+#include "lexer/lexer.h"
 
 int main(int argc, char **argv) {
     std::ifstream file;

@@ -1,8 +1,8 @@
 add_executable(Compiler compiler.cpp
-        lexer.cpp
-        lexer.h
-        parser.cpp
-        parser.h
+        lexer/lexer.cpp
+        lexer/lexer.h
+        parser/parser.cpp
+        parser/parser.h
 )
 
 add_custom_command(
