@@ -1,13 +1,10 @@
 #ifndef PARSER_H
 #define PARSER_H
+#include <memory>
 #include <vector>
 
 #include "../ast/node.h"
 #include "../lexer/lexer.h"
-
-#include
-#include
-
 
 class Parser {
     int index;

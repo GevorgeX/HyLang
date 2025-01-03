@@ -4,10 +4,12 @@
 #include "../node.h"
 #include "../operations.h"
 
-struct UnaryExpNode {
+struct UnaryExpNode : Node {
     std::unique_ptr<Node> value;
     UnaryOperation opType;
     UnaryExpNode(std::unique_ptr<Node>, UnaryOperation);
+    void Accept(Visitor&) override;
+
 };
 
 #endif //UNARYEXPNODE_H

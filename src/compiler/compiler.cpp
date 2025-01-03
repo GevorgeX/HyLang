@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "lexer/lexer.h"
+#include "parser/parser.h"
 
 int main(int argc, char **argv) {
     std::ifstream file;
@@ -23,4 +24,8 @@ int main(int argc, char **argv) {
     for (auto token : tokens) {
         std::cout << token<< "\n";
     }
+
+    Parser parser(tokens, code);
+    auto t = parser.parse();
+
 }
