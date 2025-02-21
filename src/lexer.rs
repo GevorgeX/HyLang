@@ -8,6 +8,10 @@ pub struct Lexer {
     text: Vec<char>
 }
 
+static SYMBOLS:[char;6] = [
+    '(', ')','[',']', '{','}',
+    ];
+
 impl Lexer {
     pub fn new () -> Self {
         Lexer{
@@ -74,8 +78,15 @@ impl Lexer {
                 self.index += 1;
             }
             else if chr == ']'{
-                res.push(Token::new(TokenType::RightRBracket, self.index as u32, 1, self.line));
+                res.push(Token::new(TokenType::RightSBracket, self.index as u32, 1, self.line));
                 self.index += 1;
+            }
+            else if is_allowed_word(chr){
+                let name = self.parse_word();
+                res.push(name)
+            }
+            else{
+                panic!("Unknow symbol {}", self.index);
             }
         }
         res
@@ -104,4 +115,25 @@ impl Lexer {
 
         Token::new(TokenType::Number , start as u32, (self.index - start) as u32, self.line)
     }
+
+    fn parse_word(&mut self) -> Token {
+        let start = self.index;
+        let mut chr = self.text[self.index];
+        while chr.is_ascii_digit() || is_allowed_word(chr)  {
+            self.index += 1;
+            if !self.not_end(){
+                break;
+            }
+            chr = self.text[self.index];
+        }
+
+        Token::new(TokenType::Word , start as u32, (self.index - start) as u32, self.line)
+    }
+    
+}
+
+fn is_allowed_word(chr:char) -> bool{
+    chr.is_ascii_alphabetic() || 
+    chr == '_' || 
+    chr as u8 > 127 
 }

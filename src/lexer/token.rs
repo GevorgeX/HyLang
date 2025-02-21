@@ -13,6 +13,7 @@ pub enum TokenType{
     RightCBracket, // }
     LeftSBracket, // [
     RightSBracket, // ]
+    Word, //bla bla
 }
 
 #[derive(Debug)]
