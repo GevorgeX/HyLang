@@ -8,10 +8,6 @@ pub struct Lexer {
     text: Vec<char>
 }
 
-static SYMBOLS:[char;6] = [
-    '(', ')','[',']', '{','}',
-    ];
-
 impl Lexer {
     pub fn new () -> Self {
         Lexer{
