@@ -1,4 +1,5 @@
 mod lexer;
+mod parser;
 
 fn main() {
     let code = "1 + 3 եթե *(10/999) - 8 barev".to_string();

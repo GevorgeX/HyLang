@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum TokenType{
     Number, // 1 2 3
     Plus, // +
@@ -21,7 +21,7 @@ pub enum TokenType{
 
 #[derive(Debug)]
 pub struct Token{
-    token_type: TokenType,
+    pub token_type: TokenType,
     index: u32,
     len: u32,
     line: u32

@@ -1,6 +1,6 @@
 use token::{Token , TokenType};
 
-mod token;
+pub mod token;
 
 pub struct Lexer {
     index: usize,
