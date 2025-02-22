@@ -123,7 +123,15 @@ impl Lexer {
             chr = self.text[self.index];
         }
 
-        Token::new(TokenType::Word , start as u32, (self.index - start) as u32, self.line)
+        let word:String = self.text[start..self.index].iter().collect();
+        let token_type = match &*word {
+            "եթե" => TokenType::If,
+            "այլ" => TokenType::Else,
+            "ցիկլ" => TokenType::While,
+            _=> TokenType::Word
+        };
+
+        Token::new(token_type , start as u32, (self.index - start) as u32, self.line)
     }
     
 }
@@ -131,5 +139,5 @@ impl Lexer {
 fn is_allowed_word(chr:char) -> bool{
     chr.is_ascii_alphabetic() || 
     chr == '_' || 
-    chr as u8 > 127 
+    chr as u32 > 127 
 }

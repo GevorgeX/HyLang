@@ -14,6 +14,9 @@ pub enum TokenType{
     LeftSBracket, // [
     RightSBracket, // ]
     Word, //bla bla
+    If,
+    Else,
+    While,
 }
 
 #[derive(Debug)]
