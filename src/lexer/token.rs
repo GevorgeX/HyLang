@@ -22,13 +22,13 @@ pub enum TokenType{
 #[derive(Debug)]
 pub struct Token{
     token_type: TokenType,
-    index: u32,
-    len: u32,
-    line: u32
+    index: usize,
+    len: usize,
+    line: usize
 }
 
 impl Token {
-    pub fn new(token_type:TokenType, index: u32, len: u32, line: u32) -> Self{
+    pub fn new(token_type:TokenType, index: usize, len: usize, line: usize) -> Self{
         Self { token_type, index, len, line }
     }
 }

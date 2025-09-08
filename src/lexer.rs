@@ -1,10 +1,12 @@
 use token::{Token , TokenType};
+use crate::errors::lexer_errors::LexerError;
+use crate::errors::lexer_errors::LexerError::{InvalidNumber, UnexpectedCharacter};
 
 mod token;
 
 pub struct Lexer {
     index: usize,
-    line: u32,
+    line: usize,
     text: Vec<char>
 }
 
@@ -17,121 +19,124 @@ impl Lexer {
         }
     }
 
-    pub fn parse(&mut self,text:&String) -> Vec<Token>{
+    pub fn parse(&mut self,text:&String) ->Result<Vec<Token>, LexerError >{
         self.text = text.chars().collect();
         self.line = 1;
-        self.index = 0
-        ;
+        self.index = 0;
+
         let mut res = vec![];
 
-        while self.not_end(){
+        while let Some(&chr) = self.text.get(self.index){
             self.skip_space();
-
-            let chr = self.text[self.index];
 
             if chr == '\n'{
                 self.line += 1;
-                self.index += 1;
-            }
-            else if chr.is_ascii_digit(){
-                let num = self.parse_number();
-                res.push(num);
-            }
-            else if chr == '+'{
-                res.push(Token::new(TokenType::Plus, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '-'{
-                res.push(Token::new(TokenType::Minus, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '*'{
-                res.push(Token::new(TokenType::Star, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '/'{
-                res.push(Token::new(TokenType::Slash, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '('{
-                res.push(Token::new(TokenType::LeftRBracket, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == ')'{
-                res.push(Token::new(TokenType::RightRBracket, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '{'{
-                res.push(Token::new(TokenType::LeftCBracket, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '}'{
-                res.push(Token::new(TokenType::RightCBracket, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '['{
-                res.push(Token::new(TokenType::LeftSBracket, self.index as u32, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == ']'{
-                res.push(Token::new(TokenType::RightSBracket, self.index as u32, 1, self.line));
                 self.index += 1;
             }
             else if is_allowed_word(chr){
                 let name = self.parse_word();
                 res.push(name)
             }
+            else if chr.is_ascii_digit(){
+                let num = self.parse_number()?;
+                res.push(num);
+            }
+            else if chr == '+'{
+                res.push(Token::new(TokenType::Plus, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '-'{
+                res.push(Token::new(TokenType::Minus, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '*'{
+                res.push(Token::new(TokenType::Star, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '/'{
+                res.push(Token::new(TokenType::Slash, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '('{
+                res.push(Token::new(TokenType::LeftRBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == ')'{
+                res.push(Token::new(TokenType::RightRBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '{'{
+                res.push(Token::new(TokenType::LeftCBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '}'{
+                res.push(Token::new(TokenType::RightCBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == '['{
+                res.push(Token::new(TokenType::LeftSBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
+            else if chr == ']'{
+                res.push(Token::new(TokenType::RightSBracket, self.index, 1, self.line));
+                self.index += 1;
+            }
             else{
-                panic!("Unknow symbol {}", self.index);
+                return Err(UnexpectedCharacter {line: self.line, index: self.index});
             }
         }
-        res
-    }
-
-    fn not_end(&self) ->bool{
-        self.index < self.text.len()
+        Ok(res)
     }
 
     fn skip_space(&mut self) {
-        loop {
-            let chr = self.text[self.index];
+        while let Some(chr) = self.text.get(self.index) {
             match chr {
-                ' ' | '\t' => self.index +=1,
+                ' ' | '\t' | '\r' => self.index +=1,
                 _ => return
             }
         }
-        
     }
     
-    fn parse_number(&mut self) -> Token {
+    fn parse_number(&mut self) -> Result<Token, LexerError> {
         let start = self.index;
-        while self.not_end() && self.text[self.index].is_ascii_digit() {
-            self.index += 1;
+        while let Some(&chr) = self.text.get(self.index) {
+            if chr.is_ascii_digit(){
+                self.index += 1;
+            }
+            else{
+                break;
+            }
         }
 
-        Token::new(TokenType::Number , start as u32, (self.index - start) as u32, self.line)
+        if let Some(&chr) = self.text.get(self.index) {
+            if is_allowed_word(chr){
+                return Err(InvalidNumber{line: self.line,index: start, len: self.index - start});
+            }
+        }
+
+        Ok(Token::new(TokenType::Number, start, self.index - start, self.line))
     }
 
     fn parse_word(&mut self) -> Token {
         let start = self.index;
-        let mut chr = self.text[self.index];
-        while chr.is_ascii_digit() || is_allowed_word(chr)  {
-            self.index += 1;
-            if !self.not_end(){
+        while let Some(&chr) = self.text.get(self.index) {
+            if is_allowed_word(chr) || chr.is_ascii_digit(){
+                self.index += 1;
+            }
+            else{
                 break;
             }
-            chr = self.text[self.index];
         }
 
         let word:String = self.text[start..self.index].iter().collect();
         let token_type = match &*word {
-            "եթե" => TokenType::If,
-            "այլ" => TokenType::Else,
-            "ցիկլ" => TokenType::While,
+            "if" => TokenType::If,
+            "else" => TokenType::Else,
+            "while" => TokenType::While,
             _=> TokenType::Word
         };
 
-        Token::new(token_type , start as u32, (self.index - start) as u32, self.line)
+        Token::new(token_type , start, self.index - start, self.line)
     }
     
 }
