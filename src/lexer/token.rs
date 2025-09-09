@@ -13,10 +13,36 @@ pub enum TokenType{
     RightCBracket, // }
     LeftSBracket, // [
     RightSBracket, // ]
-    Word, //bla bla
+    Ident, //bla bla
     If,
     Else,
     While,
+    Function,
+    Struct,
+    Union,
+    Var,
+    Const,
+    Or,
+    And,
+    Not,
+    Percent,
+    Equal,
+    Less,
+    Greater,
+    Comma,
+    Tilde,
+    Colon,
+    Ampersand,
+    Pipe,
+    Caret,
+    Dot,
+    Namespace,
+    Use,
+    Return,
+    Break,
+    Continue,
+    True,
+    False,
 }
 
 #[derive(Debug)]

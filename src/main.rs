@@ -2,7 +2,7 @@ mod lexer;
 mod errors;
 
 fn main() {
-    let code = "1 + 3 if *(10/999) - 8barev".to_string();
+    let code = std::fs::read_to_string("code.hy").unwrap();
     let mut lex = lexer::Lexer::new();
 
     let res = lex.parse(&code);

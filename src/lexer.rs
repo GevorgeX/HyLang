@@ -23,78 +23,115 @@ impl Lexer {
         self.text = text.chars().collect();
         self.line = 1;
         self.index = 0;
-
         let mut res = vec![];
 
         while let Some(&chr) = self.text.get(self.index){
-            self.skip_space();
-
-            if chr == '\n'{
-                self.line += 1;
-                self.index += 1;
-            }
-            else if is_allowed_word(chr){
-                let name = self.parse_word();
-                res.push(name)
-            }
-            else if chr.is_ascii_digit(){
-                let num = self.parse_number()?;
-                res.push(num);
-            }
-            else if chr == '+'{
-                res.push(Token::new(TokenType::Plus, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '-'{
-                res.push(Token::new(TokenType::Minus, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '*'{
-                res.push(Token::new(TokenType::Star, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '/'{
-                res.push(Token::new(TokenType::Slash, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '('{
-                res.push(Token::new(TokenType::LeftRBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == ')'{
-                res.push(Token::new(TokenType::RightRBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '{'{
-                res.push(Token::new(TokenType::LeftCBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '}'{
-                res.push(Token::new(TokenType::RightCBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == '['{
-                res.push(Token::new(TokenType::LeftSBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else if chr == ']'{
-                res.push(Token::new(TokenType::RightSBracket, self.index, 1, self.line));
-                self.index += 1;
-            }
-            else{
-                return Err(UnexpectedCharacter {line: self.line, index: self.index});
+            match chr {
+                ' ' | '\t' | '\r' => self.index +=1,
+                '\n' => {
+                    self.line += 1;
+                    self.index += 1;
+                }
+                ident if Self::is_allowed_ident(ident) => {
+                    let name = self.parse_ident();
+                    res.push(name)
+                }
+                digit if digit.is_ascii_digit() => {
+                    let num = self.parse_number()?;
+                    res.push(num);
+                }
+                '+' => {
+                    res.push(Token::new(TokenType::Plus, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '-' => {
+                    res.push(Token::new(TokenType::Minus, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '*' => {
+                    res.push(Token::new(TokenType::Star, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '/' => {
+                    res.push(Token::new(TokenType::Slash, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '%' => {
+                    res.push(Token::new(TokenType::Percent, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '(' => {
+                    res.push(Token::new(TokenType::LeftRBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                ')' => {
+                    res.push(Token::new(TokenType::RightRBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '{' => {
+                    res.push(Token::new(TokenType::LeftCBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '}' => {
+                    res.push(Token::new(TokenType::RightCBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '[' => {
+                    res.push(Token::new(TokenType::LeftSBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                ']' => {
+                    res.push(Token::new(TokenType::RightSBracket, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '!' => {
+                    res.push(Token::new(TokenType::Not, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '=' => {
+                    res.push(Token::new(TokenType::Equal, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '<' => {
+                    res.push(Token::new(TokenType::Less, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '>' => {
+                    res.push(Token::new(TokenType::Greater, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                ',' => {
+                    res.push(Token::new(TokenType::Comma, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '~' => {
+                    res.push(Token::new(TokenType::Tilde, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                ':' => {
+                    res.push(Token::new(TokenType::Colon, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '&' => {
+                    res.push(Token::new(TokenType::Ampersand, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '|' => {
+                    res.push(Token::new(TokenType::Pipe, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '^' => {
+                    res.push(Token::new(TokenType::Caret, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                '.' => {
+                    res.push(Token::new(TokenType::Dot, self.index, 1, self.line));
+                    self.index += 1;
+                }
+                _ => return Err(UnexpectedCharacter {line: self.line, index: self.index})
             }
         }
         Ok(res)
-    }
-
-    fn skip_space(&mut self) {
-        while let Some(chr) = self.text.get(self.index) {
-            match chr {
-                ' ' | '\t' | '\r' => self.index +=1,
-                _ => return
-            }
-        }
     }
     
     fn parse_number(&mut self) -> Result<Token, LexerError> {
@@ -109,7 +146,7 @@ impl Lexer {
         }
 
         if let Some(&chr) = self.text.get(self.index) {
-            if is_allowed_word(chr){
+            if Self::is_allowed_ident(chr){
                 return Err(InvalidNumber{line: self.line,index: start, len: self.index - start});
             }
         }
@@ -117,10 +154,10 @@ impl Lexer {
         Ok(Token::new(TokenType::Number, start, self.index - start, self.line))
     }
 
-    fn parse_word(&mut self) -> Token {
+    fn parse_ident(&mut self) -> Token {
         let start = self.index;
         while let Some(&chr) = self.text.get(self.index) {
-            if is_allowed_word(chr) || chr.is_ascii_digit(){
+            if Self::is_allowed_ident(chr) || chr.is_ascii_digit(){
                 self.index += 1;
             }
             else{
@@ -133,16 +170,30 @@ impl Lexer {
             "if" => TokenType::If,
             "else" => TokenType::Else,
             "while" => TokenType::While,
-            _=> TokenType::Word
+            "fn" => TokenType::Function,
+            "struct" => TokenType::Struct,
+            "union" => TokenType::Union,
+            "var" => TokenType::Var,
+            "const" => TokenType::Const,
+            "and" => TokenType::And,
+            "or" => TokenType::Or,
+            "namespace" => TokenType::Namespace,
+            "use" => TokenType::Use,
+            "return" => TokenType::Return,
+            "break" => TokenType::Break,
+            "continue" => TokenType::Continue,
+            "true" => TokenType::True,
+            "false" => TokenType::False,
+            _=> TokenType::Ident
         };
 
         Token::new(token_type , start, self.index - start, self.line)
     }
-    
+
+    fn is_allowed_ident(chr:char) -> bool{
+        chr.is_ascii_alphabetic() ||
+            chr == '_' ||
+            chr as u32 > 127
+    }
 }
 
-fn is_allowed_word(chr:char) -> bool{
-    chr.is_ascii_alphabetic() || 
-    chr == '_' || 
-    chr as u32 > 127 
-}
