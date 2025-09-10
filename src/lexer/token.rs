@@ -31,7 +31,7 @@ pub enum TokenType{
     Greater,
     Comma,
     Tilde,
-    Colon,
+    // Colon,
     Ampersand,
     Pipe,
     Caret,

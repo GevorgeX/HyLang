@@ -108,10 +108,10 @@ impl Lexer {
                     res.push(Token::new(TokenType::Tilde, self.index, 1, self.line));
                     self.index += 1;
                 }
-                ':' => {
-                    res.push(Token::new(TokenType::Colon, self.index, 1, self.line));
-                    self.index += 1;
-                }
+                // ':' => {
+                //     res.push(Token::new(TokenType::Colon, self.index, 1, self.line));
+                //     self.index += 1;
+                // }
                 '&' => {
                     res.push(Token::new(TokenType::Ampersand, self.index, 1, self.line));
                     self.index += 1;
