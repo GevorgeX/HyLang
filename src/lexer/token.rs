@@ -1,8 +1,8 @@
 use std::fmt::Debug;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq , Copy)]
 pub enum TokenType{
-    Number, // 1 2 3
+    Integer, // 1 2 3
     Plus, // +
     Minus, // -
     Star, // *
@@ -27,6 +27,7 @@ pub enum TokenType{
     Not,
     Percent,
     Equal,
+    NotEqual,
     Less,
     Greater,
     Comma,
@@ -45,16 +46,22 @@ pub enum TokenType{
     False,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
+pub struct TokenInfo {
+    pub index: usize,
+    pub start: usize,
+    pub len: usize,
+    pub line: usize
+}
+
+#[derive(Debug, Clone, Copy)]
 pub struct Token{
-    token_type: TokenType,
-    index: usize,
-    len: usize,
-    line: usize
+    pub token_type: TokenType,
+    pub token_info: TokenInfo
 }
 
 impl Token {
-    pub fn new(token_type:TokenType, index: usize, len: usize, line: usize) -> Self{
-        Self { token_type, index, len, line }
+    pub fn new(token_type:TokenType, index: usize, start: usize, len: usize, line: usize) -> Self{
+        Self { token_type,token_info: TokenInfo { index, start, len, line } }
     }
 }

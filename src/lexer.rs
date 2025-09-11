@@ -2,11 +2,12 @@ use token::{Token , TokenType};
 use crate::errors::lexer_errors::LexerError;
 use crate::errors::lexer_errors::LexerError::{InvalidNumber, UnexpectedCharacter};
 
-mod token;
+pub mod token;
 
 pub struct Lexer {
     index: usize,
     line: usize,
+    start: usize,
     text: Vec<char>
 }
 
@@ -15,6 +16,7 @@ impl Lexer {
         Lexer{
             index: 0,
             line: 1,
+            start: 0,
             text: vec![]
         }
     }
@@ -27,10 +29,14 @@ impl Lexer {
 
         while let Some(&chr) = self.text.get(self.index){
             match chr {
-                ' ' | '\t' | '\r' => self.index +=1,
+                ' ' | '\t' | '\r' => {
+                    self.index += 1;
+                    self.start += 1;
+                },
                 '\n' => {
                     self.line += 1;
                     self.index += 1;
+                    self.start = 0;
                 }
                 ident if Self::is_allowed_ident(ident) => {
                     let name = self.parse_ident();
@@ -41,71 +47,78 @@ impl Lexer {
                     res.push(num);
                 }
                 '+' => {
-                    res.push(Token::new(TokenType::Plus, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Plus, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '-' => {
-                    res.push(Token::new(TokenType::Minus, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Minus, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '*' => {
-                    res.push(Token::new(TokenType::Star, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Star, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '/' => {
-                    res.push(Token::new(TokenType::Slash, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Slash, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '%' => {
-                    res.push(Token::new(TokenType::Percent, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Percent, self.index, self.start,1, self.line));
                     self.index += 1;
                 }
                 '(' => {
-                    res.push(Token::new(TokenType::LeftRBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::LeftRBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 ')' => {
-                    res.push(Token::new(TokenType::RightRBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::RightRBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '{' => {
-                    res.push(Token::new(TokenType::LeftCBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::LeftCBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '}' => {
-                    res.push(Token::new(TokenType::RightCBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::RightCBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '[' => {
-                    res.push(Token::new(TokenType::LeftSBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::LeftSBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 ']' => {
-                    res.push(Token::new(TokenType::RightSBracket, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::RightSBracket, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '!' => {
-                    res.push(Token::new(TokenType::Not, self.index, 1, self.line));
+                    if let Some(&next_chr) = self.text.get(self.index + 1){
+                        if next_chr == '='{
+                            res.push(Token::new(TokenType::NotEqual, self.index, self.start, 2, self.line));
+                            self.index += 2;
+                            continue;
+                        }
+                    }
+                    res.push(Token::new(TokenType::Not, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '=' => {
-                    res.push(Token::new(TokenType::Equal, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Equal, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '<' => {
-                    res.push(Token::new(TokenType::Less, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Less, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '>' => {
-                    res.push(Token::new(TokenType::Greater, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Greater, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 ',' => {
-                    res.push(Token::new(TokenType::Comma, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Comma, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '~' => {
-                    res.push(Token::new(TokenType::Tilde, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Tilde, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 // ':' => {
@@ -113,19 +126,19 @@ impl Lexer {
                 //     self.index += 1;
                 // }
                 '&' => {
-                    res.push(Token::new(TokenType::Ampersand, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Ampersand, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '|' => {
-                    res.push(Token::new(TokenType::Pipe, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Pipe, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '^' => {
-                    res.push(Token::new(TokenType::Caret, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Caret, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 '.' => {
-                    res.push(Token::new(TokenType::Dot, self.index, 1, self.line));
+                    res.push(Token::new(TokenType::Dot, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
                 _ => return Err(UnexpectedCharacter {line: self.line, index: self.index})
@@ -151,7 +164,7 @@ impl Lexer {
             }
         }
 
-        Ok(Token::new(TokenType::Number, start, self.index - start, self.line))
+        Ok(Token::new(TokenType::Integer, start, self.start, self.index - start, self.line))
     }
 
     fn parse_ident(&mut self) -> Token {
@@ -187,7 +200,7 @@ impl Lexer {
             _=> TokenType::Ident
         };
 
-        Token::new(token_type , start, self.index - start, self.line)
+        Token::new(token_type , start, self.start, self.index - start, self.line)
     }
 
     fn is_allowed_ident(chr:char) -> bool{
