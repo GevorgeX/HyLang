@@ -148,16 +148,12 @@ impl Parser {
         Ok(left)
     }
 
-    fn postfix(&mut self) -> Result<Expression, SyntaxError> {
-        self.prefix()
-    }
-
     fn prefix(&mut self) -> Result<Expression, SyntaxError> {
         if let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
                 TokenType::Minus => UnaryOperator::Negate,
                 TokenType::Not => UnaryOperator::Not,
-                _ => return self.primary(),
+                _ => return self.postfix(),
             };
             self.next_token();
             let right = self.prefix()?;
@@ -168,6 +164,10 @@ impl Parser {
             });
         }
         Err(SyntaxError::ExpectedExpression { token_info: self.get_current_token_info() })
+    }
+
+    fn postfix(&mut self) -> Result<Expression, SyntaxError> {
+        self.primary()
     }
 
     fn primary(&mut self) -> Result<Expression, SyntaxError> {
