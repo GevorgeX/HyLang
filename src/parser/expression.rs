@@ -48,12 +48,34 @@ pub enum BinaryOperator {
     Equal,
     NotEqual,
     Less,
-    Greater
+    Greater,
+    Assign,
 }
 
 impl Parser {
     pub fn expression(&mut self) -> Result<Expression, SyntaxError> {
-        self.equality()
+        self.assignment()
+    }
+
+    fn assignment(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.equality()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::Equal => BinaryOperator::Assign,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.equality()?;
+            left = Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            };
+        }
+
+        Ok(left)
     }
 
     fn equality(&mut self) -> Result<Expression, SyntaxError> {
@@ -61,7 +83,7 @@ impl Parser {
 
         while let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
-                TokenType::Equal => BinaryOperator::Equal,
+                TokenType::DoubleEqual => BinaryOperator::Equal,
                 TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };

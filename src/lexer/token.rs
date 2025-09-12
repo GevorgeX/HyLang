@@ -45,6 +45,7 @@ pub enum TokenType{
     Continue,
     True,
     False,
+    DoubleEqual,
 }
 
 #[derive(Debug, Clone, Copy)]

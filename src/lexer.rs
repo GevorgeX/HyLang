@@ -102,6 +102,13 @@ impl Lexer {
                     self.index += 1;
                 }
                 '=' => {
+                    if let Some(&next_chr) = self.text.get(self.index + 1){
+                        if next_chr == '='{
+                            res.push(Token::new(TokenType::DoubleEqual, self.index, self.start, 2, self.line));
+                            self.index += 2;
+                            continue;
+                        }
+                    }
                     res.push(Token::new(TokenType::Equal, self.index, self.start, 1, self.line));
                     self.index += 1;
                 }
