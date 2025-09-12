@@ -186,18 +186,17 @@ impl Parser {
     }
 
     fn postfix(&mut self) -> Result<Expression, SyntaxError> {
-        let left = self.primary();
-        if let Some(&token) = self.peek_token() {
+        let mut left = self.primary()?;
+        while let Some(&token) = self.peek_token() {
             match token.token_type {
                 TokenType::Dot => {
                     self.next_token();
                     let member = self.primary()?;
-                    let left = left?;
-                    Ok(Expression::GetMember {
+                    left = Expression::GetMember {
                         object: Box::new(left),
                         member: Box::new(member),
                         token_info: token.token_info,
-                    })
+                    };
                 }
                 TokenType::LeftRBracket => {
                     self.next_token();
@@ -223,30 +222,27 @@ impl Parser {
                         }
                     }
                     let rbracket_token = self.require_token(TokenType::RightRBracket)?;
-                    let left = left?;
-                    Ok(Expression::Call {
+                    left = Expression::Call {
                         callee: Box::new(left),
                         arguments,
                         token_info: (token.token_info, rbracket_token.token_info),
-                    })
+                    };
                 }
                 TokenType::LeftSBracket => {
                     self.next_token();
                     let index = self.expression()?;
                     let rbracket_token = self.require_token(TokenType::RightSBracket)?;
-                    let left = left?;
-                    Ok(Expression::Index {
+                    left = Expression::Index {
                         object: Box::new(left),
                         index: Box::new(index),
                         token_info: (token.token_info, rbracket_token.token_info),
-                    })
+                    };
                 }
-                _ => left,
+                _ => break,
             }
         }
-        else {
-            left
-        }
+
+        Ok(left)
     }
 
     fn primary(&mut self) -> Result<Expression, SyntaxError> {
