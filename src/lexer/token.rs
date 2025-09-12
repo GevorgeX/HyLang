@@ -16,6 +16,7 @@ pub enum TokenType{
     Ident, //bla bla
     If,
     Else,
+    Elif,
     While,
     Function,
     Struct,

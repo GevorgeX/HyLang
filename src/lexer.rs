@@ -182,6 +182,7 @@ impl Lexer {
         let token_type = match &*word {
             "if" => TokenType::If,
             "else" => TokenType::Else,
+            "elif" => TokenType::Elif,
             "while" => TokenType::While,
             "fn" => TokenType::Function,
             "struct" => TokenType::Struct,

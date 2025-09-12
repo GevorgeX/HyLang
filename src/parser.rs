@@ -1,9 +1,9 @@
-use std::cmp::PartialEq;
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{Token, TokenInfo, TokenType};
-use crate::parser::expression::Expression;
+use crate::parser::statement::Statement;
 
-pub(crate) mod expression;
+pub mod expression;
+pub mod statement;
 
 pub struct Parser{
     code: Vec<Token>,
@@ -15,8 +15,8 @@ impl Parser{
         Self { code, index: 0 }
     }
 
-    pub fn parse(&mut self) -> Result<Expression, SyntaxError> {
-        self.expression()
+    pub fn parse(&mut self) -> Result<Statement, SyntaxError> {
+        self.statement()
     }
 
     pub fn next_token(&mut self) -> Option<&Token> {
