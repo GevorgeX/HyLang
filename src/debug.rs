@@ -146,6 +146,16 @@ pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show
                 print_expression_tree(expr, indent + 1, true, show_token_info);
             }
         }
+        Statement::DefineConstantVariable{identifier, value, token_info} => {
+            if show_token_info {
+                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier.token_info, token_info);
+            } else {
+                println!("{}DefineConstantVariable", prefix);
+            }
+            if let Some((_, expr)) = value {
+                print_expression_tree(expr, indent + 1, true, show_token_info);
+            }
+        }
     }
 }
 
