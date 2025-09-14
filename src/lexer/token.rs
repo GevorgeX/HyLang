@@ -3,49 +3,70 @@ use std::fmt::Debug;
 #[derive(Debug, Clone, PartialEq , Copy)]
 pub enum TokenType{
     Integer, // 1 2 3
-    Plus, // +
-    Minus, // -
-    Star, // *
-    Slash, // /
+    True, // true,
+    False, // false,
+
     LeftRBracket, // (
     RightRBracket, // )
     LeftCBracket, // {
     RightCBracket, // }
     LeftSBracket, // [
     RightSBracket, // ]
+
     Ident, //bla bla
-    If,
-    Else,
-    Elif,
-    While,
-    Function,
-    Struct,
-    Union,
-    Var,
-    Const,
-    Or,
-    And,
-    Not,
-    Percent,
-    Equal,
-    NotEqual,
-    Less,
-    Greater,
-    Comma,
-    Tilde,
-    // Colon,
-    Ampersand,
-    Pipe,
-    Caret,
-    Dot,
-    Namespace,
-    Use,
-    Return,
-    Break,
-    Continue,
-    True,
-    False,
-    DoubleEqual,
+    If, //if
+    Else, // else
+    Elif, // elif
+    While, // while
+    Function, // function
+    Struct, // struct
+    Union, // union
+    Var, // var
+    Const, // const
+    Namespace, // namespace
+    Use, // use
+    Return, // return
+    Break, // break
+    Continue, // continue
+
+    Or, // or
+    And, // and
+
+    Plus, // +
+    PlusEqual, // +=
+    Minus, // -
+    MinusEqual, // -=
+    Star, // *
+    StarEqual, // *=
+    Slash, // /
+    SlashEqual, // /=
+    Percent, // %
+    PercentEqual, // %=
+
+    Not, // !
+    NotEqual, // !=
+    Equal, // =
+    DoubleEqual, // ==
+    Less, // <
+    LessEqual, // <=
+    Greater, // >
+    GreaterEqual, // >=
+
+    DoubleLess, // <<
+    DoubleLessEqual, // <<=
+    DoubleGreater, // >>
+    DoubleGreaterEqual, // >>=
+    Tilde, // ~
+    TildeEqual, // ~=
+    Ampersand, // &
+    AmpersandEqual, // &=
+    Pipe, // |
+    PipeEqual, // |=
+    Caret, // ^
+    CaretEqual, // ^=
+
+    Dot, // .
+    Comma, // ,
 }
 
 #[derive(Debug, Clone, Copy)]

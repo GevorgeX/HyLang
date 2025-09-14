@@ -32,17 +32,36 @@ pub enum UnaryOperator {
 #[derive(Debug)]
 pub enum BinaryOperator {
     Add,
+    AddAssign,
     Subtract,
+    SubtractAssign,
     Multiply,
+    MultiplyAssign,
     Divide,
+    DivideAssign,
     Mod,
+    ModAssign,
     LogicalAnd,
     LogicalOr,
     Equal,
     NotEqual,
     Less,
+    LessEqual,
     Greater,
+    GreaterEqual,
     Assign,
+
+    BitwiseAnd,
+    BitwiseAndAssign,
+    BitwiseOr,
+    BitwiseOrAssign,
+    BitwiseXor,
+    BitwiseXorAssign,
+    LeftShift,
+    LeftShiftAssign,
+    RightShift,
+    RightShiftAssign,
+
 }
 
 impl Parser {
@@ -51,15 +70,47 @@ impl Parser {
     }
 
     fn assignment(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.equality()?;
+        let left = self.logical_or()?;
 
         while let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
                 TokenType::Equal => BinaryOperator::Assign,
+                TokenType::PlusEqual => BinaryOperator::AddAssign,
+                TokenType::MinusEqual => BinaryOperator::SubtractAssign,
+                TokenType::StarEqual => BinaryOperator::MultiplyAssign,
+                TokenType::SlashEqual => BinaryOperator::DivideAssign,
+                TokenType::PercentEqual => BinaryOperator::ModAssign,
+                TokenType::AmpersandEqual => BinaryOperator::BitwiseAndAssign,
+                TokenType::PipeEqual => BinaryOperator::BitwiseOrAssign,
+                TokenType::CaretEqual => BinaryOperator::BitwiseXorAssign,
+                TokenType::DoubleLessEqual => BinaryOperator::LeftShiftAssign,
+                TokenType::DoubleGreaterEqual => BinaryOperator::RightShiftAssign,
                 _ => break,
             };
             self.next_token();
-            let right = self.equality()?;
+            let right = self.assignment()?;
+            return Ok(Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            });
+
+        }
+
+        Ok(left)
+    }
+
+    fn logical_or(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.logical_and()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::Or => BinaryOperator::LogicalOr,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.logical_and()?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -71,7 +122,91 @@ impl Parser {
         Ok(left)
     }
 
-    fn equality(&mut self) -> Result<Expression, SyntaxError> {
+    fn logical_and(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_or()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::And => BinaryOperator::LogicalAnd,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.bitwise_or()?;
+            left = Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            };
+        }
+
+        Ok(left)
+    }
+
+    fn bitwise_or(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_xor()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::Pipe => BinaryOperator::BitwiseOr,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.bitwise_xor()?;
+            left = Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            };
+        }
+
+        Ok(left)
+    }
+
+    fn bitwise_xor(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_and()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::Caret => BinaryOperator::BitwiseXor,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.bitwise_and()?;
+            left = Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            };
+        }
+
+        Ok(left)
+    }
+
+    fn bitwise_and(&mut self) -> Result<Expression, SyntaxError> {
+        let mut left = self.equivalence()?;
+
+        while let Some(&token) = self.peek_token() {
+            let operator = match token.token_type {
+                TokenType::Ampersand => BinaryOperator::BitwiseAnd,
+                _ => break,
+            };
+            self.next_token();
+            let right = self.equivalence()?;
+            left = Expression::Binary {
+                left: Box::new(left),
+                operator,
+                right: Box::new(right),
+                token_info: token.token_info,
+            };
+        }
+
+        Ok(left)
+    }
+
+    fn equivalence(&mut self) -> Result<Expression, SyntaxError> {
         let mut left = self.relational()?;
 
         while let Some(&token) = self.peek_token() {
@@ -94,16 +229,20 @@ impl Parser {
     }
 
     fn relational(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.bitwise()?;
+        let mut left = self.shift()?;
 
         while let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
                 TokenType::Less => BinaryOperator::Less,
+                TokenType::LessEqual => BinaryOperator::LessEqual,
                 TokenType::Greater => BinaryOperator::Greater,
+                TokenType::GreaterEqual => BinaryOperator::GreaterEqual,
+                TokenType::DoubleEqual => BinaryOperator::Equal,
+                TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };
             self.next_token();
-            let right = self.bitwise()?;
+            let right = self.shift()?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -115,13 +254,13 @@ impl Parser {
         Ok(left)
     }
 
-    fn bitwise(&mut self) -> Result<Expression, SyntaxError> {
+    fn shift(&mut self) -> Result<Expression, SyntaxError> {
         let mut left = self.additive()?;
 
         while let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
-                TokenType::Pipe => BinaryOperator::LogicalOr,
-                TokenType::Ampersand => BinaryOperator::LogicalAnd,
+                TokenType::DoubleLess => BinaryOperator::LeftShift,
+                TokenType::DoubleGreater => BinaryOperator::RightShift,
                 _ => break,
             };
             self.next_token();
