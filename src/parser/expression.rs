@@ -1,5 +1,8 @@
+mod control_flow;
+
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
+pub(crate) use crate::parser::expression::control_flow::{ElseBranch, IfElseBranch};
 use crate::parser::statement::Statement;
 use crate::parser::Parser;
 
@@ -17,23 +20,13 @@ pub enum Expression {
     IfElse{if_block: Box<IfElseBranch>, else_if_blocks: Option<Vec<IfElseBranch>>, else_block: Option<ElseBranch>},
 }
 
-pub struct IfElseBranch {
-    pub(crate) condition: Expression,
-    pub(crate) body: Vec<Statement>,
-    pub(crate) token_info: TokenInfo,
-    pub(crate) brackets_token_info: (TokenInfo, TokenInfo)
-}
-
-pub struct ElseBranch {
-    pub(crate) body: Vec<Statement>,
-    pub(crate) token_info: TokenInfo,
-    pub(crate) brackets_token_info: (TokenInfo, TokenInfo)
-}
-
 #[derive(Debug)]
 pub enum UnaryOperator {
     Negate,
-    Not,
+    LogicalNot,
+    BitwiseNot,
+    AddressOf,
+    Dereference,
 }
 
 #[derive(Debug)]
@@ -43,8 +36,8 @@ pub enum BinaryOperator {
     Multiply,
     Divide,
     Mod,
-    And,
-    Or,
+    LogicalAnd,
+    LogicalOr,
     Equal,
     NotEqual,
     Less,
@@ -127,8 +120,8 @@ impl Parser {
 
         while let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
-                TokenType::Pipe => BinaryOperator::Or,
-                TokenType::Ampersand => BinaryOperator::And,
+                TokenType::Pipe => BinaryOperator::LogicalOr,
+                TokenType::Ampersand => BinaryOperator::LogicalAnd,
                 _ => break,
             };
             self.next_token();
@@ -193,7 +186,10 @@ impl Parser {
         if let Some(&token) = self.peek_token() {
             let operator = match token.token_type {
                 TokenType::Minus => UnaryOperator::Negate,
-                TokenType::Not => UnaryOperator::Not,
+                TokenType::Not => UnaryOperator::LogicalNot,
+                TokenType::Tilde => UnaryOperator::BitwiseNot,
+                TokenType::Ampersand => UnaryOperator::AddressOf,
+                TokenType::Star => UnaryOperator::Dereference,
                 _ => return self.postfix(),
             };
             self.next_token();
@@ -293,93 +289,5 @@ impl Parser {
             }
             _ => Err(SyntaxError::UnexpectedToken { token: token.clone() }),
         }
-    }
-
-    fn while_exp(&mut self, token_info: TokenInfo) -> Result<Expression, SyntaxError> {
-        let exp = self.expression()?;
-        let left_bracket = self.require_token(TokenType::LeftCBracket)?.token_info;
-        let (body, right_bracket) = self.block_of_statements()?;
-        Ok(Expression::While {
-            condition: Box::new(exp),
-            body,
-            token_info,
-            brackets_token_info: (left_bracket, right_bracket),
-        })
-    }
-
-    fn block(&mut self, left_bracket: TokenInfo) -> Result<Expression, SyntaxError> {
-        let (body, right_bracket) = self.block_of_statements()?;
-        Ok(Expression::Block {
-            body,
-            brackets_token_info: (left_bracket, right_bracket),
-        })
-    }
-
-    fn block_of_statements(&mut self) -> Result<(Vec<Statement>,TokenInfo), SyntaxError> {
-        let mut body = Vec::new();
-        while let Some(&token) = self.peek_token() {
-            if token.token_type == TokenType::RightCBracket {
-                break;
-            }
-            let stmt = self.statement()?;
-            body.push(stmt);
-        }
-        let right_bracket = self.require_token(TokenType::RightCBracket)?;
-        Ok((body, right_bracket.token_info))
-    }
-
-    fn if_else(&mut self, if_token: TokenInfo) -> Result<Expression, SyntaxError> {
-        let condition = self.expression()?;
-        let left_bracket = self.require_token(TokenType::LeftCBracket)?.token_info;
-        let (if_body, right_bracket) = self.block_of_statements()?;
-        let if_block = IfElseBranch {
-            condition,
-            body: if_body,
-            token_info: if_token,
-            brackets_token_info: (left_bracket, right_bracket),
-        };
-
-        let mut else_if_blocks = Vec::new();
-        while let Some(&token) = self.peek_token() {
-            if token.token_type == TokenType::Elif {
-                self.next_token();
-                let elif_token = token.token_info;
-                let condition = self.expression()?;
-                let left_bracket = self.require_token(TokenType::LeftCBracket)?.token_info;
-                let (elif_body, right_bracket) = self.block_of_statements()?;
-                else_if_blocks.push(IfElseBranch {
-                    condition,
-                    body: elif_body,
-                    token_info: elif_token,
-                    brackets_token_info: (left_bracket, right_bracket),
-                });
-            } else {
-                break;
-            }
-        }
-
-        let else_block = if let Some(&token) = self.peek_token() {
-            if token.token_type == TokenType::Else {
-                self.next_token();
-                let else_token = token.token_info;
-                let left_bracket = self.require_token(TokenType::LeftCBracket)?.token_info;
-                let (else_body, right_bracket) = self.block_of_statements()?;
-                Some(ElseBranch {
-                    body: else_body,
-                    token_info: else_token,
-                    brackets_token_info: (left_bracket, right_bracket),
-                })
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-
-        Ok(Expression::IfElse {
-            if_block: Box::new(if_block),
-            else_if_blocks: if else_if_blocks.is_empty() { None } else { Some(else_if_blocks) },
-            else_block,
-        })
     }
 }
