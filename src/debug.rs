@@ -1,5 +1,6 @@
 use crate::parser::expression::{Expression, IfElseBranch, ElseBranch};
 use crate::parser::statement::Statement;
+use crate::parser::declaration::Declaration;
 
 pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, show_token_info: bool) {
     let prefix = if indent == 0 {
@@ -154,6 +155,32 @@ pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show
             }
             if let Some((_, expr)) = value {
                 print_expression_tree(expr, indent + 1, true, show_token_info);
+            }
+        }
+    }
+}
+
+pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, show_token_info: bool) {
+    let prefix = if indent == 0 {
+        String::new()
+    } else {
+        let mut s = String::new();
+        for _ in 0..(indent - 1) {
+            s.push_str("│   ");
+        }
+        s.push_str(if is_last { "└── " } else { "├── " });
+        s
+    };
+
+    match decl {
+        Declaration::Namespace { token_info, name, body, bracket_token } => {
+            if show_token_info {
+                println!("{}Namespace {:?} brackets={:?}", prefix, token_info, bracket_token);
+            } else {
+                println!("{}Namespace", prefix);
+            }
+            for (i, sub_decl) in body.iter().enumerate() {
+                print_declaration_tree(sub_decl, indent + 1, i == body.len() - 1, show_token_info);
             }
         }
     }
