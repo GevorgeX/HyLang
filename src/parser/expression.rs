@@ -357,42 +357,21 @@ impl Parser {
                 }
                 TokenType::LeftRBracket => {
                     self.next_token();
-                    let mut arguments = Vec::new();
-                    if let Some(&next_token) = self.peek_token() {
-                        if next_token.token_type != TokenType::RightRBracket {
-                            loop {
-                                let arg = self.expression()?;
-                                arguments.push(arg);
-                                if let Some(&comma_or_rbracket) = self.peek_token() {
-                                    if comma_or_rbracket.token_type == TokenType::Comma {
-                                        self.next_token();
-                                        continue;
-                                    } else if comma_or_rbracket.token_type == TokenType::RightRBracket {
-                                        break;
-                                    } else {
-                                        return Err(SyntaxError::ExpectedToken { token_info: comma_or_rbracket.token_info, expected: TokenType::Comma });
-                                    }
-                                } else {
-                                    return Err(SyntaxError::ExpectedToken { token_info: self.get_current_token_info(), expected: TokenType::RightRBracket });
-                                }
-                            }
-                        }
-                    }
-                    let rbracket_token = self.require_token(TokenType::RightRBracket)?;
+                    let (arguments, right_rbracket_token_info) = self.parse_call_arguments()?;
                     left = Expression::Call {
                         callee: Box::new(left),
                         arguments,
-                        token_info: (token.token_info, rbracket_token.token_info),
+                        token_info: (token.token_info, right_rbracket_token_info),
                     };
                 }
                 TokenType::LeftSBracket => {
                     self.next_token();
                     let index = self.expression()?;
-                    let rbracket_token = self.require_token(TokenType::RightSBracket)?;
+                    let right_sbracket_token = self.require_token(TokenType::RightSBracket)?;
                     left = Expression::Index {
                         object: Box::new(left),
                         index: Box::new(index),
-                        token_info: (token.token_info, rbracket_token.token_info),
+                        token_info: (token.token_info, right_sbracket_token.token_info),
                     };
                 }
                 _ => break,
@@ -400,6 +379,32 @@ impl Parser {
         }
 
         Ok(left)
+    }
+
+    fn parse_call_arguments(&mut self) -> Result<(Vec<Expression>, TokenInfo), SyntaxError> {
+        let mut arguments = Vec::new();
+        if let Some(&next_token) = self.peek_token() {
+            if next_token.token_type != TokenType::RightRBracket {
+                loop {
+                    let arg = self.expression()?;
+                    arguments.push(arg);
+                    if let Some(&comma_or_rbracket) = self.peek_token() {
+                        if comma_or_rbracket.token_type == TokenType::Comma {
+                            self.next_token();
+                            continue;
+                        } else if comma_or_rbracket.token_type == TokenType::RightRBracket {
+                            break;
+                        } else {
+                            return Err(SyntaxError::ExpectedToken { token_info: comma_or_rbracket.token_info, expected: TokenType::Comma });
+                        }
+                    } else {
+                        return Err(SyntaxError::ExpectedToken { token_info: self.get_current_token_info(), expected: TokenType::RightRBracket });
+                    }
+                }
+            }
+        }
+        let right_rbracket_token = self.require_token(TokenType::RightRBracket)?;
+        Ok((arguments, right_rbracket_token.token_info))
     }
 
     fn primary(&mut self) -> Result<Expression, SyntaxError> {
