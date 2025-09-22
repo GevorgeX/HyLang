@@ -1,8 +1,9 @@
-mod control_flow;
+pub mod control_flow;
 
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
 pub(crate) use crate::parser::expression::control_flow::{ElseBranch, IfElseBranch};
+use crate::parser::expression::control_flow::BlockOfStatements;
 use crate::parser::statement::Statement;
 use crate::parser::Parser;
 
@@ -15,8 +16,8 @@ pub enum Expression {
     GetMember{object: Box<Expression>, member: Box<Expression>, token_info: TokenInfo},
     Call{callee: Box<Expression>, arguments: Vec<Expression>, token_info: (TokenInfo, TokenInfo)},
     Index{object: Box<Expression>, index: Box<Expression>, token_info: (TokenInfo, TokenInfo)},
-    While{condition: Box<Expression>, body: Vec<Statement>, token_info: TokenInfo, brackets_token_info: (TokenInfo, TokenInfo)},
-    Block{body: Vec<Statement>, brackets_token_info: (TokenInfo, TokenInfo)},
+    While{condition: Box<Expression>, body: BlockOfStatements, token_info: TokenInfo},
+    Block{body: BlockOfStatements },
     IfElse{if_block: Box<IfElseBranch>, else_if_blocks: Option<Vec<IfElseBranch>>, else_block: Option<ElseBranch>},
 }
 
@@ -426,7 +427,7 @@ impl Parser {
                 self.while_exp(token.token_info)
             }
             TokenType::LeftCBracket => {
-                self.block(token.token_info)
+                self.block()
             }
             TokenType::If => {
                 self.if_else(token.token_info)

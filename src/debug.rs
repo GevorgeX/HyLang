@@ -82,26 +82,26 @@ pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, sh
             print_expression_tree(object, indent + 1, false, show_token_info);
             print_expression_tree(index, indent + 1, true, show_token_info);
         }
-        Expression::While{condition, body, token_info, brackets_token_info} => {
+        Expression::While{condition, body, token_info} => {
             if show_token_info {
-                println!("{}While {:?} {:?}", prefix, token_info, brackets_token_info);
+                println!("{}While {:?}", prefix, token_info);
             } else {
                 println!("{}While", prefix);
             }
             print_expression_tree(condition, indent + 1, false, show_token_info);
             println!("{}Body", "│   ".repeat(indent));
-            for (i, stmt) in body.iter().enumerate() {
-                print_statement_tree(stmt, indent + 2, i == body.len() - 1, show_token_info);
+            for (i, stmt) in body.statements.iter().enumerate() {
+                print_statement_tree(stmt, indent + 2, i == body.statements.len() - 1, show_token_info);
             }
         }
-        Expression::Block{body, brackets_token_info} => {
+        Expression::Block{body} => {
             if show_token_info {
-                println!("{}Block {:?}", prefix, brackets_token_info);
+                println!("{}Block {:?}", prefix, body.brackets_token_info);
             } else {
                 println!("{}Block", prefix);
             }
-            for (i, stmt) in body.iter().enumerate() {
-                print_statement_tree(stmt, indent + 1, i == body.len() - 1, show_token_info);
+            for (i, stmt) in body.statements.iter().enumerate() {
+                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, show_token_info);
             }
         }
         Expression::IfElse{if_block, else_if_blocks, else_block} => {
@@ -183,6 +183,19 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
                 print_declaration_tree(sub_decl, indent + 1, i == body.len() - 1, show_token_info);
             }
         }
+        Declaration::Function{ func_token_info, name, parameters, bracket_token, type_token_info, body } => {
+            if show_token_info {
+                println!(
+                    "{}FunctionDefine name={:?} parameters={:?} return_type={:?} brackets={:?}",
+                    prefix, name, parameters, type_token_info, bracket_token
+                );
+            } else {
+                println!("{}FunctionDefine", prefix);
+            }
+            for (i, stmt) in body.statements.iter().enumerate() {
+                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, show_token_info);
+            }
+        }
     }
 }
 
@@ -198,14 +211,14 @@ fn print_if_else_branch(label: &str, branch: &IfElseBranch, indent: usize, is_la
         s
     };
     if show_token_info {
-        println!("{}{} [{:?} {:?}]", prefix, label, branch.token_info, branch.brackets_token_info);
+        println!("{}{} [{:?} {:?}]", prefix, label, branch.token_info, branch.body.brackets_token_info);
     } else {
         println!("{}{}", prefix, label);
     }
     print_expression_tree(&branch.condition, indent + 1, false, show_token_info);
     println!("{}Body", "│   ".repeat(indent));
-    for (i, stmt) in branch.body.iter().enumerate() {
-        print_statement_tree(stmt, indent + 2, i == branch.body.len() - 1, show_token_info);
+    for (i, stmt) in branch.body.statements.iter().enumerate() {
+        print_statement_tree(stmt, indent + 2, i == branch.body.statements.len() - 1, show_token_info);
     }
 }
 
@@ -221,12 +234,12 @@ fn print_else_branch(branch: &ElseBranch, indent: usize, is_last: bool, show_tok
         s
     };
     if show_token_info {
-        println!("{}Else [{:?} {:?}]", prefix, branch.token_info, branch.brackets_token_info);
+        println!("{}Else [{:?} {:?}]", prefix, branch.token_info, branch.body.brackets_token_info);
     } else {
         println!("{}Else", prefix);
     }
     println!("{}Body", "│   ".repeat(indent));
-    for (i, stmt) in branch.body.iter().enumerate() {
-        print_statement_tree(stmt, indent + 2, i == branch.body.len() - 1, show_token_info);
+    for (i, stmt) in branch.body.statements.iter().enumerate() {
+        print_statement_tree(stmt, indent + 2, i == branch.body.statements.len() - 1, show_token_info);
     }
 }
