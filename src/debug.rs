@@ -192,8 +192,78 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
             } else {
                 println!("{}FunctionDefine", prefix);
             }
+            // Аргументы функции с ───
+            for (i, param) in parameters.iter().enumerate() {
+                let arg_prefix = format!(
+                    "{}{}",
+                    "│   ".repeat(indent),
+                    if i == parameters.len() - 1 { "└───" } else { "├───" }
+                );
+                if show_token_info {
+                    println!(
+                        "{}Arg name={:?} type={:?}",
+                        arg_prefix, param.name_token_info, param.type_token_info
+                    );
+                } else {
+                    println!("{}Arg", arg_prefix);
+                }
+            }
             for (i, stmt) in body.statements.iter().enumerate() {
                 print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, show_token_info);
+            }
+        }
+        Declaration::Struct { struct_token_info, name, fields, bracket_token } => {
+            if show_token_info {
+                println!(
+                    "{}Struct name={:?} brackets={:?}",
+                    prefix, name, bracket_token
+                );
+            } else {
+                println!("{}Struct", prefix);
+            }
+            for (i, field) in fields.iter().enumerate() {
+                let field_prefix = format!(
+                    "{}{}",
+                    "│   ".repeat(indent),
+                    if i == fields.len() - 1 { "└───" } else { "├───" }
+                );
+                if show_token_info {
+                    println!(
+                        "{}Field name={:?} type={:?}",
+                        field_prefix,
+                        field.name_token_info,
+                        field.type_token_info
+                    );
+                } else {
+                    println!("{}Field", field_prefix);
+                }
+            }
+        }
+        Declaration::Union { union_token_info, name, fields, bracket_token } => {
+            if show_token_info {
+                println!(
+                    "{}Union name={:?} brackets={:?}",
+                    prefix, name, bracket_token
+                );
+            } else {
+                println!("{}Union", prefix);
+            }
+            for (i, field) in fields.iter().enumerate() {
+                let field_prefix = format!(
+                    "{}{}",
+                    "│   ".repeat(indent),
+                    if i == fields.len() - 1 { "└───" } else { "├───" }
+                );
+                if show_token_info {
+                    println!(
+                        "{}Field name={:?} type={:?}",
+                        field_prefix,
+                        field.name_token_info,
+                        field.type_token_info
+                    );
+                } else {
+                    println!("{}Field", field_prefix);
+                }
             }
         }
     }

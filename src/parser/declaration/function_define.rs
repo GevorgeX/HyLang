@@ -4,12 +4,13 @@ use crate::parser::Parser;
 
 #[derive(Debug)]
 pub struct FunctionArgument {
-    name_token_info: TokenInfo,
-    type_token_info: TokenInfo,
+    pub(crate) name_token_info: TokenInfo,
+    pub(crate) type_token_info: TokenInfo,
 }
 
 impl Parser{
-    pub fn function_argument(&mut self) -> Result<(Vec<FunctionArgument>, TokenInfo), SyntaxError> {
+    pub fn function_argument(&mut self) -> Result<(TokenInfo,Vec<FunctionArgument>, TokenInfo), SyntaxError> {
+        let lbracket_token = self.require_token(TokenType::LeftRBracket)?.token_info;
         let mut args = Vec::new();
 
         while let Some(&token) = self.peek_token() {
@@ -36,6 +37,6 @@ impl Parser{
             }
         }
 
-        Ok((args,self.require_token(TokenType::RightRBracket)?.token_info))
+        Ok((lbracket_token,args,self.require_token(TokenType::RightRBracket)?.token_info))
     }
 }
