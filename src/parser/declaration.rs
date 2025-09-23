@@ -32,7 +32,7 @@ pub enum Declaration {
 }
 
 impl Parser {
-    pub fn declaration(&mut self) -> Result<Declaration, SyntaxError> {
+    pub fn declaration(&mut self) -> Result<Option<Declaration>, SyntaxError> {
         while let Some(&token) = self.peek_token() {
             return match token.token_type {
                 TokenType::Namespace => {
@@ -45,10 +45,12 @@ impl Parser {
                         if token.token_type == TokenType::RightCBracket {
                             break;
                         }
-                        body.push(self.declaration()?);
+                        if let Some(decl) = self.declaration()?{
+                            body.push(decl);
+                        }
                     }
                     let close_bracket = self.require_token(TokenType::RightCBracket)?.token_info;
-                    Ok(Declaration::Namespace { token_info: token.token_info, name: name_token, body, bracket_token: (open_bracket, close_bracket) })
+                    Ok(Some(Declaration::Namespace { token_info: token.token_info, name: name_token, body, bracket_token: (open_bracket, close_bracket)}))
                 }
                 TokenType::Function => {
                     self.next_token();
@@ -57,36 +59,36 @@ impl Parser {
                     let type_token_info = self.require_token(TokenType::Ident)?.token_info;
                     let body = self.block_of_statements()?;
 
-                    Ok(Declaration::Function {
+                    Ok(Some(Declaration::Function {
                         func_token_info: token.token_info,
                         name: name_token_info,
                         parameters,
                         bracket_token: (lbracket_token_info, rbracket_token),
                         type_token_info,
                         body,
-                    })
+                    }))
                 }
                 TokenType::Struct => {
                     self.next_token();
                     let name_token_info = self.require_token(TokenType::Ident)?.token_info;
                     let (open_bracket, fields, close_bracket) = self.struct_union_field()?;
-                    Ok(Declaration::Struct {
+                    Ok(Some(Declaration::Struct {
                         struct_token_info: token.token_info,
                         name: name_token_info,
                         fields,
                         bracket_token: (open_bracket, close_bracket)
-                    })
+                    }))
                 }
                 TokenType::Union => {
                     self.next_token();
                     let name_token_info = self.require_token(TokenType::Ident)?.token_info;
                     let (open_bracket, fields, close_bracket) = self.struct_union_field()?;
-                    Ok(Declaration::Union {
+                    Ok(Some(Declaration::Union {
                         union_token_info: token.token_info,
                         name: name_token_info,
                         fields,
                         bracket_token: (open_bracket, close_bracket)
-                    })
+                    }))
                 }
                 _ => Err(SyntaxError::UnexpectedToken { token: token.clone() }),
             }

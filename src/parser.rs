@@ -16,7 +16,7 @@ impl Parser{
         Self { code, index: 0 }
     }
 
-    pub fn parse(&mut self) -> Result<Declaration, SyntaxError> {
+    pub fn parse(&mut self) -> Result<Option<Declaration>, SyntaxError> {
         self.declaration()
     }
 

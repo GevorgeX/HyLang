@@ -1,4 +1,5 @@
 use crate::debug::{print_declaration_tree, print_statement_tree};
+use crate::parser::declaration::Declaration;
 
 mod lexer;
 mod errors;
@@ -27,7 +28,12 @@ fn main() {
     let res = parser.parse();
     match res {
         Ok(res) => {
-            print_declaration_tree(&res, 0, false, false);
+            match res {
+                Some(res) => {
+                    print_declaration_tree(&res, 0, false, false);
+                }
+                None => {}
+            }
         }
         Err(err) => {
             println!("{:?}", err);
