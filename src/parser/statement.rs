@@ -5,8 +5,8 @@ use crate::parser::Parser;
 
 pub enum Statement {
     ExpressionStatement(Expression),
-    DefineVariable{identifier: Token, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
-    DefineConstantVariable{identifier: Token, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
+    DefineVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
+    DefineConstantVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
 }
 
 impl Parser {
@@ -15,7 +15,7 @@ impl Parser {
             match token.token_type {
                 TokenType::Var => {
                     self.next_token();
-                    let identifier = self.require_token(TokenType::Ident)?.clone();
+                    let identifier = self.require_token(TokenType::Ident)?.token_info;
                     let value = self.define_var_initialization()?;
                     return Ok(Statement::DefineVariable {
                         identifier,
@@ -25,7 +25,7 @@ impl Parser {
                 }
                 TokenType::Const => {
                     self.next_token();
-                    let identifier = self.require_token(TokenType::Ident)?.clone();
+                    let identifier = self.require_token(TokenType::Ident)?.token_info;
                     let value = self.define_var_initialization()?;
                     return Ok(Statement::DefineConstantVariable {
                         identifier,

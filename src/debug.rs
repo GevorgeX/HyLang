@@ -139,7 +139,7 @@ pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show
         }
         Statement::DefineVariable{identifier, value, token_info} => {
             if show_token_info {
-                println!("{}DefineVariable {:?} {:?}", prefix, identifier.token_info, token_info);
+                println!("{}DefineVariable {:?} {:?}", prefix, identifier, token_info);
             } else {
                 println!("{}DefineVariable", prefix);
             }
@@ -149,7 +149,7 @@ pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show
         }
         Statement::DefineConstantVariable{identifier, value, token_info} => {
             if show_token_info {
-                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier.token_info, token_info);
+                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier, token_info);
             } else {
                 println!("{}DefineConstantVariable", prefix);
             }
