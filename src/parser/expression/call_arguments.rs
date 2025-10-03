@@ -1,29 +1,18 @@
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
+use crate::parser::expression::Expression;
 use crate::parser::Parser;
 
-#[derive(Debug)]
-pub struct FunctionArgument {
-    pub(crate) name_token_info: TokenInfo,
-    pub(crate) type_token_info: TokenInfo,
-}
-
 impl Parser{
-    pub fn function_argument(&mut self) -> Result<(TokenInfo,Vec<FunctionArgument>, TokenInfo), SyntaxError> {
-        let lbracket_token = self.require_token(TokenType::LeftRBracket)?.token_info;
-        let mut args = Vec::new();
-
+    pub fn parse_call_arguments(&mut self) -> Result<(Vec<Expression>, TokenInfo), SyntaxError> {
+        let mut arguments = Vec::new();
         while let Some(&next_token) = self.peek_token() {
             if next_token.token_type == TokenType::RightRBracket {
                 break
             }
             else {
-                let name_token = self.require_token(TokenType::Ident)?.clone();
-                let type_token = self.require_token(TokenType::Ident)?;
-                args.push(FunctionArgument {
-                    name_token_info: name_token.token_info,
-                    type_token_info: type_token.token_info,
-                });
+                let exp = self.expression()?;
+                arguments.push(exp);
                 if let Some(token) = self.peek_token() {
                     if token.token_type == TokenType::Comma {
                         self.next_token();
@@ -37,7 +26,7 @@ impl Parser{
                 return Err(SyntaxError::ExpectedToken {token_info: next_token.token_info, expected: TokenType::RightRBracket});
             }
         }
-
-        Ok((lbracket_token,args,self.require_token(TokenType::RightRBracket)?.token_info))
+        let right_rbracket_token = self.require_token(TokenType::RightRBracket)?;
+        Ok((arguments, right_rbracket_token.token_info))
     }
 }

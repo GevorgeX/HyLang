@@ -67,6 +67,9 @@ pub enum TokenType{
 
     Dot, // .
     Comma, // ,
+    
+    DotComma, // ;
+    NewLine, // \n
 }
 
 #[derive(Debug, Clone, Copy)]

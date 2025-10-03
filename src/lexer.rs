@@ -16,7 +16,7 @@ impl Lexer {
         Lexer{
             index: 0,
             line: 1,
-            start: 0,
+            start: 1,
             text: vec![]
         }
     }
@@ -34,9 +34,10 @@ impl Lexer {
                     self.start += 1;
                 },
                 '\n' => {
+                    res.push(Token::new(TokenType::NewLine, self.index, self.start, 1, self.line));
                     self.line += 1;
                     self.index += 1;
-                    self.start = 0;
+                    self.start = 1;
                 }
                 ident if Self::is_allowed_ident(ident) => {
                     let name = self.parse_ident();
@@ -249,6 +250,11 @@ impl Lexer {
                     self.index += 1;
                     self.start += 1;
                 }
+                ';' => {
+                    res.push(Token::new(TokenType::DotComma, self.index, self.start, 1, self.line));
+                    self.index += 1;
+                    self.start += 1;
+                }
                 _ => return Err(UnexpectedCharacter {line: self.line, index: self.index})
             }
         }
@@ -260,6 +266,7 @@ impl Lexer {
         while let Some(&chr) = self.text.get(self.index) {
             if chr.is_ascii_digit(){
                 self.index += 1;
+                self.start += 1;
             }
             else{
                 break;
@@ -280,6 +287,7 @@ impl Lexer {
         while let Some(&chr) = self.text.get(self.index) {
             if Self::is_allowed_ident(chr) || chr.is_ascii_digit(){
                 self.index += 1;
+                self.start += 1;
             }
             else{
                 break;

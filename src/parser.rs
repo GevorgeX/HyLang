@@ -20,23 +20,48 @@ impl Parser{
         self.declaration()
     }
 
-    pub fn next_token(&mut self) -> Option<&Token> {
+    fn skip_new_lines(&self) -> usize {
+        let mut i = self.index;
+        while let Some(token) = self.code.get(i) {
+            if token.token_type == TokenType::NewLine {
+                i += 1;
+            } else {
+                break;
+            }
+        }
+        i
+    }
+
+    pub fn next_token_with_nl(&mut self) -> Option<&Token> {
         self.index += 1;
         self.code.get(self.index - 1)
     }
 
+    pub fn next_token(&mut self) -> Option<&Token> {
+        self.index = self.skip_new_lines() + 1;
+        self.code.get(self.index - 1)
+    }
+
     pub fn require_token(&mut self, token_type: TokenType) -> Result<&Token, SyntaxError> {
-        let token = self.code.get(self.index);
+        let i = self.skip_new_lines();
+        let token = self.code.get(i);
         if let Some(t) = token {
             if t.token_type == token_type{
-                self.index += 1;
+                self.index = i + 1;
                 return Ok(t)
             }
         }
         let token_info = self.get_current_token_info();
         Err(SyntaxError::ExpectedToken {token_info, expected: token_type})
     }
+    
+
     pub fn peek_token(&self) -> Option<&Token> {
+        let i = self.skip_new_lines();
+        self.code.get(i)
+    }
+
+    pub fn peek_token_with_newline(&self) -> Option<&Token> {
         self.code.get(self.index)
     }
 

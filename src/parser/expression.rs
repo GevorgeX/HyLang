@@ -1,10 +1,10 @@
 pub mod control_flow;
+mod call_arguments;
 
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
-pub(crate) use crate::parser::expression::control_flow::{ElseBranch, IfElseBranch};
+pub use crate::parser::expression::control_flow::{ElseBranch, IfElseBranch};
 use crate::parser::expression::control_flow::BlockOfStatements;
-use crate::parser::statement::Statement;
 use crate::parser::Parser;
 
 pub enum Expression {
@@ -67,13 +67,21 @@ pub enum BinaryOperator {
 
 impl Parser {
     pub fn expression(&mut self) -> Result<Expression, SyntaxError> {
-        self.assignment()
+        self.expression_wrapper(true)
     }
 
-    fn assignment(&mut self) -> Result<Expression, SyntaxError> {
-        let left = self.logical_or()?;
+    pub fn expression_without_newline(&mut self) -> Result<Expression, SyntaxError> {
+        self.expression_wrapper(false)
+    }
 
-        while let Some(&token) = self.peek_token() {
+    fn expression_wrapper(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        self.assignment(ignore_newline)
+    }
+
+    fn assignment(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let left = self.logical_or(ignore_newline)?;
+
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Equal => BinaryOperator::Assign,
                 TokenType::PlusEqual => BinaryOperator::AddAssign,
@@ -88,8 +96,8 @@ impl Parser {
                 TokenType::DoubleGreaterEqual => BinaryOperator::RightShiftAssign,
                 _ => break,
             };
-            self.next_token();
-            let right = self.assignment()?;
+            self.next(ignore_newline);
+            let right = self.assignment(ignore_newline)?;
             return Ok(Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -102,16 +110,16 @@ impl Parser {
         Ok(left)
     }
 
-    fn logical_or(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.logical_and()?;
+    fn logical_or(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.logical_and(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Or => BinaryOperator::LogicalOr,
                 _ => break,
             };
-            self.next_token();
-            let right = self.logical_and()?;
+            self.next(ignore_newline);
+            let right = self.logical_and(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -123,16 +131,16 @@ impl Parser {
         Ok(left)
     }
 
-    fn logical_and(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.bitwise_or()?;
+    fn logical_and(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_or(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::And => BinaryOperator::LogicalAnd,
                 _ => break,
             };
-            self.next_token();
-            let right = self.bitwise_or()?;
+            self.next(ignore_newline);
+            let right = self.bitwise_or(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -144,16 +152,16 @@ impl Parser {
         Ok(left)
     }
 
-    fn bitwise_or(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.bitwise_xor()?;
+    fn bitwise_or(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_xor(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Pipe => BinaryOperator::BitwiseOr,
                 _ => break,
             };
-            self.next_token();
-            let right = self.bitwise_xor()?;
+            self.next(ignore_newline);
+            let right = self.bitwise_xor(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -165,16 +173,16 @@ impl Parser {
         Ok(left)
     }
 
-    fn bitwise_xor(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.bitwise_and()?;
+    fn bitwise_xor(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.bitwise_and(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Caret => BinaryOperator::BitwiseXor,
                 _ => break,
             };
-            self.next_token();
-            let right = self.bitwise_and()?;
+            self.next(ignore_newline);
+            let right = self.bitwise_and(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -186,16 +194,16 @@ impl Parser {
         Ok(left)
     }
 
-    fn bitwise_and(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.equivalence()?;
+    fn bitwise_and(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.equivalence(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Ampersand => BinaryOperator::BitwiseAnd,
                 _ => break,
             };
-            self.next_token();
-            let right = self.equivalence()?;
+            self.next(ignore_newline);
+            let right = self.equivalence(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -207,17 +215,17 @@ impl Parser {
         Ok(left)
     }
 
-    fn equivalence(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.relational()?;
+    fn equivalence(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.relational(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::DoubleEqual => BinaryOperator::Equal,
                 TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };
-            self.next_token();
-            let right = self.relational()?;
+            self.next(ignore_newline);
+            let right = self.relational(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -229,10 +237,10 @@ impl Parser {
         Ok(left)
     }
 
-    fn relational(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.shift()?;
+    fn relational(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.shift(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Less => BinaryOperator::Less,
                 TokenType::LessEqual => BinaryOperator::LessEqual,
@@ -242,8 +250,8 @@ impl Parser {
                 TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };
-            self.next_token();
-            let right = self.shift()?;
+            self.next(ignore_newline);
+            let right = self.shift(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -255,17 +263,17 @@ impl Parser {
         Ok(left)
     }
 
-    fn shift(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.additive()?;
+    fn shift(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.additive(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::DoubleLess => BinaryOperator::LeftShift,
                 TokenType::DoubleGreater => BinaryOperator::RightShift,
                 _ => break,
             };
-            self.next_token();
-            let right = self.additive()?;
+            self.next(ignore_newline);
+            let right = self.additive(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -277,17 +285,17 @@ impl Parser {
         Ok(left)
     }
 
-    fn additive(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.multiplicative()?;
+    fn additive(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.multiplicative(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Plus => BinaryOperator::Add,
                 TokenType::Minus => BinaryOperator::Subtract,
                 _ => break,
             };
-            self.next_token();
-            let right = self.multiplicative()?;
+            self.next(ignore_newline);
+            let right = self.multiplicative(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -299,18 +307,18 @@ impl Parser {
         Ok(left)
     }
 
-    fn multiplicative(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.prefix()?;
+    fn multiplicative(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.prefix(ignore_newline)?;
 
-        while let Some(&token) = self.peek_token() {
+        while let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Star => BinaryOperator::Multiply,
                 TokenType::Slash => BinaryOperator::Divide,
                 TokenType::Percent => BinaryOperator::Mod,
                 _ => break,
             };
-            self.next_token();
-            let right = self.prefix()?;
+            self.next(ignore_newline);
+            let right = self.prefix(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -322,34 +330,34 @@ impl Parser {
         Ok(left)
     }
 
-    fn prefix(&mut self) -> Result<Expression, SyntaxError> {
-        if let Some(&token) = self.peek_token() {
+    fn prefix(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        if let Some(&token) = self.peek(ignore_newline) {
             let operator = match token.token_type {
                 TokenType::Minus => UnaryOperator::Negate,
                 TokenType::Not => UnaryOperator::LogicalNot,
                 TokenType::Tilde => UnaryOperator::BitwiseNot,
                 TokenType::Ampersand => UnaryOperator::AddressOf,
                 TokenType::Star => UnaryOperator::Dereference,
-                _ => return self.postfix(),
+                _ => return self.postfix(ignore_newline),
             };
-            self.next_token();
-            let right = self.prefix()?;
+            self.next(ignore_newline);
+            let right = self.prefix(ignore_newline)?;
             return Ok(Expression::Unary {
                 operator,
                 right: Box::new(right),
                 token_info: token.token_info,
             });
         }
-        self.postfix()
+        self.postfix(ignore_newline)
     }
 
-    fn postfix(&mut self) -> Result<Expression, SyntaxError> {
-        let mut left = self.primary()?;
-        while let Some(&token) = self.peek_token() {
+    fn postfix(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+        let mut left = self.primary(ignore_newline)?;
+        while let Some(&token) = self.peek(ignore_newline) {
             match token.token_type {
                 TokenType::Dot => {
-                    self.next_token();
-                    let member = self.primary()?;
+                    self.next(ignore_newline);
+                    let member = self.primary(ignore_newline)?;
                     left = Expression::GetMember {
                         object: Box::new(left),
                         member: Box::new(member),
@@ -357,7 +365,7 @@ impl Parser {
                     };
                 }
                 TokenType::LeftRBracket => {
-                    self.next_token();
+                    self.next(ignore_newline);
                     let (arguments, right_rbracket_token_info) = self.parse_call_arguments()?;
                     left = Expression::Call {
                         callee: Box::new(left),
@@ -366,7 +374,7 @@ impl Parser {
                     };
                 }
                 TokenType::LeftSBracket => {
-                    self.next_token();
+                    self.next(ignore_newline);
                     let index = self.expression()?;
                     let right_sbracket_token = self.require_token(TokenType::RightSBracket)?;
                     left = Expression::Index {
@@ -382,36 +390,10 @@ impl Parser {
         Ok(left)
     }
 
-    fn parse_call_arguments(&mut self) -> Result<(Vec<Expression>, TokenInfo), SyntaxError> {
-        let mut arguments = Vec::new();
-        if let Some(&next_token) = self.peek_token() {
-            if next_token.token_type != TokenType::RightRBracket {
-                loop {
-                    let arg = self.expression()?;
-                    arguments.push(arg);
-                    if let Some(&comma_or_rbracket) = self.peek_token() {
-                        if comma_or_rbracket.token_type == TokenType::Comma {
-                            self.next_token();
-                            continue;
-                        } else if comma_or_rbracket.token_type == TokenType::RightRBracket {
-                            break;
-                        } else {
-                            return Err(SyntaxError::ExpectedToken { token_info: comma_or_rbracket.token_info, expected: TokenType::Comma });
-                        }
-                    } else {
-                        return Err(SyntaxError::ExpectedToken { token_info: self.get_current_token_info(), expected: TokenType::RightRBracket });
-                    }
-                }
-            }
-        }
-        let right_rbracket_token = self.require_token(TokenType::RightRBracket)?;
-        Ok((arguments, right_rbracket_token.token_info))
-    }
-
-    fn primary(&mut self) -> Result<Expression, SyntaxError> {
+    fn primary(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
         let token = {
             let token_info = self.get_current_token_info();
-            self.next_token().ok_or(SyntaxError::ExpectedExpression { token_info })
+            self.next(ignore_newline).ok_or(SyntaxError::ExpectedExpression { token_info })
         }?.clone();
 
         match &token.token_type {
@@ -419,7 +401,7 @@ impl Parser {
             TokenType::True | TokenType::False => Ok(Expression::Boolean { token_info: token.token_info }),
             TokenType::Ident => Ok(Expression::Identifier { token_info: token.token_info }),
             TokenType::LeftRBracket => {
-                let expr = self.expression()?;
+                let expr = self.expression_wrapper(true)?;
                 self.require_token(TokenType::RightRBracket)?;
                 Ok(expr)
             }
@@ -433,6 +415,22 @@ impl Parser {
                 self.if_else(token.token_info)
             }
             _ => Err(SyntaxError::UnexpectedToken { token: token.clone() }),
+        }
+    }
+
+    fn next(&mut self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
+        if ignore_newline {
+            self.next_token()
+        } else {
+            self.next_token_with_nl()
+        }
+    }
+
+    fn peek(&self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
+        if ignore_newline {
+            self.peek_token()
+        } else {
+            self.peek_token_with_newline()
         }
     }
 }
