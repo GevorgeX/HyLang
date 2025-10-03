@@ -15,5 +15,6 @@ pub mod syntax_errors{
         ExpectedToken{token_info: TokenInfo, expected: TokenType},
         ExpectedExpression{token_info: TokenInfo},
         ExpectedStatement{token_info: TokenInfo},
+        ExpectedType { token_info: TokenInfo },
     }
 }

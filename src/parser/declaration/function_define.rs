@@ -1,11 +1,12 @@
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
+use crate::parser::types::Type;
 use crate::parser::Parser;
 
 #[derive(Debug)]
 pub struct FunctionArgument {
-    pub(crate) name_token_info: TokenInfo,
-    pub(crate) type_token_info: TokenInfo,
+    pub name_token_info: TokenInfo,
+    pub arg_type: Type,
 }
 
 impl Parser{
@@ -19,10 +20,10 @@ impl Parser{
             }
             else {
                 let name_token = self.require_token(TokenType::Ident)?.clone();
-                let type_token = self.require_token(TokenType::Ident)?;
+                let arg_type = self.parse_type()?;
                 args.push(FunctionArgument {
                     name_token_info: name_token.token_info,
-                    type_token_info: type_token.token_info,
+                    arg_type,
                 });
                 if let Some(token) = self.peek_token() {
                     if token.token_type == TokenType::Comma {

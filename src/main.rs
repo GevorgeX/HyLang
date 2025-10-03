@@ -1,7 +1,4 @@
-use crate::debug::{print_declaration_tree, print_statement_tree};
-use crate::errors::syntax_errors::SyntaxError;
-use crate::parser::declaration::Declaration;
-use crate::parser::statement::Statement;
+use crate::debug::print_declaration_tree;
 
 mod lexer;
 mod errors;
@@ -25,6 +22,9 @@ fn main() {
             return;
         }
     }
+
+    println!("{}", "-".repeat(50));
+    println!("{}", "-".repeat(50));
 
     let mut parser = parser::Parser::new(res.unwrap());
     let res = parser.parse();

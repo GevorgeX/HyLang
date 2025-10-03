@@ -417,20 +417,4 @@ impl Parser {
             _ => Err(SyntaxError::UnexpectedToken { token: token.clone() }),
         }
     }
-
-    fn next(&mut self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
-        if ignore_newline {
-            self.next_token()
-        } else {
-            self.next_token_with_nl()
-        }
-    }
-
-    fn peek(&self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
-        if ignore_newline {
-            self.peek_token()
-        } else {
-            self.peek_token_with_newline()
-        }
-    }
 }

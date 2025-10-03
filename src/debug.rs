@@ -1,6 +1,7 @@
 use crate::parser::expression::{Expression, IfElseBranch, ElseBranch};
 use crate::parser::statement::Statement;
 use crate::parser::declaration::Declaration;
+use crate::parser::types::Type;
 
 pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, show_token_info: bool) {
     let prefix = if indent == 0 {
@@ -137,21 +138,21 @@ pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show
             println!("{}ExpressionStatement", prefix);
             print_expression_tree(expr, indent + 1, true, show_token_info);
         }
-        Statement::DefineVariable{identifier, value, token_info} => {
+        Statement::DefineVariable{identifier, value, var_type} => {
             if show_token_info {
-                println!("{}DefineVariable {:?} {:?}", prefix, identifier, token_info);
+                println!("{}DefineVariable {:?} {:?}", prefix, identifier, var_type);
             } else {
-                println!("{}DefineVariable", prefix);
+                println!("{}DefineVariable {:?}", prefix, var_type);
             }
             if let Some((_, expr)) = value {
                 print_expression_tree(expr, indent + 1, true, show_token_info);
             }
         }
-        Statement::DefineConstantVariable{identifier, value, token_info} => {
+        Statement::DefineConstantVariable{identifier, value, const_type} => {
             if show_token_info {
-                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier, token_info);
+                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier, const_type);
             } else {
-                println!("{}DefineConstantVariable", prefix);
+                println!("{}DefineConstantVariable {:?}", prefix, const_type);
             }
             if let Some((_, expr)) = value {
                 print_expression_tree(expr, indent + 1, true, show_token_info);
@@ -202,7 +203,7 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
                 if show_token_info {
                     println!(
                         "{}Arg name={:?} type={:?}",
-                        arg_prefix, param.name_token_info, param.type_token_info
+                        arg_prefix, param.name_token_info, param.arg_type
                     );
                 } else {
                     println!("{}Arg", arg_prefix);
@@ -232,7 +233,7 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
                         "{}Field name={:?} type={:?}",
                         field_prefix,
                         field.name_token_info,
-                        field.type_token_info
+                        field.field_type
                     );
                 } else {
                     println!("{}Field", field_prefix);
@@ -259,7 +260,7 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
                         "{}Field name={:?} type={:?}",
                         field_prefix,
                         field.name_token_info,
-                        field.type_token_info
+                        field.field_type
                     );
                 } else {
                     println!("{}Field", field_prefix);

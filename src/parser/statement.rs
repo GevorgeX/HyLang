@@ -1,12 +1,14 @@
 use crate::errors::syntax_errors::SyntaxError;
-use crate::lexer::token::{Token, TokenInfo, TokenType};
+use crate::lexer::token::{TokenInfo, TokenType};
 use crate::parser::expression::Expression;
 use crate::parser::Parser;
 
+use super::types::Type;
+
 pub enum Statement {
     ExpressionStatement(Expression),
-    DefineVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
-    DefineConstantVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, token_info: TokenInfo},
+    DefineVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, var_type: Option<Type>},
+    DefineConstantVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, const_type: Option<Type>},
 }
 
 impl Parser {
@@ -34,6 +36,16 @@ impl Parser {
         Ok(())
     }
 
+    fn is_statment_end(&self) -> bool {
+        if let Some(token) = self.peek_token_with_newline() {
+            return match token.token_type {
+                TokenType::RightCBracket | TokenType::NewLine | TokenType::DotComma => true,
+                _ => false,
+            }
+        }
+        false
+    }
+
     pub fn statement(&mut self) -> Result<Statement, SyntaxError> {
         if let Some(&token) = self.peek_token() {
             let res = match token.token_type {
@@ -41,20 +53,30 @@ impl Parser {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
                     let value = self.define_var_initialization()?;
+                    let mut var_type = None;
+                    if !self.is_statment_end()  {
+                      var_type = Some(self.parse_type()?);
+                    }
+
                     Statement::DefineVariable {
                         identifier,
                         value,
-                        token_info: token.token_info,
+                        var_type
                     }
                 }
                 TokenType::Const => {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
                     let value = self.define_var_initialization()?;
+                    let mut const_type = None;
+                    if !self.is_statment_end()  {
+                      const_type = Some(self.parse_type()?);
+                    }
+
                     Statement::DefineConstantVariable {
                         identifier,
                         value,
-                        token_info: token.token_info,
+                        const_type
                     }
                 }
                 _ => {
