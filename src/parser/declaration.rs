@@ -6,6 +6,7 @@ use crate::lexer::token::{TokenInfo, TokenType};
 use crate::parser::declaration::function_define::FunctionArgument;
 use crate::parser::expression::control_flow::BlockOfStatements;
 use crate::parser::Parser;
+use crate::parser::types::Type;
 
 pub enum Declaration {
     Namespace{ token_info: TokenInfo, name: TokenInfo, body: Vec<Declaration>, bracket_token: (TokenInfo, TokenInfo) },
@@ -14,7 +15,7 @@ pub enum Declaration {
         name: TokenInfo,
         parameters: Vec<FunctionArgument>,
         bracket_token: (TokenInfo, TokenInfo),
-        type_token_info: TokenInfo,
+        return_type: Option<Type>,
         body: BlockOfStatements
     },
     Struct{
@@ -56,7 +57,14 @@ impl Parser {
                     self.next_token();
                     let name_token_info = self.require_token(TokenType::Ident)?.token_info;
                     let (lbracket_token_info, parameters, rbracket_token) = self.function_argument()?;
-                    let type_token_info = self.require_token(TokenType::Ident)?.token_info;
+                    let return_type = {
+                        if let Some(token) = self.peek_token() {
+                            if token.token_type != TokenType::LeftCBracket {
+                                Some(self.parse_type()?)
+                            }
+                            else { None }
+                        } else { None }
+                    };
                     let body = self.block_of_statements()?;
 
                     Ok(Some(Declaration::Function {
@@ -64,7 +72,7 @@ impl Parser {
                         name: name_token_info,
                         parameters,
                         bracket_token: (lbracket_token_info, rbracket_token),
-                        type_token_info,
+                        return_type,
                         body,
                     }))
                 }

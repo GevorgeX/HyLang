@@ -184,11 +184,11 @@ pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, 
                 print_declaration_tree(sub_decl, indent + 1, i == body.len() - 1, show_token_info);
             }
         }
-        Declaration::Function{ func_token_info, name, parameters, bracket_token, type_token_info, body } => {
+        Declaration::Function{ func_token_info, name, parameters, bracket_token, return_type, body } => {
             if show_token_info {
                 println!(
                     "{}FunctionDefine name={:?} parameters={:?} return_type={:?} brackets={:?}",
-                    prefix, name, parameters, type_token_info, bracket_token
+                    prefix, name, parameters, return_type, bracket_token
                 );
             } else {
                 println!("{}FunctionDefine", prefix);
