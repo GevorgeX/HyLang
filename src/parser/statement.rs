@@ -36,10 +36,10 @@ impl Parser {
         Ok(())
     }
 
-    fn is_statement_end(&self) -> bool {
+    fn is_variable_decl_end(&self) -> bool {
         if let Some(token) = self.peek_token_with_newline() {
             return match token.token_type {
-                TokenType::RightCBracket | TokenType::NewLine | TokenType::DotComma => true,
+                TokenType::RightCBracket | TokenType::NewLine | TokenType::DotComma | TokenType::Equal => true,
                 _ => false,
             }
         }
@@ -52,15 +52,13 @@ impl Parser {
                 TokenType::Var => {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
-                    let value = self.define_var_initialization()?;
                     let var_type = {
-                        if !self.is_statement_end()  {
+                        if !self.is_variable_decl_end()  {
                           Some(self.parse_type()?)
-
                         }
                         else { None }
                     };
-
+                    let value = self.define_var_initialization()?;
                     Statement::DefineVariable {
                         identifier,
                         value,
@@ -70,15 +68,13 @@ impl Parser {
                 TokenType::Const => {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
-                    let value = self.define_var_initialization()?;
                     let const_type = {
-                        if !self.is_statement_end()  {
+                        if !self.is_variable_decl_end()  {
                             Some(self.parse_type()?)
-
                         }
                         else { None }
                     };
-
+                    let value = self.define_var_initialization()?;
                     Statement::DefineConstantVariable {
                         identifier,
                         value,
