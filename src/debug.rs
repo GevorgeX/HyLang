@@ -3,8 +3,8 @@ use crate::parser::statement::Statement;
 use crate::parser::declaration::Declaration;
 use crate::parser::types::Type;
 
-pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, show_token_info: bool) {
-    let prefix = if indent == 0 {
+fn make_prefix(indent: usize, is_last: bool) -> String {
+    if indent == 0 {
         String::new()
     } else {
         let mut s = String::new();
@@ -13,304 +13,212 @@ pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, sh
         }
         s.push_str(if is_last { "└── " } else { "├── " });
         s
-    };
+    }
+}
+
+pub fn print_expression_tree(expr: &Expression, indent: usize, is_last: bool, code: &String) {
+    let prefix = make_prefix(indent, is_last);
 
     match expr {
         Expression::Integer{token_info} => {
-            if show_token_info {
-                println!("{}Integer {:?}", prefix, token_info);
-            } else {
-                println!("{}Integer", prefix);
-            }
+            println!("{}Integer {}", prefix, &code[token_info.index..token_info.index + token_info.len]);
         }
         Expression::Boolean{token_info} => {
-            if show_token_info {
-                println!("{}Boolean {:?}", prefix, token_info);
-            } else {
-                println!("{}Boolean", prefix);
-            }
+            println!("{}Boolean {}", prefix, &code[token_info.index..token_info.index + token_info.len]);
+
         }
         Expression::Identifier{token_info} => {
-            if show_token_info {
-                println!("{}Identifier {:?}", prefix, token_info);
-            } else {
-                println!("{}Identifier", prefix);
-            }
+            println!("{}Identifier {}", prefix, &code[token_info.index..token_info.index + token_info.len]);
+
         }
         Expression::Unary{operator, right, token_info} => {
-            if show_token_info {
-                println!("{}Unary {:?} {:?}", prefix, operator, token_info);
-            } else {
-                println!("{}Unary {:?}", prefix, operator);
-            }
-            print_expression_tree(right, indent + 1, true, show_token_info);
+            println!("{}Unary {:?} {}", prefix, operator, &code[token_info.index..token_info.index + token_info.len]);
+
+            print_expression_tree(right, indent + 1, true, code);
         }
-        Expression::Binary{left, operator, right, token_info} => {
-            if show_token_info {
-                println!("{}Binary {:?} {:?}", prefix, operator, token_info);
-            } else {
-                println!("{}Binary {:?}", prefix, operator);
-            }
-            print_expression_tree(left, indent + 1, false, show_token_info);
-            print_expression_tree(right, indent + 1, true, show_token_info);
+        Expression::Binary{left, operator, right, ..} => {
+            println!("{}Binary {:?}", prefix, operator);
+
+            print_expression_tree(left, indent + 1, false, code);
+            print_expression_tree(right, indent + 1, true, code);
         }
-        Expression::GetMember{object, member, token_info} => {
-            if show_token_info {
-                println!("{}GetMember {:?}", prefix, token_info);
-            } else {
-                println!("{}GetMember", prefix);
-            }
-            print_expression_tree(object, indent + 1, false, show_token_info);
-            print_expression_tree(member, indent + 1, true, show_token_info);
+        Expression::GetMember{object, member, ..} => {
+            println!("{}GetMember", prefix);
+            print_expression_tree(object, indent + 1, false, code);
+            print_expression_tree(member, indent + 1, true, code);
         }
-        Expression::Call{callee, arguments, token_info} => {
-            if show_token_info {
-                println!("{}Call {:?}", prefix, token_info);
-            } else {
-                println!("{}Call", prefix);
-            }
-            print_expression_tree(callee, indent + 1, false, show_token_info);
+        Expression::Call{callee, arguments, ..} => {
+            println!("{}Call", prefix);
+            print_expression_tree(callee, indent + 1, false, code);
             for (i, arg) in arguments.iter().enumerate() {
-                print_expression_tree(arg, indent + 1, i == arguments.len() - 1, show_token_info);
+                print_expression_tree(arg, indent + 1, i == arguments.len() - 1, code);
             }
         }
-        Expression::Index{object, index, token_info} => {
-            if show_token_info {
-                println!("{}Index {:?}", prefix, token_info);
-            } else {
-                println!("{}Index", prefix);
-            }
-            print_expression_tree(object, indent + 1, false, show_token_info);
-            print_expression_tree(index, indent + 1, true, show_token_info);
+        Expression::Index{object, index, ..} => {
+            println!("{}Index", prefix);
+            print_expression_tree(object, indent + 1, false, code);
+            print_expression_tree(index, indent + 1, true, code);
         }
-        Expression::While{condition, body, token_info} => {
-            if show_token_info {
-                println!("{}While {:?}", prefix, token_info);
-            } else {
-                println!("{}While", prefix);
-            }
-            print_expression_tree(condition, indent + 1, false, show_token_info);
-            println!("{}Body", "│   ".repeat(indent));
+        Expression::While{condition, body, ..} => {
+            println!("{}While", prefix);
+            print_expression_tree(condition, indent + 1, false, code);
             for (i, stmt) in body.statements.iter().enumerate() {
-                print_statement_tree(stmt, indent + 2, i == body.statements.len() - 1, show_token_info);
+                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, code);
             }
         }
         Expression::Block{body} => {
-            if show_token_info {
-                println!("{}Block {:?}", prefix, body.brackets_token_info);
-            } else {
-                println!("{}Block", prefix);
-            }
+            println!("{}Block", prefix);
             for (i, stmt) in body.statements.iter().enumerate() {
-                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, show_token_info);
+                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, code);
             }
         }
         Expression::IfElse{if_block, else_if_blocks, else_block} => {
-            println!("{}IfElse", prefix);
-            print_if_else_branch("If", if_block, indent + 1, false, show_token_info);
+            println!("{}If", prefix);
+            // Печать условия if
+            print_expression_tree(&if_block.condition, indent + 1, true, code);
 
-            if let Some(else_if_blocks) = else_if_blocks {
-                for (i, elif) in else_if_blocks.iter().enumerate() {
-                    print_if_else_branch("Elif", elif, indent + 1, false, show_token_info);
+            for (i, stmt) in if_block.body.statements.iter().enumerate() {
+                print_statement_tree(stmt, indent + 1, i == if_block.body.statements.len() - 1, code);
+            }
+            // Печать elif ветвей
+            if let Some(elif_blocks) = else_if_blocks {
+                for elif in elif_blocks {
+                    let elif_prefix = make_prefix(indent, false);
+                    println!("{}Elif", elif_prefix);
+                    print_expression_tree(&elif.condition, indent + 1, true, code);
+                    for (i, stmt) in elif.body.statements.iter().enumerate() {
+                        print_statement_tree(stmt, indent + 1, i == elif.body.statements.len() - 1, code);
+                    }
                 }
             }
+            // Печать else ветви
             if let Some(else_block) = else_block {
-                print_else_branch(else_block, indent + 1, true, show_token_info);
+                let else_prefix = make_prefix(indent, true);
+                println!("{}Else", else_prefix);
+                for (i, stmt) in else_block.body.statements.iter().enumerate() {
+                    print_statement_tree(stmt, indent + 1, i == else_block.body.statements.len() - 1, code);
+                }
             }
         }
     }
 }
 
-pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, show_token_info: bool) {
-    let prefix = if indent == 0 {
-        String::new()
-    } else {
-        let mut s = String::new();
-        for _ in 0..(indent - 1) {
-            s.push_str("│   ");
-        }
-        s.push_str(if is_last { "└── " } else { "├── " });
-        s
-    };
+pub fn print_statement_tree(stmt: &Statement, indent: usize, is_last: bool, code: &String) {
+    let prefix = make_prefix(indent, is_last);
 
     match stmt {
         Statement::ExpressionStatement(expr) => {
             println!("{}ExpressionStatement", prefix);
-            print_expression_tree(expr, indent + 1, true, show_token_info);
+            print_expression_tree(expr, indent + 1, true, code);
         }
         Statement::DefineVariable{identifier, value, var_type} => {
-            if show_token_info {
-                println!("{}DefineVariable {:?} {:?}", prefix, identifier, var_type);
-            } else {
-                println!("{}DefineVariable {:?}", prefix, var_type);
+            println!("{}DefineVariable {:?}", prefix, &code[identifier.index..identifier.index + identifier.len]);
+            if let Some(ty) = var_type {
+                print_type_tree(ty, indent + 1, true, code);
             }
             if let Some((_, expr)) = value {
-                print_expression_tree(expr, indent + 1, true, show_token_info);
+                print_expression_tree(expr, indent + 1, true, code);
             }
         }
         Statement::DefineConstantVariable{identifier, value, const_type} => {
-            if show_token_info {
-                println!("{}DefineConstantVariable {:?} {:?}", prefix, identifier, const_type);
-            } else {
-                println!("{}DefineConstantVariable {:?}", prefix, const_type);
+            println!("{}DefineConstantVariable {:?}", prefix, &code[identifier.index..identifier.index + identifier.len]);
+            if let Some(ty) = const_type {
+                print_type_tree(ty, indent + 1, true, code);
             }
             if let Some((_, expr)) = value {
-                print_expression_tree(expr, indent + 1, true, show_token_info);
+                print_expression_tree(expr, indent + 1, true, code);
             }
         }
     }
 }
 
-pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, show_token_info: bool) {
-    let prefix = if indent == 0 {
-        String::new()
-    } else {
-        let mut s = String::new();
-        for _ in 0..(indent - 1) {
-            s.push_str("│   ");
-        }
-        s.push_str(if is_last { "└── " } else { "├── " });
-        s
-    };
+fn print_fields(fields: &[crate::parser::declaration::struct_union_define::Field], indent: usize, code: &String) {
+    for (i, field) in fields.iter().enumerate() {
+        let field_prefix = format!(
+            "{}{}",
+            "│   ".repeat(indent),
+            if i == fields.len() - 1 { "└───" } else { "├───" }
+        );
+        let name = field.name_token_info;
+        println!(
+            "{}Field name={:?}",
+            field_prefix,
+            &code[name.index..name.index + name.len],
+        );
+        print_type_tree(&field.field_type, indent + 2, true, code);
+    }
+}
+
+pub fn print_declaration_tree(decl: &Declaration, indent: usize, is_last: bool, code: &String) {
+    let prefix = make_prefix(indent, is_last);
 
     match decl {
-        Declaration::Namespace { token_info, name, body, bracket_token } => {
-            if show_token_info {
-                println!("{}Namespace {:?} brackets={:?}", prefix, token_info, bracket_token);
-            } else {
-                println!("{}Namespace", prefix);
-            }
+        Declaration::Namespace { name, body, .. } => {
+            println!("{}Namespace {:?}", prefix, &code[name.index..name.index + name.len]);
+
             for (i, sub_decl) in body.iter().enumerate() {
-                print_declaration_tree(sub_decl, indent + 1, i == body.len() - 1, show_token_info);
+                print_declaration_tree(sub_decl, indent + 1, i == body.len() - 1, code);
             }
         }
-        Declaration::Function{ func_token_info, name, parameters, bracket_token, return_type, body } => {
-            if show_token_info {
-                println!(
-                    "{}FunctionDefine name={:?} parameters={:?} return_type={:?} brackets={:?}",
-                    prefix, name, parameters, return_type, bracket_token
-                );
-            } else {
-                println!("{}FunctionDefine", prefix);
-            }
-            // Аргументы функции с ───
-            for (i, param) in parameters.iter().enumerate() {
-                let arg_prefix = format!(
+        Declaration::Function{ name, parameters, return_type, body, .. } => {
+            println!(
+                "{}FunctionDefine name={:?}",
+                prefix, &code[name.index..name.index + name.len]
+            );
+
+            for (i, field) in parameters.iter().enumerate() {
+                let field_prefix = format!(
                     "{}{}",
                     "│   ".repeat(indent),
-                    if i == parameters.len() - 1 { "└───" } else { "├───" }
+                    if i == parameters.len() - 1
+                        && return_type.is_none()
+                        && body.statements.len() == 0 { "└───" } else { "├───" }
                 );
-                if show_token_info {
-                    println!(
-                        "{}Arg name={:?} type={:?}",
-                        arg_prefix, param.name_token_info, param.arg_type
-                    );
-                } else {
-                    println!("{}Arg", arg_prefix);
-                }
+                let name = field.name_token_info;
+                println!(
+                    "{}Argument name={:?}",
+                    field_prefix,
+                    &code[name.index..name.index + name.len],
+                );
+                print_type_tree(&field.arg_type, indent + 2, true, code);
             }
+
+            if let Some(ret_type) = return_type {
+                println!("{}├───ReturnType", "│   ".repeat(indent));
+                print_type_tree(ret_type, indent + 2, true, code);
+            }
+
             for (i, stmt) in body.statements.iter().enumerate() {
-                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, show_token_info);
+                print_statement_tree(stmt, indent + 1, i == body.statements.len() - 1, code);
             }
         }
-        Declaration::Struct { struct_token_info, name, fields, bracket_token } => {
-            if show_token_info {
-                println!(
-                    "{}Struct name={:?} brackets={:?}",
-                    prefix, name, bracket_token
-                );
-            } else {
-                println!("{}Struct", prefix);
-            }
-            for (i, field) in fields.iter().enumerate() {
-                let field_prefix = format!(
-                    "{}{}",
-                    "│   ".repeat(indent),
-                    if i == fields.len() - 1 { "└───" } else { "├───" }
-                );
-                if show_token_info {
-                    println!(
-                        "{}Field name={:?} type={:?}",
-                        field_prefix,
-                        field.name_token_info,
-                        field.field_type
-                    );
-                } else {
-                    println!("{}Field", field_prefix);
-                }
-            }
+        Declaration::Struct { name, fields, .. } => {
+            println!(
+                "{}Struct name={:?} ",
+                prefix, &code[name.index..name.index + name.len]
+            );
+            print_fields(fields, indent, code);
         }
-        Declaration::Union { union_token_info, name, fields, bracket_token } => {
-            if show_token_info {
-                println!(
-                    "{}Union name={:?} brackets={:?}",
-                    prefix, name, bracket_token
-                );
-            } else {
-                println!("{}Union", prefix);
-            }
-            for (i, field) in fields.iter().enumerate() {
-                let field_prefix = format!(
-                    "{}{}",
-                    "│   ".repeat(indent),
-                    if i == fields.len() - 1 { "└───" } else { "├───" }
-                );
-                if show_token_info {
-                    println!(
-                        "{}Field name={:?} type={:?}",
-                        field_prefix,
-                        field.name_token_info,
-                        field.field_type
-                    );
-                } else {
-                    println!("{}Field", field_prefix);
-                }
-            }
+        Declaration::Union { name, fields, .. } => {
+            println!(
+                "{}Union name={:?} ",
+                prefix, &code[name.index..name.index + name.len]
+            );
+            print_fields(fields, indent, code);
         }
     }
 }
 
-fn print_if_else_branch(label: &str, branch: &IfElseBranch, indent: usize, is_last: bool, show_token_info: bool) {
-    let prefix = if indent == 0 {
-        String::new()
-    } else {
-        let mut s = String::new();
-        for _ in 0..(indent - 1) {
-            s.push_str("│   ");
+pub fn print_type_tree(ty: &Type, indent: usize, is_last: bool, code: &str) {
+    let prefix = make_prefix(indent, is_last);
+    match ty {
+        Type::Identifier { token_info } => {
+            let name = &code[token_info.index..token_info.index + token_info.len];
+            println!("{}Identifier {}", prefix, name);
         }
-        s.push_str(if is_last { "└── " } else { "├── " });
-        s
-    };
-    if show_token_info {
-        println!("{}{} [{:?} {:?}]", prefix, label, branch.token_info, branch.body.brackets_token_info);
-    } else {
-        println!("{}{}", prefix, label);
-    }
-    print_expression_tree(&branch.condition, indent + 1, false, show_token_info);
-    println!("{}Body", "│   ".repeat(indent));
-    for (i, stmt) in branch.body.statements.iter().enumerate() {
-        print_statement_tree(stmt, indent + 2, i == branch.body.statements.len() - 1, show_token_info);
-    }
-}
-
-fn print_else_branch(branch: &ElseBranch, indent: usize, is_last: bool, show_token_info: bool) {
-    let prefix = if indent == 0 {
-        String::new()
-    } else {
-        let mut s = String::new();
-        for _ in 0..(indent - 1) {
-            s.push_str("│   ");
+        Type::Pointer { to, .. } => {
+            println!("{}Pointer", prefix);
+            print_type_tree(to, indent + 1, true, code);
         }
-        s.push_str(if is_last { "└── " } else { "├── " });
-        s
-    };
-    if show_token_info {
-        println!("{}Else [{:?} {:?}]", prefix, branch.token_info, branch.body.brackets_token_info);
-    } else {
-        println!("{}Else", prefix);
-    }
-    println!("{}Body", "│   ".repeat(indent));
-    for (i, stmt) in branch.body.statements.iter().enumerate() {
-        print_statement_tree(stmt, indent + 2, i == branch.body.statements.len() - 1, show_token_info);
     }
 }

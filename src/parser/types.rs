@@ -9,16 +9,6 @@ pub enum Type{
     Pointer{token_info: TokenInfo, to: Box<Type>},
 }
 
-impl Debug for Type {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Type::Identifier{token_info} => write!(f, "Identifier"),
-            Type::Pointer{token_info, to} => write!(f, "Pointer -> {:?}", to),
-        }
-    }
-    
-}
-
 impl Parser {
     pub fn parse_type(&mut self) -> Result<Type, SyntaxError> {
         self.prefix_type(false)

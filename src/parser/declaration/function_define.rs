@@ -3,7 +3,6 @@ use crate::lexer::token::{TokenInfo, TokenType};
 use crate::parser::types::Type;
 use crate::parser::Parser;
 
-#[derive(Debug)]
 pub struct FunctionArgument {
     pub name_token_info: TokenInfo,
     pub arg_type: Type,

@@ -1,5 +1,5 @@
 mod function_define;
-mod struct_union_define;
+pub mod struct_union_define;
 
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};

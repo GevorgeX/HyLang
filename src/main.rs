@@ -33,7 +33,7 @@ fn main() {
         Ok(res) => {
             match res {
                 Some(res) => {
-                    print_declaration_tree(&res, 0, false, false);
+                    print_declaration_tree(&res, 0, false, &code);
                 }
                 None => {}
             }
