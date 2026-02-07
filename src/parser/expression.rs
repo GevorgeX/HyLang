@@ -246,8 +246,6 @@ impl Parser {
                 TokenType::LessEqual => BinaryOperator::LessEqual,
                 TokenType::Greater => BinaryOperator::Greater,
                 TokenType::GreaterEqual => BinaryOperator::GreaterEqual,
-                TokenType::DoubleEqual => BinaryOperator::Equal,
-                TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };
             self.next(ignore_newline);
