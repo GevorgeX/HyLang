@@ -1,0 +1,6 @@
+Statement:
+    Exp
+
+    var Ident `: Type` `= Exp`
+
+    const Ident `: Type` `= Exp`

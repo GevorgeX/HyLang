@@ -1,0 +1,107 @@
+Primary:
+    1.3
+
+    True
+
+    False
+
+    Ident
+
+    If {}
+
+    While {}
+
+    {
+        Stm
+        Stm
+    }
+
+    ( Exp )
+
+Postfix:
+    Exp.Exp
+
+    Exp(Exp, Exp, Exp)
+
+    Exp[Exp]
+
+Prefix:
+    -Exp
+
+    !Exp
+
+    ~Exp
+
+    &Exp
+
+    *Exo
+
+Multiplicative:
+    Exp * Exp
+
+    Exp / Exp
+
+    Exp % Exp
+
+Additive:
+    Exp + Exp
+
+    Exp - Exp
+
+
+Shift:
+    Exp >> Exp
+
+    Exp << Exp
+
+Relational:
+    Exp > Exp
+
+    Exp >= Exp
+
+    Exp < Exp
+
+    Exp <= Exp
+
+Equivalence:
+    Exp == Exp
+
+    Exp != Exp
+
+Bitwise And:
+    Exp & Exp
+
+Bitwise Xor:
+    Exp ^ Exp
+
+Bitwise Or:
+    Exp | Exp
+
+Logical And:
+    Exp and Exp
+
+Logical Or:
+    Exp Or Exp
+
+Assigment:
+    Exp = Exp
+
+    Exp += Exp
+
+    Exp -= Exp
+
+    Exp *= Exp
+
+    Exp /= Exp
+
+    Exp %= Exp
+
+    Exp &= Exp
+
+    Exp |= Exp
+
+    Exp ^= Exp
+
+    Exp >>= Exp
+
+    Exp <<= Exp

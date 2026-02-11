@@ -1,0 +1,20 @@
+Declaration:
+    namespace Ident{
+        Decl
+        Decl
+    }
+
+    fn Ident(Ident Type, Ident Type) {
+        Stm
+        Stm
+    }
+
+    struct Ident {
+        Ident Type Ident Type
+        Ident Type
+    }
+
+    union Ident {
+        Ident Type Ident Type
+        Ident Type
+    }
