@@ -1,14 +1,8 @@
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
+use crate::parser::expression::block::BlockOfStatements;
 use crate::parser::expression::Expression;
 use crate::parser::Parser;
-use crate::parser::statement::Statement;
-
-
-pub struct BlockOfStatements {
-    pub(crate) statements: Vec<Statement>,
-    pub(crate) brackets_token_info: (TokenInfo, TokenInfo)
-}
 
 pub struct IfElseBranch {
     pub(crate) condition: Expression,
@@ -22,41 +16,6 @@ pub struct ElseBranch {
 }
 
 impl Parser{
-    pub(crate) fn block(&mut self) -> Result<Expression, SyntaxError> {
-        self.index -= 1;
-        let body = self.block_of_statements()?;
-        Ok(Expression::Block {
-            body,
-        })
-    }
-
-    pub(crate) fn while_exp(&mut self, token_info: TokenInfo) -> Result<Expression, SyntaxError> {
-        let exp = self.expression()?;
-        let body = self.block_of_statements()?;
-        Ok(Expression::While {
-            condition: Box::new(exp),
-            body,
-            token_info
-        })
-    }
-
-    pub fn block_of_statements(&mut self) -> Result<BlockOfStatements, SyntaxError> {
-        let left_bracket = self.require_token(TokenType::LeftCBracket)?.clone();
-        let mut body = Vec::new();
-        while let Some(&token) = self.peek_token() {
-            if token.token_type == TokenType::RightCBracket {
-                break;
-            }
-            let stmt = self.statement()?;
-            body.push(stmt);
-        }
-        let right_bracket = self.require_token(TokenType::RightCBracket)?;
-        Ok(BlockOfStatements {
-            statements: body,
-            brackets_token_info: (left_bracket.token_info, right_bracket.token_info),
-        })
-    }
-
     fn if_block(&mut self, if_token: TokenInfo) -> Result<IfElseBranch, SyntaxError> {
         let condition = self.expression()?;
         let if_body= self.block_of_statements()?;

@@ -1,10 +1,12 @@
-pub mod control_flow;
+mod if_else;
 mod call_arguments;
+pub mod block;
+mod while_exp;
 
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
-pub use crate::parser::expression::control_flow::{ElseBranch, IfElseBranch};
-use crate::parser::expression::control_flow::BlockOfStatements;
+use crate::parser::expression::block::BlockOfStatements;
+pub use crate::parser::expression::if_else::{ElseBranch, IfElseBranch};
 use crate::parser::Parser;
 
 pub enum Expression {
