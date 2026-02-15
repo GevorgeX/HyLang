@@ -67,7 +67,7 @@ pub enum BinaryOperator {
 }
 
 impl Parser {
-    pub fn expression_non_ignore_newline(&mut self) -> Result<Expression, SyntaxError> {
+    pub fn expression_newline(&mut self) -> Result<Expression, SyntaxError> {
         self.skip_newlines();
         self.peek_expression(false)
     }
@@ -426,7 +426,7 @@ impl Parser {
         if ignore_newline {
             self.next_token()
         } else {
-            self.next_token_non_ignore_nl()
+            self.next_token_newline()
         }
     }
 
@@ -434,7 +434,7 @@ impl Parser {
         if ignore_newline {
             self.peek_token()
         } else {
-            self.peek_token_non_ignore_nl()
+            self.peek_token_newline()
         }
     }
 }

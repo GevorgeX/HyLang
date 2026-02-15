@@ -5,6 +5,8 @@ use crate::parser::Parser;
 
 use super::types::Type;
 
+mod variable_decl;
+
 pub enum Statement {
     ExpressionStatement(Expression),
     DefineVariable{identifier: TokenInfo, value: Option<(TokenInfo, Expression)>, var_type: Option<Type>},
@@ -14,7 +16,7 @@ pub enum Statement {
 impl Parser {
     fn require_statement_end(&mut self) -> Result<(), SyntaxError> {
         let mut found = false;
-        while let Some(token) = self.peek_token_non_ignore_nl() {
+        while let Some(token) = self.peek_token_newline() {
             match token.token_type {
                 TokenType::RightCBracket => {
                     found = true;
@@ -37,7 +39,7 @@ impl Parser {
     }
 
     fn is_variable_decl_end(&self) -> bool {
-        if let Some(token) = self.peek_token_non_ignore_nl() {
+        if let Some(token) = self.peek_token_newline() {
             return match token.token_type {
                 TokenType::RightCBracket | TokenType::NewLine | TokenType::DotComma | TokenType::Equal => true,
                 _ => false,
@@ -52,13 +54,9 @@ impl Parser {
                 TokenType::Var => {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
-                    let var_type = {
-                        if !self.is_variable_decl_end()  {
-                          Some(self.parse_type()?)
-                        }
-                        else { None }
-                    };
-                    let value = self.define_var_initialization()?;
+                    let var_type = self.define_var_type()?;
+                    let value = self.var_initialization()?;
+
                     Statement::DefineVariable {
                         identifier,
                         value,
@@ -68,13 +66,9 @@ impl Parser {
                 TokenType::Const => {
                     self.next_token();
                     let identifier = self.require_token(TokenType::Ident)?.token_info;
-                    let const_type = {
-                        if !self.is_variable_decl_end()  {
-                            Some(self.parse_type()?)
-                        }
-                        else { None }
-                    };
-                    let value = self.define_var_initialization()?;
+                    let const_type = self.define_var_type()?;
+                    let value = self.var_initialization()?;
+
                     Statement::DefineConstantVariable {
                         identifier,
                         value,
@@ -82,7 +76,7 @@ impl Parser {
                     }
                 }
                 _ => {
-                    let expr = self.expression_non_ignore_newline()?;
+                    let expr = self.expression_newline()?;
                     Statement::ExpressionStatement(expr)
                 }
             };
@@ -93,15 +87,4 @@ impl Parser {
         Err(SyntaxError::ExpectedStatement{token_info: self.get_current_token_info()})
     }
 
-    fn define_var_initialization(&mut self) -> Result<Option<(TokenInfo, Expression)>, SyntaxError> {
-        let mut value = None;
-        if let Some(&equal_token) = self.peek_token() {
-            if equal_token.token_type == TokenType::Equal {
-                self.next_token();
-                let expr = self.expression_non_ignore_newline()?;
-                value = Some((equal_token.token_info, expr));
-            }
-        }
-        Ok(value)
-    }
 }

@@ -11,7 +11,7 @@ pub struct Field {
 impl Parser{
         fn require_field_end(&mut self) -> Result<(), SyntaxError> {
         let mut found = false;
-        while let Some(token) = self.peek_token_non_ignore_nl() {
+        while let Some(token) = self.peek_token_newline() {
             match token.token_type {
                 TokenType::RightCBracket => {
                     found = true;

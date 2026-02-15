@@ -1,5 +1,6 @@
 mod function_define;
 pub mod struct_union_define;
+mod namespace;
 
 use crate::errors::syntax_errors::SyntaxError;
 use crate::lexer::token::{TokenInfo, TokenType};
@@ -39,32 +40,14 @@ impl Parser {
                 TokenType::Namespace => {
                     self.next_token();
                     let name_token = self.require_token(TokenType::Ident)?.token_info;
-                    let open_bracket = self.require_token(TokenType::LeftCBracket)?.token_info;
-                    let mut body = Vec::new();
-
-                    while let Some(&token) = self.peek_token() {
-                        if token.token_type == TokenType::RightCBracket {
-                            break;
-                        }
-                        if let Some(decl) = self.declaration()?{
-                            body.push(decl);
-                        }
-                    }
-                    let close_bracket = self.require_token(TokenType::RightCBracket)?.token_info;
+                    let (open_bracket, body, close_bracket) = self.namespace_body()?;
                     Ok(Some(Declaration::Namespace { token_info: token.token_info, name: name_token, body, bracket_token: (open_bracket, close_bracket)}))
                 }
                 TokenType::Function => {
                     self.next_token();
                     let name_token_info = self.require_token(TokenType::Ident)?.token_info;
                     let (lbracket_token_info, parameters, rbracket_token) = self.function_argument()?;
-                    let return_type = {
-                        if let Some(token) = self.peek_token() {
-                            if token.token_type != TokenType::LeftCBracket {
-                                Some(self.parse_type()?)
-                            }
-                            else { None }
-                        } else { None }
-                    };
+                    let return_type = self.function_return_type()?;
                     let body = self.block_of_statements()?;
 
                     Ok(Some(Declaration::Function {

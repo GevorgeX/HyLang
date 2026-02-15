@@ -33,7 +33,7 @@ impl Parser{
         index
     }
 
-    pub fn next_token_non_ignore_nl(&mut self) -> Option<&Token> {
+    pub fn next_token_newline(&mut self) -> Option<&Token> {
         self.index += 1;
         self.code.get(self.index - 1)
     }
@@ -51,7 +51,7 @@ impl Parser{
         self.code.get(last_index) 
      }
     
-    pub fn peek_token_non_ignore_nl(&self) -> Option<&Token> {
+    pub fn peek_token_newline(&self) -> Option<&Token> {
         self.code.get(self.index)
     }
 

@@ -40,4 +40,15 @@ impl Parser{
 
         Ok((lbracket_token,args,self.require_token(TokenType::RightRBracket)?.token_info))
     }
+
+    pub fn function_return_type(&mut self) -> Result<Option<Type>, SyntaxError> {
+        Ok(
+            if let Some(token) = self.peek_token() {
+                if token.token_type != TokenType::LeftCBracket {
+                    Some(self.parse_type()?)
+                }
+                else { None }
+            } else { None }
+        )
+    }
 }
