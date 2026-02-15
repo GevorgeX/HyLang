@@ -1,5 +1,3 @@
-use std::fmt::Debug;
-
 use crate::{errors::syntax_errors::SyntaxError, lexer::token::{TokenInfo, TokenType}};
 
 use super::Parser;
@@ -11,18 +9,18 @@ pub enum Type{
 
 impl Parser {
     pub fn parse_type(&mut self) -> Result<Type, SyntaxError> {
-        self.prefix_type(false)
+        self.prefix_type()
     }
 
-    fn prefix_type(&mut self, ignore_newline: bool) -> Result<Type, SyntaxError> {
-        if let Some(&token) = self.peek(ignore_newline) {
+    fn prefix_type(&mut self) -> Result<Type, SyntaxError> {
+        if let Some(&token) = self.peek_token() {
             match token.token_type {
                 TokenType::Star => {
-                    self.next(ignore_newline);
-                    let to = self.prefix_type(ignore_newline)?;
+                    self.next_token();
+                    let to = self.prefix_type()?;
                     Ok(Type::Pointer { token_info: token.token_info, to: Box::new(to) })
                 }
-                _ => self.primary_type(ignore_newline),
+                _ => self.primary_type(),
             }
         } else {
             let token_info = self.get_current_token_info();
@@ -30,10 +28,10 @@ impl Parser {
         }
     }
 
-    fn primary_type(&mut self, ignore_newline: bool) -> Result<Type, SyntaxError> {
+    fn primary_type(&mut self) -> Result<Type, SyntaxError> {
         let token = {
             let token_info = self.get_current_token_info();
-            self.next(ignore_newline).ok_or(SyntaxError::ExpectedExpression { token_info })
+            self.next_token().ok_or(SyntaxError::ExpectedExpression { token_info })
         }?.clone();
         match token.token_type {
             TokenType::Ident => Ok(Type::Identifier { token_info: token.token_info }),

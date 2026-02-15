@@ -9,42 +9,59 @@ pub mod types;
 
 pub struct Parser{
     code: Vec<Token>,
-    index: usize,
+    index: usize
 }
 
 impl Parser{
     pub fn new(code: Vec<Token>) -> Self {
-        Self { code, index: 0 }
+        Self { code, index: 0}
     }
 
     pub fn parse(&mut self) -> Result<Option<Declaration>, SyntaxError> {
         self.declaration()
     }
 
-    fn skip_new_lines(&self) -> usize {
-        let mut i = self.index;
-        while let Some(token) = self.code.get(i) {
+    pub fn get_non_newline(&self) -> usize {
+        let mut index = self.index;
+        while let Some(token) = self.code.get(index) {
             if token.token_type == TokenType::NewLine {
-                i += 1;
+                index += 1;
             } else {
                 break;
             }
         }
-        i
+        index
     }
 
-    pub fn next_token_with_nl(&mut self) -> Option<&Token> {
+    pub fn next_token_non_ignore_nl(&mut self) -> Option<&Token> {
         self.index += 1;
         self.code.get(self.index - 1)
     }
 
     pub fn next_token(&mut self) -> Option<&Token> {
-        self.index = self.skip_new_lines() + 1;
-        self.code.get(self.index - 1)
+        let next_non_newline_index = self.get_non_newline();
+        if self.index != next_non_newline_index{
+            self.index = next_non_newline_index;
+        }
+        
+        let last_index = self.index;
+        self.index += 1;
+        self.skip_newlines();
+        
+        self.code.get(last_index) 
+     }
+    
+    pub fn peek_token_non_ignore_nl(&self) -> Option<&Token> {
+        self.code.get(self.index)
+    }
+
+    pub fn peek_token(&self) -> Option<&Token> {
+        let i = self.get_non_newline();
+        self.code.get(i)
     }
 
     pub fn require_token(&mut self, token_type: TokenType) -> Result<&Token, SyntaxError> {
-        let i = self.skip_new_lines();
+        let i = self.get_non_newline();
         let token = self.code.get(i);
         if let Some(t) = token {
             if t.token_type == token_type{
@@ -55,16 +72,6 @@ impl Parser{
         let token_info = self.get_current_token_info();
         Err(SyntaxError::ExpectedToken {token_info, expected: token_type})
     }
-    
-
-    pub fn peek_token(&self) -> Option<&Token> {
-        let i = self.skip_new_lines();
-        self.code.get(i)
-    }
-
-    pub fn peek_token_with_newline(&self) -> Option<&Token> {
-        self.code.get(self.index)
-    }
 
     pub fn get_current_token_info(&self) -> TokenInfo {
         if self.index >= self.code.len() {
@@ -73,19 +80,8 @@ impl Parser{
         self.code[self.index].token_info
     }
 
-    fn next(&mut self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
-        if ignore_newline {
-            self.next_token()
-        } else {
-            self.next_token_with_nl()
-        }
+    pub fn skip_newlines(&mut self) {
+        self.index = self.get_non_newline()
     }
 
-    fn peek(&self, ignore_newline: bool) -> Option<&crate::lexer::token::Token> {
-        if ignore_newline {
-            self.peek_token()
-        } else {
-            self.peek_token_with_newline()
-        }
-    }
 }

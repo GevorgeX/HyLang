@@ -14,7 +14,7 @@ pub enum Statement {
 impl Parser {
     fn require_statement_end(&mut self) -> Result<(), SyntaxError> {
         let mut found = false;
-        while let Some(token) = self.peek_token_with_newline() {
+        while let Some(token) = self.peek_token_non_ignore_nl() {
             match token.token_type {
                 TokenType::RightCBracket => {
                     found = true;
@@ -37,7 +37,7 @@ impl Parser {
     }
 
     fn is_variable_decl_end(&self) -> bool {
-        if let Some(token) = self.peek_token_with_newline() {
+        if let Some(token) = self.peek_token_non_ignore_nl() {
             return match token.token_type {
                 TokenType::RightCBracket | TokenType::NewLine | TokenType::DotComma | TokenType::Equal => true,
                 _ => false,
@@ -82,8 +82,7 @@ impl Parser {
                     }
                 }
                 _ => {
-                    self.index = self.skip_new_lines();
-                    let expr = self.expression_without_newline()?;
+                    let expr = self.expression_non_ignore_newline()?;
                     Statement::ExpressionStatement(expr)
                 }
             };
@@ -99,7 +98,7 @@ impl Parser {
         if let Some(&equal_token) = self.peek_token() {
             if equal_token.token_type == TokenType::Equal {
                 self.next_token();
-                let expr = self.expression_without_newline()?;
+                let expr = self.expression_non_ignore_newline()?;
                 value = Some((equal_token.token_info, expr));
             }
         }

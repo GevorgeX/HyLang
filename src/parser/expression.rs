@@ -4,7 +4,7 @@ pub mod block;
 mod while_exp;
 
 use crate::errors::syntax_errors::SyntaxError;
-use crate::lexer::token::{TokenInfo, TokenType};
+use crate::lexer::token::{Token, TokenInfo, TokenType};
 use crate::parser::expression::block::BlockOfStatements;
 pub use crate::parser::expression::if_else::{ElseBranch, IfElseBranch};
 use crate::parser::Parser;
@@ -22,7 +22,6 @@ pub enum Expression {
     Block{body: BlockOfStatements },
     IfElse{if_block: Box<IfElseBranch>, else_if_blocks: Option<Vec<IfElseBranch>>, else_block: Option<ElseBranch>},
 }
-
 #[derive(Debug)]
 pub enum UnaryOperator {
     Negate,
@@ -68,15 +67,17 @@ pub enum BinaryOperator {
 }
 
 impl Parser {
+    pub fn expression_non_ignore_newline(&mut self) -> Result<Expression, SyntaxError> {
+        self.skip_newlines();
+        self.peek_expression(false)
+    }
+
     pub fn expression(&mut self) -> Result<Expression, SyntaxError> {
-        self.expression_wrapper(true)
+        self.skip_newlines();
+        self.peek_expression(true)
     }
-
-    pub fn expression_without_newline(&mut self) -> Result<Expression, SyntaxError> {
-        self.expression_wrapper(false)
-    }
-
-    fn expression_wrapper(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
+    
+    fn peek_expression(&mut self, ignore_newline: bool) -> Result<Expression, SyntaxError> {
         self.assignment(ignore_newline)
     }
 
@@ -98,8 +99,9 @@ impl Parser {
                 TokenType::DoubleGreaterEqual => BinaryOperator::RightShiftAssign,
                 _ => break,
             };
-            self.next(ignore_newline);
-            let right = self.assignment(ignore_newline)?;
+            self.next_token();
+
+            let right = self.logical_or(ignore_newline)?;
             return Ok(Expression::Binary {
                 left: Box::new(left),
                 operator,
@@ -120,7 +122,7 @@ impl Parser {
                 TokenType::Or => BinaryOperator::LogicalOr,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.logical_and(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -141,7 +143,7 @@ impl Parser {
                 TokenType::And => BinaryOperator::LogicalAnd,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.bitwise_or(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -162,7 +164,7 @@ impl Parser {
                 TokenType::Pipe => BinaryOperator::BitwiseOr,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.bitwise_xor(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -183,7 +185,7 @@ impl Parser {
                 TokenType::Caret => BinaryOperator::BitwiseXor,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.bitwise_and(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -204,7 +206,7 @@ impl Parser {
                 TokenType::Ampersand => BinaryOperator::BitwiseAnd,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.equivalence(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -226,7 +228,7 @@ impl Parser {
                 TokenType::NotEqual => BinaryOperator::NotEqual,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.relational(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -250,7 +252,7 @@ impl Parser {
                 TokenType::GreaterEqual => BinaryOperator::GreaterEqual,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.shift(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -272,7 +274,7 @@ impl Parser {
                 TokenType::DoubleGreater => BinaryOperator::RightShift,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.additive(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -294,7 +296,7 @@ impl Parser {
                 TokenType::Minus => BinaryOperator::Subtract,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.multiplicative(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -317,7 +319,7 @@ impl Parser {
                 TokenType::Percent => BinaryOperator::Mod,
                 _ => break,
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.prefix(ignore_newline)?;
             left = Expression::Binary {
                 left: Box::new(left),
@@ -340,7 +342,7 @@ impl Parser {
                 TokenType::Star => UnaryOperator::Dereference,
                 _ => return self.postfix(ignore_newline),
             };
-            self.next(ignore_newline);
+            self.next_token();
             let right = self.prefix(ignore_newline)?;
             return Ok(Expression::Unary {
                 operator,
@@ -356,7 +358,7 @@ impl Parser {
         while let Some(&token) = self.peek(ignore_newline) {
             match token.token_type {
                 TokenType::Dot => {
-                    self.next(ignore_newline);
+                    self.next_token();
                     let member = self.primary(ignore_newline)?;
                     left = Expression::GetMember {
                         object: Box::new(left),
@@ -365,7 +367,7 @@ impl Parser {
                     };
                 }
                 TokenType::LeftRBracket => {
-                    self.next(ignore_newline);
+                    self.next_token();
                     let (arguments, right_rbracket_token_info) = self.parse_call_arguments()?;
                     left = Expression::Call {
                         callee: Box::new(left),
@@ -374,8 +376,9 @@ impl Parser {
                     };
                 }
                 TokenType::LeftSBracket => {
-                    self.next(ignore_newline);
-                    let index = self.expression()?;
+                    self.next_token();
+                    let index = self.peek_expression(true)?;
+                    self.skip_newlines();
                     let right_sbracket_token = self.require_token(TokenType::RightSBracket)?;
                     left = Expression::Index {
                         object: Box::new(left),
@@ -401,7 +404,8 @@ impl Parser {
             TokenType::True | TokenType::False => Ok(Expression::Boolean { token_info: token.token_info }),
             TokenType::Ident => Ok(Expression::Identifier { token_info: token.token_info }),
             TokenType::LeftRBracket => {
-                let expr = self.expression_wrapper(true)?;
+                let expr = self.expression()?;
+                self.skip_newlines();
                 self.require_token(TokenType::RightRBracket)?;
                 Ok(expr)
             }
@@ -415,6 +419,22 @@ impl Parser {
                 self.if_else(token.token_info)
             }
             _ => Err(SyntaxError::UnexpectedToken { token: token.clone() }),
+        }
+    }
+
+    fn next(&mut self, ignore_newline: bool) -> Option<&Token> {
+        if ignore_newline {
+            self.next_token()
+        } else {
+            self.next_token_non_ignore_nl()
+        }
+    }
+
+    fn peek(&self, ignore_newline: bool) -> Option<&Token> {
+        if ignore_newline {
+            self.peek_token()
+        } else {
+            self.peek_token_non_ignore_nl()
         }
     }
 }
